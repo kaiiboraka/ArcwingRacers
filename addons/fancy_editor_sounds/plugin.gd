@@ -52,7 +52,6 @@ var zap_accumulator: int = 0
 var last_focused_editor_id: String = ""
 var has_editor_focused: bool = false
 var editors: Dictionary = {}
-var shader_tab_container: TabContainer
 #endregion
 
 #region EDITOR INTERFACE
@@ -876,23 +875,20 @@ func register_script_editor() -> void:
 func find_shader_editor_container() -> void:
 	var base_control: Control = EditorInterface.get_base_control()
 	var shader_file_editor_node: Node = find_node_by_class_name(base_control, "ShaderFileEditor")
-	if shader_file_editor_node:
-		var parent: Node = shader_file_editor_node.get_parent()
-		var shader_create_node: Node = find_node_by_class_name(parent, "ShaderCreateDialog")
-		if shader_create_node:
-			for child in shader_create_node.get_parent().get_children():
-				if child is TabContainer:
-					shader_tab_container = child
-				
-	if not shader_tab_container:
-		printerr("[Fancy Editor Sounds] Unable not find the shader tab container. (Sounds wont play inside shader editor)")
+	if not shader_file_editor_node:
+		printerr("[Fancy Editor Sounds] Unable to find the shader editor.")
 		return
+		
+	var code_edit: CodeEdit = find_node_by_class_name(shader_file_editor_node, "CodeEdit")
+	if not code_edit:
+		printerr("[Fancy Editor Sounds] Unable to find shader code edit. (Sounds wont play inside shader editor)")
+		return
+	
+	var editor_id = "shader_" + str(code_edit)
+	if not editors.has(editor_id) or not is_instance_valid(editors.get(editor_id)):
+		add_new_editor(code_edit, editor_id)
 	else:
-		shader_tab_container.tab_changed.connect(_on_shader_tab_changed)
-		initial_shader_editor_lookup(shader_tab_container)
-
-func _on_shader_tab_changed(tab: int) -> void:
-	add_shader_edit(shader_tab_container, tab)
+		editors[editor_id].code_edit = code_edit
 
 func find_node_by_class_name(node: Node, class_string: String) -> Node:
 	if node.get_class() == class_string:
@@ -903,30 +899,8 @@ func find_node_by_class_name(node: Node, class_string: String) -> Node:
 			return result
 	return null
 
-func add_shader_edit(container: TabContainer, tab_number: int) -> void:
-	if not is_instance_valid(container):
-		return
-	
-	var text_shader_editor = container.get_tab_control(tab_number)
-	if not text_shader_editor or "TextShaderEditor" not in text_shader_editor.name: 
-		return
-	
-	var previous_editors = editors.duplicate()
-	
-	# Find the CodeEdit component(s) in this text_shader_editor
-	var code_edit: CodeEdit = find_node_by_class_name(text_shader_editor, "CodeEdit")
-	var editor_id = text_shader_editor.name + "_" + str(code_edit)
-	if not previous_editors.has(editor_id):
-		add_new_editor(code_edit, editor_id)
-	else:
-		editors[editor_id].code_edit = code_edit
-
-func initial_shader_editor_lookup(container: TabContainer) -> void:
-	if not is_instance_valid(container):
-		return
-
-	for i in range(container.get_tab_count()):
-		add_shader_edit(container, i)
+func _on_shader_tab_changed(tab: int) -> void:
+	pass
 
 #endregion
 
