@@ -75,4 +75,19 @@ show_checkered = true
 top_level = true
 metadata/_edit_lock_ = true
 
-[node name="Node3D" parent="." unique_id=612795873 instance=ExtResource("1_26u2p")]
+[node name="Arcwing1" parent="." unique_id=612795873 instance=ExtResource("1_26u2p")]
+
+[node name="Arcwing2" parent="." unique_id=590529740 instance=ExtResource("1_26u2p")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15, 0, 0)
+
+[node name="Arcwing3" parent="." unique_id=490624005 instance=ExtResource("1_26u2p")]
+
+[node name="Arcwing4" parent="." unique_id=1868689680 instance=ExtResource("1_26u2p")]
+
+[node name="Arcwing5" parent="." unique_id=1973779646 instance=ExtResource("1_26u2p")]
+
+[node name="Arcwing6" parent="." unique_id=89871901 instance=ExtResource("1_26u2p")]
+
+[node name="Arcwing7" parent="." unique_id=1063328069 instance=ExtResource("1_26u2p")]
+
+[node name="Arcwing8" parent="." unique_id=1547816581 instance=ExtResource("1_26u2p")]

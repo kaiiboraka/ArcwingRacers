@@ -161,10 +161,11 @@ func update_player_volume(action_type: ActionType) -> void:
 	volume_db += 20 * log(player_data.volume_multiplier) / log(10)
 	player_data.player.volume_db = volume_db
 
-# Convert percentage to dB
+# Convert percentage to dB using a squared power curve
 func base_volume_from_percentage(percentage: float) -> float:
-	# Map 0% to -80 dB and 100% to 0 dB
-	return lerp(-80.0, 0.0, percentage / 100.0)
+	if percentage <= 0:
+		return -80.0
+	return 40 * log(percentage / 100.0) / log(10)
 
 # Calculate dB adjustment from percentage
 func additional_db_from_percentage(percentage: float) -> float:
@@ -204,7 +205,6 @@ func handle_interface_input(event: InputEvent) -> void:
 	if _interface_input_busy:
 		return
 	_interface_input_busy = true
-	await get_tree().process_frame
 	var base_control = EditorInterface.get_base_control()
 	var focused = base_control.get_viewport().gui_get_hovered_control()
 	
@@ -240,16 +240,17 @@ func handle_interface_input(event: InputEvent) -> void:
 		if slider && !is_dragging_slider:
 			setup_slider_tracking(slider)
 	
-	if focused is Tree:
-		handle_tree_interactions(focused, event)
-	elif focused is ItemList:
-		handle_item_list_interactions(focused, event)
-	elif current_slider != null and is_instance_valid(current_slider) and is_control_related_to_slider(focused, current_slider):
-		handle_editor_slider_interactions(current_slider, event)
+	if is_instance_valid(focused):
+		if focused is Tree:
+			handle_tree_interactions(focused, event)
+		elif focused is ItemList:
+			handle_item_list_interactions(focused, event)
+		elif current_slider != null and is_instance_valid(current_slider) and is_control_related_to_slider(focused, current_slider):
+			handle_editor_slider_interactions(current_slider, event)
 		
-	# Handle button clicks
-	if event is InputEventMouseButton and event.is_released() and event.button_index == MOUSE_BUTTON_LEFT:
-		handle_button_click(focused, event)
+		# Handle button clicks
+		if event is InputEventMouseButton and event.is_released() and event.button_index == MOUSE_BUTTON_LEFT:
+			handle_button_click(focused, event)
 	_interface_input_busy = false
 
 func handle_tab_input(event: InputEvent) -> void:
