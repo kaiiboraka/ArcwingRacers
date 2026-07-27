@@ -1,0 +1,38 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="ArcwingRacers"
+config/features=PackedStringArray("4.7")
+boot_splash/image="uid://cdxi6o7rb3osj"
+config/icon="uid://cxanvdcmlwtu6"
+
+[autoload]
+
+SignalLens="*uid://mh4uahxfhah"
+_mcp_game_helper="*res://addons/godot_ai/runtime/game_helper.gd"
+
+[dotnet]
+
+project/assembly_name="ArcwingRacers"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/ColorPreview/plugin.cfg", "res://addons/GDQuest_GDScript_formatter/plugin.cfg", "res://addons/Todo_Manager/plugin.cfg", "res://addons/explore-editor-theme/plugin.cfg", "res://addons/fancy_editor_sounds/plugin.cfg", "res://addons/godot_ai/plugin.cfg", "res://addons/moderntitlebar/plugin.cfg", "res://addons/plugin_refresher/plugin.cfg", "res://addons/resource_namer/plugin.cfg", "res://addons/script-ide/plugin.cfg", "res://addons/signal_lens/plugin.cfg", "res://addons/terrain_3d/plugin.cfg")
+
+[file_customization]
+
+folder_colors={
+"res://Content/": "pink",
+"res://Systems/": "yellow",
+"res://UI/": "teal",
+"res://addons/": "gray"
+}
