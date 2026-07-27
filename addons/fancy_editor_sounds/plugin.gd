@@ -171,9 +171,7 @@ func base_volume_from_percentage(percentage: float) -> float:
 func additional_db_from_percentage(percentage: float) -> float:
 	if percentage <= 0:
 		return -80.0
-	else:
-		# Convert percentage to dB (100% = 0dB, 200% = +6dB, 50% = -6dB)
-		return 20 * log(percentage / 100.0) / log(10)
+	return 40 * log(percentage / 100.0) / log(10)
 
 func load_typing_sounds() -> void:
 	typing_sounds.append(load("res://addons/fancy_editor_sounds/keyboard_sounds/key-press-1.mp3"))

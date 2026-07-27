@@ -122,19 +122,12 @@ func register_setting(path: String, default_value, type: int = TYPE_BOOL,
 		
 		editor_settings.set_initial_value(path, initial_value, false)
 		
-		# Add property info for proper display
-		var property_info = {
+		editor_settings.add_property_info({
 			"name": path,
 			"type": type,
 			"hint": hint,
 			"hint_string": hint_string
-		}
-		
-		# Add display name if provided
-		if display_name != "":
-			property_info["usage"] = PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_CATEGORY
-		
-		editor_settings.add_property_info(property_info)
+		})
 
 func load_settings_values() -> void:
 	# Load master volume
