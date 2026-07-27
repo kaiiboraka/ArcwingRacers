@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://ta4rkqlgf5a0"]
 
 [ext_resource type="PackedScene" uid="uid://dylywca7tvxrp" path="res://Content/Scenes/Arcwing.tscn" id="1_26u2p"]
+[ext_resource type="PackedScene" uid="uid://v7n3qlho6kr3" path="res://Content/Scenes/starting_line.tscn" id="2_wg3kv"]
 
 [sub_resource type="Gradient" id="Gradient_8c3dd"]
 offsets = PackedFloat32Array(0.2, 1)
@@ -76,18 +77,29 @@ top_level = true
 metadata/_edit_lock_ = true
 
 [node name="Arcwing1" parent="." unique_id=612795873 instance=ExtResource("1_26u2p")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
 
 [node name="Arcwing2" parent="." unique_id=590529740 instance=ExtResource("1_26u2p")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 0.2, 0)
 
 [node name="Arcwing3" parent="." unique_id=490624005 instance=ExtResource("1_26u2p")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 0.2, 0)
 
 [node name="Arcwing4" parent="." unique_id=1868689680 instance=ExtResource("1_26u2p")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 45, 0.2, 0)
 
 [node name="Arcwing5" parent="." unique_id=1973779646 instance=ExtResource("1_26u2p")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, -25)
 
 [node name="Arcwing6" parent="." unique_id=89871901 instance=ExtResource("1_26u2p")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 0.2, -25)
 
 [node name="Arcwing7" parent="." unique_id=1063328069 instance=ExtResource("1_26u2p")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 0.2, -25)
 
 [node name="Arcwing8" parent="." unique_id=1547816581 instance=ExtResource("1_26u2p")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 45, 0.2, -25)
+
+[node name="StartingLine" parent="." unique_id=583602706 node_paths=PackedStringArray("racers_to_load") instance=ExtResource("2_wg3kv")]
+racer_count = 8
+racers_to_load = [NodePath("../Arcwing1"), NodePath("../Arcwing2"), NodePath("../Arcwing3"), NodePath("../Arcwing4"), NodePath("../Arcwing5"), NodePath("../Arcwing6"), NodePath("../Arcwing7"), NodePath("../Arcwing8")]
