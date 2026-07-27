@@ -33,6 +33,22 @@ Pilots: BLADE RIDERS, or Arc Riders
 "Wings" are like Solar Sails (comprised of energy cells) attached to magical machinery. inspiration from airships across Final Fantasy, Treasure Planet, Stardust etc. 
 Blade body's overall shape (on average) like a reverse of a Naboo Starfighter, where the blade comes to a long point. Not a hard rule, just a standard design basis.
 
+# Folder Structure Archictecture
+
+Reference: GDQuest's writeup of Epictellers' (Starfinder: Afterlight) four-pillar architecture — `addons` / `systems` / `ui` / `content`, with a strict one-way dependency flow (content → systems → addons; ui → systems only, read-only access) plus a per-developer sandbox folder excluded from builds. (https://www.gdquest.com/library/modular_game_architecture/)
+
+Add-ons: Libraries made in-house for tools and APIs that work in any 3D game
+Systems: Core game rules and mechanics that define how your game plays (like your combat system or game-specific character movement and pathfinding)
+UI: User interface code that reads from the game systems and displays information but never controls or writes anything itself
+Content: The actual game assets, dialogues, quests, and level-specific scripts and events
+
+The GDQuest piece's own sizing guidance: solo/small teams don't need the full Epictellers rigor (no CI-enforced structural checks), but adopting the basic four-folder split early is worth it for a project expected to run a year or more — which this project is. 
+
+## UI Boundary Rule
+
+`ui/` never calls into `systems/` directly. All UI ↔ gameplay communication routes through signals ("Call down, signal up"), through a global EventBus autoload when appropriate: 
+- UI **reads** gameplay state by subscribing to broadcasts.
+- UI **writes** (player input intended to change gameplay state) by firing a request/command through the EventBus; the owning system performs the mutation.
 
 # Story
 
