@@ -122,6 +122,8 @@ Built on **Godot 4** (GDScript). 3D. See `technical/code-standards.md` for the p
 
 | Doc | Status |
 |---|---|
+| `README.md` | ✅ Written — formal design overview with feature list, divergences, scope targets |
+| `brainstorm_GDD.md` | 🟡 Original concept / first brainstorm — raw ideas, early ability drafts, terminology noodling, concept art prompts. Preserved from the first README. Refer back when you want "what we first said about this." |
 | `game-design/overview.md` | ✅ Written — ArcwingRacers racing game design |
 | `game-design/differences-from-ep1r.md` | ✅ Written — all intentional divergences from EP1R |
 | `game-design/pod-racer-notes/ep1r-advanced-players-reference-FAQ.md` | 🟡 Reference — full EP1R player guide, racer stats, component data (1700 lines) |

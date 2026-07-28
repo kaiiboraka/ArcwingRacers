@@ -1,243 +1,174 @@
----
-pageType: GameDesign
-created: "2026-07-07 07:16PM - Tuesday Jul 7th "
-parent Page: 
-aliases: 
-  - Arcwing Racers
-tags:
-  - Gameplay/Design
-discord: 
-Reference Board: 
-share: true
-banner: "[[Arcwing Blader Rider AI_Generated Concept Art (1).png]]"
-banner-y: 10
----
 # ArcwingRacers
-High-speed low-poly racing game.
 
-> [!Summary]+ Summary of [[Fantasy Pod Racer|ArcwingRacers]]
-> LIKE POD RACER... ~~IN SPACE~~ IN ELYTHIA
+High-speed low-poly 3D fantasy racing game set on the planet Elythia. Players pilot magical hovercraft called **Arcwings** — chariot-like pods with detached floating arcane engines — across diverse biomes in tournament racing.
 
-"Arcwings"
-Arc for arcane
+Built in **Godot 4** (GDScript). Primary reference: *Star Wars Episode I: Racer.*
 
-Blade or Rig are good too
-Arc-rigs maybe?
+---
 
-Chariot/Cockpit: Blade
-Engines: Wings
-Whole 'pod': Arcwing
-Cross beams: Arc-rig
-Pilots: BLADE RIDERS, or Arc Riders
+## Overview
 
-"Wings" are like Solar Sails (comprised of energy cells) attached to magical machinery. inspiration from airships across Final Fantasy, Treasure Planet, Stardust etc. 
-Blade body's overall shape (on average) like a reverse of a Naboo Starfighter, where the blade comes to a long point. Not a hard rule, just a standard design basis.
+ArcwingRacers targets the physics feel, boost/heat risk-reward, and pod customization of EP1R, then expands on it with elemental character abilities, mana/shield mechanics, modular track hazards, a roguelike Archon Race mode, and deeper economy systems with part storage and explicit selling.
+
+The game world is **Elythia** — a planet of 12 elemental nations. The month of Taikaran is "Energy Sports Day," an Elythian Olympics where Arcwing racing is the premier sport.
 
-# Folder Structure Archictecture
+---
 
-Reference: GDQuest's writeup of Epictellers' (Starfinder: Afterlight) four-pillar architecture — `addons` / `systems` / `ui` / `content`, with a strict one-way dependency flow (content → systems → addons; ui → systems only, read-only access) plus a per-developer sandbox folder excluded from builds. (https://www.gdquest.com/library/modular_game_architecture/)
+## Architecture
 
-Add-ons: Libraries made in-house for tools and APIs that work in any 3D game
-Systems: Core game rules and mechanics that define how your game plays (like your combat system or game-specific character movement and pathfinding)
-UI: User interface code that reads from the game systems and displays information but never controls or writes anything itself
-Content: The actual game assets, dialogues, quests, and level-specific scripts and events
+Four-pillar folder structure with strict one-way dependency flow:
+
+| Pillar | Contents |
+|---|---|
+| `addons/` | Libraries and tools reusable across 3D games |
+| `systems/` | Core game rules and mechanics |
+| `ui/` | User interface — reads from systems via signals, never writes to them |
+| `content/` | Assets, scenes, scripts, levels |
+
+UI ↔ gameplay communication routes through an EventBus autoload at `systems/events/event_bus.gd`.
+
+---
+
+## Major Divergences from EP1R
+
+| Area | EP1R | ArcwingRacers |
+|---|---|---|
+| Abilities | Only Sebulba has one | Every racer has an active ability or passive |
+| AI | Fixed speed buckets | Randomized loadouts per difficulty tier |
+| Progression | Race-count gating | License Rank (points from placements) |
+| Economy | Trade-in only | Explicit selling, part warehouse |
+| Currency | Single (truguts) | Losallian Crowns + Elemental Cores |
+| Shops | One shop (Watto's) | Per-nation shops with elemental specialization |
+| Repairs | In-race hold-R only | In-race hold-R + garage paid repairs |
+| Pit Droids | Speed up repair | Same, but equipped-parts only |
+| Tracks | Static obstacles | Systemic hazards, Elemental Imbalance events |
+| Modes | Campaign + time attack | Campaign, Mercenary, Archon Races (roguelike), multiplayer |
 
-The GDQuest piece's own sizing guidance: solo/small teams don't need the full Epictellers rigor (no CI-enforced structural checks), but adopting the basic four-folder split early is worth it for a project expected to run a year or more — which this project is. 
+Full breakdown: `docs/game-design/differences-from-ep1r.md`
+
+---
 
-## UI Boundary Rule
+## Features
+
+### Core Mechanics
+- **Hover Physics** — 4 spring-raycast suspension on CharacterBody3D, independent corner damping, natural terrain following
+- **Boost/Heat System** — EP1R-style: nose-pitch charge, release-and-re-press activate, heat buildup leads to wing fire
+- **Air Control** — nose pitch modulates gravity (pull back to stay airborne, push forward to descend)
+- **In-Race Repairs** — hold R to repair damaged engine segments (engine offline during repair, yellow-only restoration)
+- **Pod-on-Pod Collisions** — damage + shoving based on relative speed, angle, and Bump Mass; wall pinning compounds damage
 
-`ui/` never calls into `systems/` directly. All UI ↔ gameplay communication routes through signals ("Call down, signal up"), through a global EventBus autoload when appropriate: 
-- UI **reads** gameplay state by subscribing to broadcasts.
-- UI **writes** (player input intended to change gameplay state) by firing a request/command through the EventBus; the owning system performs the mutation.
+### Pod Customization
+- 7 upgrade slots (Traction, Turn Response, Acceleration, Top Speed, Airbrake, Cool Rate, Repair Rate)
+- 6 tiers per slot with EP1R-derived component names and costs
+- Component health degrades in races — pit droids repair equipped parts between races
+- **Elemental mods** — Environmental Resist, Stat kiss-curse, and Perks purchased with Elemental Cores
+- **Part warehouse** — store parts indefinitely, no degradation, build multiple loadouts
+- **Junkyard** — randomized used parts at discount, any tier can appear even if locked
 
-# Story
+### Mana & Shield
+- Mana pool with slow regen + track pickups (small crystals, large crystals, super crystals)
+- Hit racers drop mana
+- Directional shield (front/back/left/right) — hold to drain mana, parry timing restores mana
 
-You are a nameless racer person (custom character, at least M/F).
-The kingdoms of Elythia are celebrating \["ENERGY SPORTS DAY" (see Fantasy X Calendar)] during the entire month of Taikaran (August), and it's basically Elythian Olympics. The most popular sport, by far, is 
+### Abilities
+- Plug-and-play: weapon type × element (e.g., Flamethrower/Fire vs Cone of Cold/Ice)
+- Element interactions: water washes ice, fire melts ice, wind blows water, lightning conducts through water
+- Each racer has at least one ability determined by their element
 
-# Game Design of [[Fantasy Pod Racer]]
+### Controls
+- Left stick: steer + nose pitch
+- Right stick: 90° ship tilt
+- Left trigger: shield (hold/parry)
+- Right trigger: ability
+- Face buttons: accelerate (south), brake (east), item/repair (west/north, preset-configurable)
+- Left bumper: look behind (minimap mirrors in rear-view)
+- Select: cycle 4 minimap modes
 
-## Primary differences
+Full mapping: `docs/game-design/controls/controls-and-camera.md`
 
-Every character gets a weapon or ability of some kind, instead of just Sebulba
+### Minimap (4 Modes)
+1. Spline zoomed out — upcoming route only
+2. Spline zoomed in — tighter approach view
+3. Vertical position comparison — neck-and-neck relative positions
+4. Screen-circling progress — spline flattened across screen edges, racer flags orbit with position numbers
 
-A way to earn money outside of racing and trading. Random "Mercenary" Race -- jump into a random race on a random track with random opponents and get paid based on your performance.
-perhaps tying winnings allocation to difficulty
+Never shows terrain. Spline follows camera direction (always "up").
 
-More complexity in itemization systems.
-More ways to play with Random / procedural / roguelike mode.
-More diversity in enemy AI experience, so instead of just bucket flat speed values for all enemy racers, they also get randomized loadouts of a range of quality gear.
-More environmental hazards and world mechanics, like in the new Galactic Racer.
-
-MAYBE:
-Maybe more goofy / weird modes, like Mirror in Ep1R, like "manual" controls or something. Hyper speed modes. The floor is Ice, or Lava, Or both. Or ND/INS/SP cheats like Big Head/Little Head mode, or Halo Birthday Party, some way to make it goofy.
-Include a tertiary Mario Kart party mode with some items or something.
-Alternate gameplay objective modes, outside of just plain racing. Teams. Capture the Flag. Rocket League. Halo Zombies. City Trial... Wait this is just Kirby Air Ride. YEAHHH
-
-## Mechanics
-
-Gotta go fast. Must feel the same speed that Ep 1 Racer does.
-
-### Racing
-Copy the floaty pod feel
-include the nose-tipping mechanic for air control and, most importantly
-COPY THE BOOST MECHANIC EXACTLY. Over-abuse will catch you on fire
-Copy the base stats from Ep 1 Racer as a baseline.
-repair is great, because of itemization
-copy the time system, with best lap time records and best overall records. Be measurable per character, as well as overall.
-
-
-### Level Design
-
-Include environmental hazards, including temperature awareness. Boost overheats you. death trap in hot areas, salvation in cold areas, but be careful because boosting lowers turn response rate, and ice is already slippery enough as is.
-Obstacles, more monsters and weird things happening
-Underwater
-
-Levels are split between design/geometry/terrain and the features/hazards on top of it, such as the geysters and monsters and even the atmospheric lighting and shaders and particles. 
-
-Elemental Imbalance -- like prankster comets in Mario Galaxy, they remix the level with crazy hard modifiers and spice up the visuals and obstacles--reuse the level design but remix what's on it. Ice level invaded by Fire, will have normally icy cavern shortcut filled with Lava. Any element can invade, and will SYSTEMICALLY change targeted things about the level in predetermined ways. Then you can just swap the "Features" of each Level.
-
-Lots more playing with jumps and skill-based shortcut moments, not gated like later Mario Kart item "shortcuts" (catch-up mechanics).
-Secret tunnels through destroyable walls you can boost through to break
-off-road alternate paths you have to boost across to make worthwhile
-underground lava caves
-
-### Characters  & Elemental Abilities
-
-#### Character agnostic
-devise a system of weaponry that mixes and matches between "weapon type" and "element" so you can "plug in" the element you need to the fun weapon mechanic that you want.
-"Flamethrower" vs "Breath of Frost/Cone of Cold". "Seed Bomb" vs "Shrapnel Grenade".
-
-#### Character Specific
-Elemental characters each have a unique ability on Cooldown?
-or a powerful passive.
-
-Fire: Afterburner - ACTIVE - the next boost will be empowered to destroy other pods. Also no slowdown on impact. (BULLET BILL)
-Iron: Fortress - ACTIVE - temporarily become immune to damage from racers or collisions (Super star)
-Earth:
-Wood:
-
-Water: Tidal wave - ACTIVE- knock away surrounding racers, sending them careening into each other and the terrain (Foghorn? sorta)
-Lightning: Electron Charge - ACTIVE - Become energy during your next boost, harmlessly passing through racers and hazards as though you'd never hit them
-Ice:
-Wind:
-
-#### Unlockable Characters
-
-Similar to EP1R, progress through the story-mode or winning certain tournaments will unlock characters to play as for any race (PER RACER LICENSE / file)
-
-SECRET Characters, or strong boss characters, will have unique permanent pod parts that you cannot change replace or disable. Such as a unique booster or turning thing. So they have some strong effect but there's still SOME customization at least. Maybe some secret characters (such as the Archons) get permanent passive versions of the active abilities for normal racers. For instance, permanent boost changing, or on actives like Water knockback, instead of 10sec CD, you have 2 charges at (2-3s) cd instead.
-
-
-### Systems
-singleplayer against self ghost or others
-
-#### pod modularity
-returning is the upgradeable part system, but now with:
-slots for mod components elemental affinity that can add extra stats and/or effects based on the magic at play
-e.g. Fire mod on engine will give you stronger boost with more heat generated
-
-Effects:
-Environmental -- resist to specific track weather threats -- fire to keep warm in the cold place, etc.
-Stats -- kiss curse. Each element should have an intuitive pairing of a stat that it increases and one it decreases. They can double dip on the stats. There will probably be fewer stats than elements anyway, so that makes it easier.
-Perks -- actual powers/effects that activate under specific conditions. Galactic Racer example: "While Surging, protected from Choked." or "On Perfect Landing, refill Afterburner fuel by 50%." or "Upon activating an Ability, gain Shielded for 5s." or "While Surging, Afterburner can burn 75% longer." etc.
-You can have multiple orbs or cores of each element, one for each type of bonus.
-
-BIS equipment should have elemental affinities baked in so you have to make tradeoffs at the highest level.
-
-"Equipment Quality/Rarity" -- not explicit. Implicit in the internal rank of its stats. Can also be reflected superficially in the UI with typical color schemes or stars or something, but it's not a hard enforced system. Also means you're not going to find the same item at multiple levels of quality.
-
-#### Economy
-The junkyard and item progression is worth copying as a baseline, and see how to expand upon it
-being able to make money outside of races by trading for worse parts you can repair is excellent gamification
-Repairing pod components after races with purchaseable (and upgradeable?) helpers to make the most of used parts
-Would also like a way to store and keep parts, and be able to directly sell in addition to trade-in.
-
-Progression of items is NOT tied to number of races completed, but perhaps some kind of License Rank? Have to win lots more easy races or fewer harder races to progress the same. You can still get some progress from placing top half (i.e. "not first").
-
-#Gameplay/Design/Question  Change the winnings allocation for 1-st place confidence? Or tie that in to base difficulty selection out of the gate? If you bet on yourself more, the game gets harder. If you choose "easy" difficulty from the menu, the winnings are split "Fair."
-Also, when do you choose the difficulty? Is it permanent per "racer license"? Perhaps a one-way trip to increasing difficulty. 
-
-How do you get mod parts? There can be a store, but they don't have healthbars so the junkyard doesn't make sense. Do you just buy them outright? Is there a special currency you get for placing that you can trade? Like an empty core... probably specifically "Stat Core" vs "Perk Core". The main world map lets you visit nations and their respective shops, so you can trade your cores for the elemental ones at that nation's shop?
-
-#### roguelike replayability - ARCHON RACES
-The upper echelon of racing. Only playable once a secret Archon character has been unlocked. Could pretty early. Maybe after your first tournament. Your first boss is Ashlyn or something. 
-
-Choose an Archon.
-Choose between 3 specific regions and do all the races in that area (Elemental advantages at play here). unlike main game where you pick a tournament set that takes you all over.
-#Gameplay/Design/Question Harder affinity makes better rewards?  
-
-#Gameplay/Design/Question What are the rewards in Archon Races? Do any transfer? Is this a completely isolated For Fun mode? Could be the elemental mod cores.
-
-The punishment of arcade-hard difficult games has been converted into a feature with the advent of roguelikes
-Rogue-lite progression systems and the idea of "new runs" in general make for a perfect match with racing games
-
-PROCEDURAL TRACK GENERATION? Dead Cells, Hades, Scourge Bringer: All have distinct chunked bespoke ROOMS that you connect differently each time. In EP1R, the tracks on the same planet are already designed this way, at the largest most interconnected first, and then ripped apart into reusable pieces you can chain together in unique ways to make shorter/easier versions of. Modular track building. So, you can have "infinite" races if you just make more modular racetrack pieces.
-
-main mode has long-term investing, planning, building, tweaking, adjusting. This one is big choices, big commitments, it's not going to last long. High risk/reward ratio.
-
-Immunities from Hazards
-Stat Sticks
-Some mod perks from the main game
- > a unique gameplay mechanic that doesn't exist in the main story progression, like a crazy Super Attack or something. just to up the ante in this Arcade mode. Maybe like, "Archon Mode" lol. 
-
-Race until you crash, at all, ever. (or like... 3 strikes, maybe). 
-Or like the Elimination races from Burnout/GR (last place+ kicked out). 
-
-Elemental Imbalance happens FREQUENTLY
-
-Potentially Slay the Spire style map progression. choose between randomized selection of encounters: Rest/Repair shop, vs Parts Shop, vs race. Could be multiple race types: normal; Ring-race -- make it through all of the checkpoint rings; Quick-Run: up to 3 laps to beat the fastest lap time with better rewards the fewer it takes you; Last Racer Running -- combat, must eliminate certain number of targets (this is where Mario Kart item implementation should definitely exist); Hyper-hazard -- all hazards are on all the time instead of popping out periodically; and more we come up with. Incursions can happen on pretty much any race, regardless of mode (probably). 
-
-# Aesthetic Design of [[Fantasy Pod Racer]]
-
-low-poly 3d.
-Simple textures.
-Immersive UI.
-Charming character models, with expressive quirky animations. (Male Fire racer is Maui)
-
-
-first people to create
-
-## Characters / "Pods" 
-
-Punch-Out Stereotypes from each nation in Elythia, one from each country.
-2 from each, M / F . maybe identical stats, just for visuals? maybe?
-Main cast as secret / boss characters. For instance, all the Archons can be tournament winners
-
-## Environment
-at least one in each country, minimum. gotta get that biome diversity
-Go through levels from the main game
-use actual pod racer as inspiration obvs. Pay closest attention to when it's NOT just roads. What do they do to break sightlines and introduce verticality and strong silhouettes?
-
-Gotta go fast. Must feel the same speed that Ep 1 Racer does. Tiling and stretched textures in addition to ACTUAL SPEED create natural motion blur.
-
-## UI
-honestly i just really like the speed gauge
-health is cool as an in-universe semi-diegetic approximation of the pod itself, instead of a bar or anything.
-
-singleplayer against self ghost or others
-
-# AI Generated Concept art
-
-Generate an image: draw highly stylized concept art for the "Arcwing", a magic-powered hovercraft for a fantasy racing game.
-
-Chariot/Cockpit: Blade
-Engines: Wings
-Whole 'pod': Arcwing
-Cross beams: Arc-rig
-Pilots: BLADE RIDERS, or Arc Riders?
-
-"Wings" are like Solar Sails (comprised of energy cells) attached to magical machinery. inspiration from airships across Final Fantasy, Treasure Planet, Stardust etc.
-Blade body's overall shape (on average) like a reverse of a Naboo Starfighter, where the blade comes to a long point. Not a hard rule, just a standard design basis.
-
-Somewhere between an airship, the solar sailer hoverboard from Treasure Planet, the pod racers from Star Wars, with the main body (the "blade") about the size of an ATV, with the back side being like the bucket of a chariot for someone to step up onto and stand at to pilot the machine. 
-Arcwings have separated floating arcane engines (or "wings") alongside the vehicle lashed to the chariot part via beams of pink arcane energy, much like the "energy binders" of a Star Wars Pod Racer. But unlike a pod racer whose energy binder pulls the two engines together in suspension, with cables from the engines that connect them to the seat, these arcane connections are straight from engine to chariot with no physical bindings.  
-in addition to the "Wings" being lashed to the "Blade" by arcane beams of light, the chariot part should allow for standing like a real chariot bucket.
-
-present 2-3 unique designs you have to contrast with each other.
-
-![[Arcwing Blader Rider AI_Generated Concept Art (2).png]]
-![[Arcwing Blader Rider AI_Generated Concept Art (1).jpg]]
-![[Arcwing Blader Rider AI_Generated Concept Art (3).png]]
-
-![[Arcwing Blader Rider AI_Generated Concept Art (1).png]]
+### Game Modes
+| Mode | Description |
+|---|---|
+| **Campaign / Tournament** | Story-driven circuit progression through Elythia's nations |
+| **Single Race** | Quick race on any unlocked track with any unlocked racer |
+| **Time Attack** | Race against the clock, best lap/race per racer per track |
+| **Mercenary Race** | Random race, random track, random opponents — paid by performance |
+| **Archon Race** | Roguelike: permadeath, elimination format, escalating hazards, massive rewards |
+| **Multiplayer** | Splitscreen (2–4), LAN, P2P online. AI fills up to 16 racers |
+
+### Track Design
+- **Modular chunks** — reusable segments stitched into multiple courses per biome
+- **Dynamic assembly** — chunks combined at runtime for randomized layouts (Archon Races)
+- **Systemic hazards** — fire vents, freezing water, pop-up traps, moving doors, destructible walls, wildlife, dragons, pirates, dock cranes
+- **Elemental Imbalance** — Mario Galaxy prankster-comet style: remixes a track with a different element's hazards, visuals, and shortcuts
+- Underwater sections, temperature zones, skill-based shortcuts, branching paths
+
+Full hazard catalog: `docs/game-design/tracks/hazards.md`
+
+### Economy
+- **Losallian Crowns** — general currency for parts, repairs, upgrades
+- **Elemental Cores** — from Archon Races, spent on elemental mods at nation shops
+- **Race Winnings** — scaled by difficulty selection (harder AI = bigger payout)
+- **Junkyard Flipping** — buy damaged high-tier parts cheap, race to repair, resell
+- **Explicit Selling** — sell any owned part for market value (no trade-in target needed)
+- **Difficulty/Payout Slider** — unified control over AI strength and prize reward
+
+Full economy: `docs/game-design/economy/overview.md`
+
+### Progression
+- **License Rank** — accumulate points from placements (wins = most, top-half = some, bottom = none)
+- Gates track access, part tiers, and max winnings
+- NOT tied to race count — skilled players rank up faster
+
+### AI
+- Randomized component loadouts within quality range per difficulty tier
+- Spline-based path sampling with lookahead distance
+- Boost timing, braking aggression, and path choice vary by difficulty
+
+---
+
+## Technical Architecture
+
+The full system map spans 23 modules across 5 implementation phases:
+
+| Phase | Focus |
+|---|---|
+| 1 | Core Racing — spline system, input buffer, pod physics, hover system, boost/heat |
+| 2 | Race Logic — race manager, lap detection, HUD, minimap, starting grid |
+| 3 | Content/Economy — component system, shops, junkyard, pit droids, AI racers |
+| 4 | Menus/Modes — garage UI, tournament progression, Archon Race mode |
+| 5 | Multiplayer — state sync, lobby, P2P networking |
+
+Technical docs: `docs/technical/`
+Architecture plan: `docs/technical/architecture-plan.md`
+
+---
+
+## Doc Structure
+
+| Folder | Contents |
+|---|---|
+| `docs/game-design/` | Design intent — mechanics, world, characters, tracks, economy, abilities |
+| `docs/technical/` | Implementation reference — architecture, physics, hover, handling, collision |
+| `docs/decisions/` | ADRs — why choices were made |
+| `docs/agent-context/` | Working memory for AI agents working in this repo |
+| `docs/pod-racer-notes/` | EP1R reference data — stats, components, junkyard strategy |
+
+Start at `docs/agent-context/context-map.md` for task-specific reading paths.
+
+---
+
+## Scope Targets (Launch)
+
+- **Tracks:** ~25+ courses across 10+ biomes
+- **Racers:** ~33–35 (18 nation racers + 12 Archons + 3–5 secret)
+- **Single-player length:** ~15–20 hours campaign
+- **Multiplayer:** Splitscreen (2–4), LAN, P2P online (post-launch)
