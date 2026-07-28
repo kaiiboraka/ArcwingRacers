@@ -46,7 +46,7 @@ Built on **Godot 4** (GDScript). 3D. See `technical/code-standards.md` for the p
 → Read `game-design/racers.md` for roster structure, `game-design/pod-stats.md` for stat allocation, `game-design/abilities.md` for element/ability assignment.
 
 **Building a new track**
-→ Read `game-design/tracks/overview.md` for biome/chunk design, `game-design/tracks/hazards.md` for hazard placement, `technical/tracks-and-splines.md` for the spline system.
+→ Read `game-design/tracks/overview.md` for biome/chunk design, `game-design/tracks/track-layout.md` for spline layout and waypoint rules, `game-design/tracks/hazards.md` for hazard placement, `technical/tracks-and-splines.md` for the spline system implementation.
 
 **Implementing or modifying the economy**
 → Read `game-design/economy/overview.md`, then `technical/architecture-plan.md` Phase 3 for system layout.
@@ -138,7 +138,8 @@ Built on **Godot 4** (GDScript). 3D. See `technical/code-standards.md` for the p
 | `game-design/tracks/hazards.md` | ✅ Written — full hazard catalog with categories and design principles |
 | `game-design/multiplayer.md` | ✅ Written — splitscreen, LAN, P2P architecture |
 | `game-design/pod-racer-notes/` | 🟡 Reference — EP1R stat data, junkyard strategy, best parts guide, pit droid mechanics |
-| `technical/tracks-and-splines.md` | ✅ Written — spline system reference |
+| `game-design/tracks/track-layout.md` | ✅ Written — design intent: cyclic/non-cyclic, branching, waypoint gating, AI pathing, modular chunks |
+| `technical/tracks-and-splines.md` | ✅ Written — implementation reference: data format, traversal, AI sampling math, minimap rendering |
 | `technical/architecture-plan.md` | ✅ Written — full system map, 23 modules across 5 phases, implementation order |
 | `technical/pod-physics-and-collision.md` | ✅ Written — capsule collision, layers, CCD strategy |
 | `technical/pod-scene-hierarchy.md` | ✅ Written — single CharacterBody3D, 7 capsules, spring-offset visuals |

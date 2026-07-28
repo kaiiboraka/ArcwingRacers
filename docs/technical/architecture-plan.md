@@ -265,15 +265,17 @@ Already handled by the input buffer abstraction. Phase 5 adds the network transp
 
 Creates multiple viewports (ViewportContainer in a Control), assigns one camera per local player. Each local player's input writes to their slot's buffer.
 
-### 23. Network Sync (LAN → P2P)
+### 23. Network Sync (LAN → P2P → Rollback)
 **Where:** `systems/multiplayer/network_manager.gd`
-**Dependencies:** Race Manager, Input Buffer
+**Dependencies:** Race Manager, Input Buffer, [netfox addon](https://github.com/foxssake/netfox) (Phase 5+)
 
-Host-authoritative model:
-- Host runs the Race Manager
-- Remote peers send input packets
-- Host broadcasts state snapshots (positions, lap, heat, damage)
+**Launch (splitscreen + LAN):** Host-authoritative with direct state sync. No rollback needed.
+
+**Post-launch (online P2P):** Switch to [netfox](https://github.com/foxssake/netfox) for rollback netcode. Pod physics migrate from `_physics_process()` to `_rollback_tick()`. Input buffer becomes a `BaseNetInput` subclass. `RollbackSynchronizer` handles save/restore; `TickInterpolator` handles visual smoothing.
+
+Transport layers:
 - ENet or WebRTC transport, no official servers
+- noray integration for NAT punchthrough
 
 ---
 

@@ -8,7 +8,6 @@ Periodically ask an agent to **file these away**: ideas will be removed from thi
 
 ## Game Design
 
-(Controls, Mana, Abilities, and Hazards filed into `game-design/controls/controls-and-camera.md`, `game-design/mana-and-shield.md`, `game-design/abilities.md`, and `game-design/tracks/hazards.md` respectively.)
 
 
 ## Technical
