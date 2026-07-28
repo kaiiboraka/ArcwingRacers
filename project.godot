@@ -8,6 +8,11 @@
 
 config_version=5
 
+[addons]
+
+project_layer_names/output=2
+project_layer_names/c#_namespace="ArcwingRacers"
+
 [application]
 
 config/name="ArcwingRacers"
@@ -19,6 +24,7 @@ config/icon="uid://cxanvdcmlwtu6"
 
 SignalLens="*uid://mh4uahxfhah"
 _mcp_game_helper="*res://addons/godot_ai/runtime/game_helper.gd"
+LayerNames="*uid://dqp3r7x2g2wgl"
 
 [dotnet]
 
@@ -26,7 +32,7 @@ project/assembly_name="ArcwingRacers"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/ColorPreview/plugin.cfg", "res://addons/GDQuest_GDScript_formatter/plugin.cfg", "res://addons/Todo_Manager/plugin.cfg", "res://addons/explore-editor-theme/plugin.cfg", "res://addons/fancy_editor_sounds/plugin.cfg", "res://addons/godot_ai/plugin.cfg", "res://addons/moderntitlebar/plugin.cfg", "res://addons/plugin_refresher/plugin.cfg", "res://addons/resource_namer/plugin.cfg", "res://addons/script-ide/plugin.cfg", "res://addons/signal_lens/plugin.cfg", "res://addons/terrain_3d/plugin.cfg")
+enabled=PackedStringArray("res://addons/ColorPreview/plugin.cfg", "res://addons/GDQuest_GDScript_formatter/plugin.cfg", "res://addons/Todo_Manager/plugin.cfg", "res://addons/explore-editor-theme/plugin.cfg", "res://addons/fancy_editor_sounds/plugin.cfg", "res://addons/godot_ai/plugin.cfg", "res://addons/layerNames/plugin.cfg", "res://addons/moderntitlebar/plugin.cfg", "res://addons/plugin_refresher/plugin.cfg", "res://addons/resource_namer/plugin.cfg", "res://addons/script-ide/plugin.cfg", "res://addons/signal_lens/plugin.cfg", "res://addons/terrain_3d/plugin.cfg")
 
 [file_customization]
 

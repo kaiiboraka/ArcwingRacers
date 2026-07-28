@@ -1,0 +1,25 @@
+<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+ 
+ <!-- Core Circle with Thick Glass Rim -->
+  <circle cx="50" cy="50" r="40" fill="#4b0082" stroke="#2a004d" stroke-width="6" />
+
+
+  <!-- Central Symbol: Purple Diamond with Hollow Yellow Circle -->
+  <polygon points="50,30 70,50 50,70 30,50" fill="#b233ee" stroke="#b233ee" stroke-width="1" />
+  <circle cx="50" cy="50" r="20" fill="none" stroke="#ffd700" stroke-width="3" />
+
+  <!-- Arcane Lines (Subtle, Optional) -->
+  <line x1="50" y1="20" x2="50" y2="80" stroke="#ffd700" stroke-width="1" stroke-dasharray="5" opacity="0.5" />
+  <line x1="20" y1="50" x2="80" y2="50" stroke="#ffd700" stroke-width="1" stroke-dasharray="5" opacity="0.5" />
+
+  <!-- Secondary Shine (Middle Left, Large and Transparent) -->
+  <circle cx="30" cy="50" r="20" fill="#ffffff" opacity="0.2">
+    <animate attributeName="r" from="20" to="22" dur="1.5s" repeatCount="indefinite" />
+  </circle>
+
+  
+    <!-- Primary Shine (Upper Right) -->
+  <circle cx="70" cy="30" r="10" fill="#ffffff" opacity="0.8">
+    <animate attributeName="r" from="10" to="12" dur="1s" repeatCount="indefinite" />
+  </circle>
+</svg>
