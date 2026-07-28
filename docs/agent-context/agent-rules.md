@@ -39,7 +39,7 @@
 - Before implementing a new singleton or persistent manager, read `technical/singleton-controllers.md`.
 - Before importing or committing any non-original audio asset, add or update its entry in `technical/audio-licensing.md`.
 - Before implementing a new Godot system, confirm the Godot version in `technical/code-standards.md` and consult that version's docs.
-- UI ↔ gameplay communication routes through signals or EventBus autoload only: UI reads by subscribing, writes by firing event requests.
+- UI ↔ gameplay communication routes through the EventBus autoload at `systems/events/event_bus.gd` only: UI reads by subscribing to signals, writes by firing request signals.
 
 ### Never
 - Do not add packages, dependencies, or plugins without asking first.

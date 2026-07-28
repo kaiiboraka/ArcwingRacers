@@ -40,28 +40,37 @@ Built on **Godot 4** (GDScript). 3D. See `technical/code-standards.md` for the p
 → Read `technical/code-standards.md` first. Then read the relevant `game-design/` doc for the system's intent.
 
 **Adding or modifying racer/pod behavior**
-→ Read `game-design/gameplay/movement.md`, then `technical/state-machines.md` for the AI/behavior architecture pattern.
+→ Read `game-design/pod-stats.md` for the stat model, `game-design/boost-and-heat.md` for the boost/heat system, `game-design/mana-and-shield.md` for mana/shield, `technical/architecture-plan.md` for system interaction, then `technical/state-machines.md` for the AI/behavior architecture pattern.
 
-**Adding a new character or elemental ability**
-→ Read `game-design/gameplay/abilities.md` and `game-design/gameplay/player-characters.md`.
+**Adding a new racer character**
+→ Read `game-design/racers.md` for roster structure, `game-design/pod-stats.md` for stat allocation, `game-design/abilities.md` for element/ability assignment.
 
-**Building a new track or world area**
-→ Read the relevant world location doc under `game-design/world/`, then `technical/collisions.md` and `technical/tilemaps.md` (if applicable).
+**Building a new track**
+→ Read `game-design/tracks/overview.md` for biome/chunk design, `game-design/tracks/hazards.md` for hazard placement, `technical/tracks-and-splines.md` for the spline system.
 
-**Implementing or modifying UI (speed gauge, health, HUD)**
-→ Read `technical/ui-events.md` and `technical/singleton-controllers.md`.
+**Implementing or modifying the economy**
+→ Read `game-design/economy/overview.md`, then `technical/architecture-plan.md` Phase 3 for system layout.
 
-**Modifying a game system (saving, audio, dialog, etc.)**
-→ Read the matching file in `systems/`, then check `technical/game-events.md` for integration patterns.
+**Implementing or modifying UI (speed gauge, HUD, menus)**
+→ Read `technical/architecture-plan.md` Phase 2 HUD section, `technical/ui-events.md` and `technical/singleton-controllers.md`, plus ADR 0002 (`decisions/adrs/0002-eventbus-ui-communication.md`).
+
+**Implementing abilities or mana system**
+→ Read `game-design/abilities.md` for ability types and element interactions, `game-design/mana-and-shield.md` for mana/shield mechanics, `technical/architecture-plan.md` for system layout.
+
+**Implementing multiplayer**
+→ Read `game-design/multiplayer.md` and ADR 0006 (`decisions/adrs/0006-multiplayer-architecture.md`), plus `technical/architecture-plan.md` Phase 5.
+
+**Implementing AI racers**
+→ Read `technical/architecture-plan.md` Phase 3 AI section, `technical/state-machines.md` for AI behavior pattern.
+
+**Modifying a game system (saving, audio, etc.)**
+→ Read the matching file in `systems/`, then check `technical/architecture-plan.md` for system boundaries.
 
 **Making an architectural decision**
 → Read existing ADRs in `decisions/adrs/` before proposing anything new.
 
-**Importing or sourcing any audio asset**
-→ Read `technical/audio-licensing.md` — every non-original audio file needs a license-traceability entry.
-
 **Filing a new idea, question, or TODO**
-→ Drop it in `unfiled-ideas.md`. Periodically, ideas are promoted into the relevant design docs.
+→ Drop it in `unfiled-ideas.md`. Periodically, ideas are promoted into the appropriate design doc.
 
 **Delivering Godot scenes, resources, or editor integration steps**
 → Read `agent-context/workflows/godot-editor-workflow.md`.
@@ -87,9 +96,18 @@ Built on **Godot 4** (GDScript). 3D. See `technical/code-standards.md` for the p
 | Elemental Imbalance | Track modifier akin to Mario Galaxy's prankster comets — remixes a level with different elemental hazards |
 | Boost | Core mechanic copied from Ep 1 Racer: over-abuse causes overheating/fire |
 | Racer License | Player progression system; license rank determines available races and rewards |
+| Losallian Crowns | Primary currency — part purchases, repairs, upgrades |
+| Elemental Cores | Tertiary currency from Archon Races, spent on elemental mods |
+| Part Warehouse | Store parts indefinitely without degradation; no forced carry limit |
 | Pit / Junkyard | Economy system — repair pod parts, trade used parts, buy/sell upgrades |
+| Explicit Selling | Divergence from EP1R: sell any owned part for current market value (no trade-in target needed) |
 | Mercenary Race | Drop into a random race on a random track for pay based on performance |
-| Four-pillar architecture | `addons/` / `systems/` / `ui` / `content/` with strict one-way dependency flow; UI reads from systems via EventBus signals |
+| Mana | Resource for abilities and shield. Recharges slowly; pickups on track; dropped by hit racers |
+| Shield | Directional block (front/back/left/right); hold drains mana, time to parry restores mana |
+| Parry | Timed shield raise just before impact — restores mana instead of consuming it |
+| Elemental Ability | Weapon type × element plug-and-play system; every racer has at least one |
+| Elemental Interaction | Cross-element effects (water washes ice, fire melts ice, wind blows water, etc.) |
+| Four-pillar architecture | `addons/` / `systems/` / `ui` / `content/` with strict one-way dependency flow; UI reads from systems via EventBus signals at `systems/events/event_bus.gd` |
 | Ep 1 Racer | Star Wars Episode I: Racer — primary reference for physics, boost, and track design |
 | Low-poly | Art style — simple textures, clean 3D models, immersive UI |
 
@@ -101,21 +119,25 @@ Built on **Godot 4** (GDScript). 3D. See `technical/code-standards.md` for the p
 
 | Doc | Status |
 |---|---|
-| `game-design/overview.md` | 🔴 Legacy (Fantasy X 2D action-RPG) — needs rewrite for ArcwingRacers |
-| `game-design/gameplay/movement.md` | 🔴 Legacy (platformer movement) — needs rewrite for racing physics |
-| `game-design/gameplay/abilities.md` | 🔴 Legacy (combat orbs) — needs rewrite for elemental racing abilities |
-| `game-design/gameplay/player-characters.md` | 🔴 Legacy (Kael/Rina) — needs rewrite for Arcwing racers |
-| `game-design/gameplay/enemies/` | 🔴 Legacy — needs replacement with racer AI / opponents |
-| `game-design/world/` | 🔴 Legacy (Zelda-like locations) — needs replacement with racetracks and biomes |
-| `game-design/art-direction/` | 🔴 Legacy (2D pixel art) — needs rewrite for 3D low-poly |
-| `game-design/audio-direction/` | 🔴 Legacy — needs rewrite for racing audio |
-| `game-design/hud/` | 🔴 Legacy — needs rewrite for racing HUD (speed gauge, health) |
-| `game-design/menu-scenes/` | 🟡 Partial — potentially adaptable |
-| `systems/` | 🔴 Mostly legacy — needs rewrite for racing systems |
-| `technical/` | ✅ Godot 4 specific — may need auditing for 3D vs 2D differences |
-| `decisions/adrs/` | 🔴 No ADRs recorded for ArcwingRacers yet |
-| `agent-context/workflows/godot-editor-workflow.md` | ✅ Substantive |
-| `superpowers/` | 🗑️ Legacy (previous project content) |
+| `game-design/overview.md` | ✅ Written — ArcwingRacers racing game design |
+| `game-design/differences-from-ep1r.md` | ✅ Written — all intentional divergences from EP1R |
+| `game-design/pod-racer-notes/ep1r-advanced-players-reference-FAQ.md` | 🟡 Reference — full EP1R player guide, racer stats, component data (1700 lines) |
+| `game-design/racers.md` | ✅ Written — roster composition, 33–35 racers |
+| `game-design/pod-stats.md` | ✅ Written — 15 attributes, 7 upgradable, 8 fixed, component tiers, damage/health |
+| `game-design/boost-and-heat.md` | ✅ Written — EP1R boost/heat system |
+| `game-design/economy/overview.md` | ✅ Written — winnings, junkyard, pit droids, license progression |
+| `game-design/tracks/overview.md` | ✅ Written — 10+ biomes, modular chunk stitching, tournaments |
+| `game-design/controls/controls-and-camera.md` | ✅ Written — KB+M + gamepad, 4 camera views, shield/parry, repair, 4 minimap modes, look-behind |
+| `game-design/mana-and-shield.md` | ✅ Written — mana pool, pickups, shield + parry mechanics |
+| `game-design/abilities.md` | ✅ Written — elemental abilities brainstorm, element interactions |
+| `game-design/tracks/hazards.md` | ✅ Written — full hazard catalog with categories and design principles |
+| `game-design/multiplayer.md` | ✅ Written — splitscreen, LAN, P2P architecture |
+| `game-design/pod-racer-notes/` | 🟡 Reference — EP1R stat data, junkyard strategy, best parts guide, pit droid mechanics |
+| `technical/tracks-and-splines.md` | ✅ Written — spline system reference |
+| `technical/architecture-plan.md` | ✅ Written — full system map, 23 modules across 5 phases, implementation order |
+| `decisions/adrs/` | ✅ 7 ADRs recorded (0001–0007) |
+| `agent-context/` | ✅ All files updated for ArcwingRacers |
+| Legacy Fantasy X docs | 🗑️ Legacy — keep for reference until replaced |
 
 ---
 
@@ -127,4 +149,4 @@ Built on **Godot 4** (GDScript). 3D. See `technical/code-standards.md` for the p
 - All `[TBD]` tags are intentional. Do not fill them in — surface them.
 - Doc filenames use `kebab-case`.
 - Code follows the four-pillar folder architecture: `addons/` (libraries), `systems/` (core mechanics), `ui/` (read-only displays), `content/` (assets, scenes, level scripts).
-- UI ↔ gameplay communication routes through signals or EventBus autoload only: UI reads by subscribing, writes by firing event requests.
+- UI ↔ gameplay communication routes through signals or EventBus autoload at `systems/events/event_bus.gd` only: UI reads by subscribing, writes by firing event requests.

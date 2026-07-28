@@ -1,8 +1,8 @@
 # Architectural Decision Records
 
-No ADRs recorded yet for Fantasy X / Elythia.
+This directory records significant architectural decisions for ArcwingRacers. Each ADR describes a decision, its context, and its consequences.
 
-As significant architectural decisions are made and confirmed (ability slot system, dual-protagonist structure, act layout, scene loading strategy, etc.), write ADRs here following the standard format:
+## How to write an ADR
 
 ```
 # ADR XXXX: [Short Title]
