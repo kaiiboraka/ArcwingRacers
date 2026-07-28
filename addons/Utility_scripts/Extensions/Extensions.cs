@@ -44,16 +44,6 @@ public static class Extensions
         return clamp ? Mathf.Clamp(val, Mathf.Min(min2, max2), Mathf.Max(min2, max2)) : val;
     }
 
-    public static Array<Node> GetAllChildren(this Node root, bool includeInternal=false)
-    {
-        var children = root.GetChildren(includeInternal);
-        var results = children;
-        foreach (var n in children)
-        {
-            results.AddRange(n.GetAllChildren(includeInternal));
-        }
-        return results;
-    }
     
     public static Array<T> Select<[MustBeVariant] T>(this Array<Node> arr) where T:Node
     {

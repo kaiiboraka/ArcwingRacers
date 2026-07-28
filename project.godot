@@ -10,6 +10,7 @@ config_version=5
 
 [addons]
 
+project_layer_names/output=2
 project_layer_names/c#_namespace="ArcwingRacers"
 
 [application]
@@ -24,7 +25,7 @@ config/icon="uid://cxanvdcmlwtu6"
 SignalLens="*uid://mh4uahxfhah"
 _mcp_game_helper="*res://addons/godot_ai/runtime/game_helper.gd"
 NetworkTime="*uid://cnqdxyjptkfvp"
-NetworkTimeSynchronizer="*uid://5rmn2ik3kjo8"
+NetworkTimeSynchronizer="*uid://bqt8q5icbv3lq"
 NetworkRollback="*uid://gas743comroj"
 NetworkEvents="*uid://bdmobxxptryj0"
 NetworkPerformance="*uid://cqgf7aqmjfoa3"
@@ -32,7 +33,7 @@ WindowTiler="*uid://cmqjajhjgffm1"
 NetworkSimulator="*uid://1y2ey1e6qjwr"
 Noray="*uid://gu4bv4tgms3x"
 PacketHandshake="*uid://tt3j25a05n7c"
-LayerNames="*uid://b5oond0fqbarv"
+LayerNames="*uid://cfuv1yauxwtgd"
 
 [dotnet]
 

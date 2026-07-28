@@ -181,10 +181,4 @@ public partial class DebugManager : CanvasLayer
 		UpdateProperty("Time Scale", Engine.TimeScale);
 	}
 
-	private void UpdateProperty_Movement()
-	{
-	}
-
-
-
 }

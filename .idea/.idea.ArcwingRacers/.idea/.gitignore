@@ -3,9 +3,9 @@
 /workspace.xml
 # Rider ignored files
 /projectSettingsUpdater.xml
-/modules.xml
 /contentModel.xml
-/.idea.generated.iml
+/modules.xml
+/.idea.ArcwingRacers.iml
 # Editor-based HTTP Client requests
 /httpRequests/
 # Datasource local storage ignored files

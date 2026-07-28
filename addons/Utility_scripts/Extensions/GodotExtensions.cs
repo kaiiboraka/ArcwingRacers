@@ -47,6 +47,35 @@ public static class GodotExtensions
         return "#" + color.ToHtml();
     }
 
+
+    public static Array<Resource> LoadAll(this Array<Resource> me, string path)
+    {
+        FileSystem.ForFilesInDirectory(path, (fileName, fullPath) =>
+        {
+            // FIXME: May need to deal with the fact that exported builds might not include .res/.tres files directly
+            // in such a case a hack is to find all the .import files and hack off the .import portion
+            if (fileName.GetExtension() == "tres" || fileName.GetExtension() == "res")
+            {
+                me.Add(ResourceLoader.Load(fullPath));
+            }
+        }, true);
+        return me;
+    }
+
+    public static Array<PackedScene> LoadAll(this Array<PackedScene> me, string path)
+    {
+        FileSystem.ForFilesInDirectory(path, (fileName, fullPath) =>
+        {
+            // FIXME: May need to deal with the fact that exported builds might not include .res/.tres files directly
+            // in such a case a hack is to find all the .import files and hack off the .import portion
+            if (fileName.GetExtension() == "tres" || fileName.GetExtension() == "res")
+            {
+                me.Add(ResourceLoader.Load(fullPath) as PackedScene);
+            }
+        }, true);
+        return me;
+    }
+
     // public static void AlignWithY(this Node2D node, Vector2 new_y)
     // {
     //     var xform = node.Transform;
