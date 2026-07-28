@@ -10,7 +10,7 @@ Built in **Godot 4** (GDScript). Primary reference: *Star Wars Episode I: Racer.
 
 ArcwingRacers targets the physics feel, boost/heat risk-reward, and pod customization of EP1R, then expands on it with elemental character abilities, mana/shield mechanics, modular track hazards, a roguelike Archon Race mode, and deeper economy systems with part storage and explicit selling.
 
-The game world is **Elythia** — a planet of 12 elemental nations. The month of Taikaran is "Energy Sports Day," an Elythian Olympics where Arcwing racing is the premier sport.
+The game world is **Elythia** — a planet of 12 elemental nations. The summer month of Taikaran features an Elythian Olympics where Arcwing racing is the premier sport.
 
 ---
 
