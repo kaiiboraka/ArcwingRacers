@@ -40,7 +40,7 @@ Built on **Godot 4** (GDScript). 3D. See `technical/code-standards.md` for the p
 → Read `technical/code-standards.md` first. Then read the relevant `game-design/` doc for the system's intent.
 
 **Adding or modifying racer/pod behavior**
-→ Read `game-design/pod-stats.md` for the stat model, `game-design/boost-and-heat.md` for the boost/heat system, `game-design/mana-and-shield.md` for mana/shield, `technical/architecture-plan.md` for system interaction, then `technical/state-machines.md` for the AI/behavior architecture pattern.
+→ Read `game-design/pod-stats.md` for the stat model, `game-design/boost-and-heat.md` for the boost/heat system, `game-design/mana-and-shield.md` for mana/shield, then the pod technical docs (`pod-scene-hierarchy.md`, `pod-hover-system.md`, `pod-handling-and-boost.md`, `pod-collision-response.md`) for implementation reference.
 
 **Adding a new racer character**
 → Read `game-design/racers.md` for roster structure, `game-design/pod-stats.md` for stat allocation, `game-design/abilities.md` for element/ability assignment.
@@ -53,6 +53,9 @@ Built on **Godot 4** (GDScript). 3D. See `technical/code-standards.md` for the p
 
 **Implementing or modifying UI (speed gauge, HUD, menus)**
 → Read `technical/architecture-plan.md` Phase 2 HUD section, `technical/ui-events.md` and `technical/singleton-controllers.md`, plus ADR 0002 (`decisions/adrs/0002-eventbus-ui-communication.md`).
+
+**Implementing pod hover, handling, or collision**
+→ Read `technical/pod-physics-and-collision.md` for collision model and layers, `technical/pod-hover-system.md` for spring-raycast model, `technical/pod-handling-and-boost.md` for acceleration/steering/boost/air control, `technical/pod-collision-response.md` for scrape/crash/damage/death spin.
 
 **Implementing abilities or mana system**
 → Read `game-design/abilities.md` for ability types and element interactions, `game-design/mana-and-shield.md` for mana/shield mechanics, `technical/architecture-plan.md` for system layout.
@@ -135,6 +138,12 @@ Built on **Godot 4** (GDScript). 3D. See `technical/code-standards.md` for the p
 | `game-design/pod-racer-notes/` | 🟡 Reference — EP1R stat data, junkyard strategy, best parts guide, pit droid mechanics |
 | `technical/tracks-and-splines.md` | ✅ Written — spline system reference |
 | `technical/architecture-plan.md` | ✅ Written — full system map, 23 modules across 5 phases, implementation order |
+| `technical/pod-physics-and-collision.md` | ✅ Written — capsule collision, layers, CCD strategy |
+| `technical/pod-scene-hierarchy.md` | ✅ Written — single CharacterBody3D, 7 capsules, spring-offset visuals |
+| `technical/pod-hover-system.md` | ✅ Written — 4 spring-raycast corners, damped Hooke's law, banking TBD |
+| `technical/pod-handling-and-boost.md` | ✅ Written — acceleration catch-up model, boost, air control (gravity modulation), steering TBD |
+| `technical/pod-collision-response.md` | ✅ Written — scrape vs crash, pod-on-pod damage, one-shot destruction, death spin |
+| `technical/next-technical-breakdowns.md` | 📋 Planned — 10 subjects queued for next session |
 | `decisions/adrs/` | ✅ 7 ADRs recorded (0001–0007) |
 | `agent-context/` | ✅ All files updated for ArcwingRacers |
 | Legacy Fantasy X docs | 🗑️ Legacy — keep for reference until replaced |
