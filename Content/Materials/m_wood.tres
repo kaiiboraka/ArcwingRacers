@@ -1,0 +1,5 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://cp0eof0tm5epu"]
+
+[resource]
+resource_name = "M_wood"
+albedo_color = Color(0.46963003, 0.34702185, 0, 1)

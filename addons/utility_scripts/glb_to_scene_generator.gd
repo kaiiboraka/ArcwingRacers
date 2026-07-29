@@ -1,25 +1,48 @@
 @tool
 extends Node
 
-## Path to a .glb file or a folder of .glb files
+@export_category("Source")
 @export var source: String = ""
-## If empty, auto-derived per file: Models→Scenes in path
-@export var output_folder: String = ""
 
+@export_category("StaticBody Scene")
+@export var generate_static_body: bool = true
+@export_dir var static_body_folder: String = "res://Content/Scenes/Doodads"
+
+@export_category("Array Mesh")
+@export var generate_array_mesh: bool = true
+@export_dir var mesh_output_folder: String = "res://Content/Models/Doodads"
+
+@export_category("Terrain Scene")
+@export var generate_terrain_scenes: bool = true
+@export_dir var terrain_output_folder: String = "res://Content/Models/Doodads"
+
+@export_category("Materials")
+@export var save_materials: bool = true
+@export_dir var materials_folder: String = "res://Content/Materials"
+
+@export_category("Operation")
 @export var skip_existing: bool = true
 
 @export_tool_button("Generate") var _generate_button: Callable = _generate
 
 var _generated: Array[String] = []
+var _mat_new: int = 0
+var _mat_skip: int = 0
 
 func _generate():
 	if source.is_empty():
 		push_error("Select a source .glb file or folder")
 		return
 
+	if not generate_static_body and not generate_array_mesh and not generate_terrain_scenes and not save_materials:
+		Log.pr("Nothing to generate — enable at least one output type")
+		return
+
 	_generated.clear()
-	var new_count := 0
-	var skip_count := 0
+	_mat_new = 0; _mat_skip = 0
+	var sb_new := 0; var sb_skip := 0
+	var mesh_new := 0; var mesh_skip := 0
+	var terrain_new := 0; var terrain_skip := 0
 
 	var files: Array[String] = []
 	if source.ends_with(".glb") or source.ends_with(".gltf"):
@@ -37,15 +60,30 @@ func _generate():
 			file = dir.get_next()
 
 	for glb_path in files:
-		var out = _output_path_for(glb_path)
-		if skip_existing and FileAccess.file_exists(out):
-			print("  skip (exists): ", out)
-			_generated.append(out)
-			skip_count += 1
-			continue
-		if _process_one(glb_path, out):
-			_generated.append(out)
-			new_count += 1
+		if generate_static_body:
+			var out = _output_path_for(glb_path)
+			if skip_existing and FileAccess.file_exists(out):
+				_generated.append(out)
+				sb_skip += 1
+			elif _process_one(glb_path, out):
+				_generated.append(out)
+				sb_new += 1
+
+		if generate_array_mesh:
+			var mesh_out = _mesh_output_path_for(glb_path)
+			var mesh_done = _build_array_mesh(glb_path, mesh_out)
+			if skip_existing and FileAccess.file_exists(mesh_out):
+				mesh_skip += 1
+			elif mesh_done:
+				mesh_new += 1
+
+		if generate_terrain_scenes:
+			var tscn_out = _terrain_output_path_for(glb_path)
+			if skip_existing and FileAccess.file_exists(tscn_out):
+				terrain_skip += 1
+			else:
+				_build_terrain_scene(glb_path, tscn_out, _mesh_output_path_for(glb_path))
+				terrain_new += 1
 
 	for child in get_children():
 		child.free()
@@ -64,17 +102,25 @@ func _generate():
 			inst.position.x = offset - aabb.position.x
 			offset += aabb.size.x + 1.0
 
-	print("Done: ", _generated.size(), " loaded (", new_count, " new, ", skip_count, " skipped)")
+	Log.pr("Done:")
+	if generate_static_body:
+		Log.pr("  StaticBody: ", sb_new, " new, ", sb_skip, " skipped")
+	if generate_array_mesh:
+		Log.pr("  ArrayMesh: ", mesh_new, " new, ", mesh_skip, " skipped")
+		if save_materials:
+			Log.pr("  Materials: ", _mat_new, " new, ", _mat_skip, " skipped")
+	if generate_terrain_scenes:
+		Log.pr("  Terrain:   ", terrain_new, " new, ", terrain_skip, " skipped")
 
 func _output_path_for(glb_path: String) -> String:
 	var glb = load(glb_path) as PackedScene
 	if not glb:
 		return ""
 	var basename = glb.resource_path.get_file().get_basename().trim_prefix("SM_").to_lower()
-	if output_folder.is_empty():
+	if static_body_folder.is_empty():
 		var dir = glb.resource_path.get_base_dir().replace("Models", "Scenes")
 		return dir.path_join(basename + ".tscn")
-	return output_folder.path_join(basename + ".tscn")
+	return static_body_folder.path_join(basename + ".tscn")
 
 func _process_one(glb_path: String, out: String) -> bool:
 	var glb = load(glb_path) as PackedScene
@@ -133,8 +179,119 @@ func _process_one(glb_path: String, out: String) -> bool:
 		push_error("Failed to save: ", out)
 		return false
 
-	print("  ", out)
+	Log.pr("  ", out)
 	return true
+
+func _mesh_output_path_for(glb_path: String) -> String:
+	var glb = load(glb_path) as PackedScene
+	if not glb:
+		return ""
+	var basename = glb.resource_path.get_file().get_basename()
+	if mesh_output_folder.is_empty():
+		return glb.resource_path.get_base_dir().path_join(basename + "_mesh.res")
+	return mesh_output_folder.path_join(basename + "_mesh.res")
+
+func _SaveOrReplace(mat: Material, mat_path: String) -> Material:
+	if not FileAccess.file_exists(mat_path):
+		var old = mat.resource_path
+		mat.resource_path = ""
+		ResourceSaver.save(mat, mat_path)
+		mat.resource_path = old
+		_mat_new += 1
+		var loaded = ResourceLoader.load(mat_path)
+		if loaded:
+			return loaded
+		return mat
+	_mat_skip += 1
+	var loaded = ResourceLoader.load(mat_path)
+	if loaded:
+		return loaded
+	return mat
+
+func _build_array_mesh(glb_path: String, mesh_path: String) -> bool:
+	var glb = load(glb_path) as PackedScene
+	if not glb:
+		return false
+	var instance = glb.instantiate()
+	if not instance:
+		return false
+
+	var glb_basename = glb.resource_path.get_file().get_basename().trim_prefix("SM_")
+	var meshes = _collect_mesh_instances(instance)
+	var saved_mats := {}
+
+	for m in meshes:
+		var src = m.mesh
+		if not src:
+			continue
+		for i in src.get_surface_count():
+			var mat = src.surface_get_material(i)
+			if save_materials and mat:
+				var mat_key = mat.resource_name
+				if mat_key.is_empty():
+					mat_key = glb_basename + "_surface_" + str(i)
+				mat_key = mat_key.replace(" ", "_").to_lower()
+				if not saved_mats.has(mat_key):
+					var mat_path = materials_folder.path_join(mat_key + ".tres")
+					if not DirAccess.dir_exists_absolute(materials_folder):
+						DirAccess.make_dir_recursive_absolute(materials_folder)
+					var loaded = _SaveOrReplace(mat, mat_path)
+					saved_mats[mat_key] = loaded
+
+	var mesh_exists = skip_existing and FileAccess.file_exists(mesh_path)
+	if not mesh_exists:
+		var array_mesh = ArrayMesh.new()
+		for m in meshes:
+			var src = m.mesh
+			if not src:
+				continue
+			for i in src.get_surface_count():
+				var arrays = src.surface_get_arrays(i)
+				var mat = saved_mats.get(src.surface_get_material(i).resource_name.replace(" ", "_").to_lower())
+				if not mat:
+					mat = src.surface_get_material(i)
+				var name = src.surface_get_name(i)
+				var prim = src.surface_get_primitive_type(i)
+
+				array_mesh.add_surface_from_arrays(prim, arrays)
+				var si = array_mesh.get_surface_count() - 1
+				if mat:
+					array_mesh.surface_set_material(si, mat)
+				if not name.is_empty():
+					array_mesh.surface_set_name(si, name)
+
+		var out_dir = mesh_path.get_base_dir()
+		if not DirAccess.dir_exists_absolute(out_dir):
+			DirAccess.make_dir_recursive_absolute(out_dir)
+		if ResourceSaver.save(array_mesh, mesh_path) == OK:
+			Log.pr("  mesh: ", mesh_path)
+			return true
+	return false
+
+func _terrain_output_path_for(glb_path: String) -> String:
+	var glb = load(glb_path) as PackedScene
+	if not glb:
+		return ""
+	var basename = glb.resource_path.get_file().get_basename()
+	if terrain_output_folder.is_empty():
+		return glb.resource_path.get_base_dir().path_join(basename + "_mesh.tscn")
+	return terrain_output_folder.path_join(basename + "_mesh.tscn")
+
+func _build_terrain_scene(glb_path: String, tscn_path: String, mesh_path: String) -> void:
+	var mesh = load(mesh_path) as ArrayMesh
+	if not mesh:
+		return
+	var mi = MeshInstance3D.new()
+	mi.name = "Mesh"
+	mi.mesh = mesh
+	var packed = PackedScene.new()
+	if packed.pack(mi) != OK:
+		return
+	var dir = tscn_path.get_base_dir()
+	if not DirAccess.dir_exists_absolute(dir):
+		DirAccess.make_dir_recursive_absolute(dir)
+	if ResourceSaver.save(packed, tscn_path) == OK:
+		Log.pr("  terrain: ", tscn_path)
 
 func _calc_aabb(node: Node) -> AABB:
 	var bounds: AABB

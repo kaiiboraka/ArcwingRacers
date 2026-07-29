@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://v88dobx56dj6"]
+
+[ext_resource type="ArrayMesh" uid="uid://bhfji06es7ij0" path="res://Content/Models/Doodads/SM_tree_cone_02_mesh.res" id="1_bbumg"]
+
+[node name="Mesh" type="MeshInstance3D" unique_id=1615110052]
+mesh = ExtResource("1_bbumg")

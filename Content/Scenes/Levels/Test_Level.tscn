@@ -1,7 +1,6 @@
 [gd_scene format=3 uid="uid://ta4rkqlgf5a0"]
 
 [ext_resource type="PackedScene" uid="uid://dylywca7tvxrp" path="res://Content/Scenes/Arcwing.tscn" id="1_26u2p"]
-[ext_resource type="PackedScene" uid="uid://t5yuqyp3wajp" path="res://Content/Scenes/Doodads/tree_round_01.tscn" id="1_nd3ke"]
 [ext_resource type="PackedScene" uid="uid://b3yor1g0ep1ph" path="res://Content/Models/Doodads/SM_tree_cone_01.glb" id="1_xk3qy"]
 [ext_resource type="PackedScene" uid="uid://v7n3qlho6kr3" path="res://Content/Scenes/starting_line.tscn" id="2_wg3kv"]
 
@@ -78,7 +77,7 @@ distance_fade_mode = 1
 distance_fade_min_distance = 128.0
 distance_fade_max_distance = 96.0
 
-[sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_3r2hc"]
+[sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_nd3ke"]
 generated_type = 1
 height_offset = 0.5
 material_override = SubResource("StandardMaterial3D_xk3qy")
@@ -86,16 +85,8 @@ last_lod = 0
 last_shadow_lod = 0
 lod0_range = 128.0
 
-[sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_nd3ke"]
-name = "SM_tree_cone_01"
-id = 1
-scene_file = ExtResource("1_nd3ke")
-density = 0.03065487
-last_lod = 3
-last_shadow_lod = 3
-
 [sub_resource type="Terrain3DAssets" id="Terrain3DAssets_iyl2v"]
-mesh_list = Array[Terrain3DMeshAsset]([SubResource("Terrain3DMeshAsset_3r2hc"), SubResource("Terrain3DMeshAsset_nd3ke")])
+mesh_list = Array[Terrain3DMeshAsset]([SubResource("Terrain3DMeshAsset_nd3ke")])
 
 [node name="Test_Level" type="Node3D" unique_id=421134206]
 

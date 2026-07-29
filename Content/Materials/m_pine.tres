@@ -1,0 +1,6 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://cm06gcjds7rf6"]
+
+[resource]
+resource_name = "M_pine"
+albedo_color = Color(0.48306522, 0.6434994, 0.3991881, 1)
+roughness = 0.7703349

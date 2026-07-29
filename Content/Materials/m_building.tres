@@ -1,0 +1,6 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://nqb0sfw6aen4"]
+
+[resource]
+resource_name = "M_building"
+albedo_color = Color(1, 0.9808205, 0.9260749, 1)
+roughness = 0.97129184
