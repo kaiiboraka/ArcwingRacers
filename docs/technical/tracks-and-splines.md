@@ -344,7 +344,7 @@ AI brakes when:
 
 ## Minimap Rendering
 
-The minimap is a 2D projection of the 3D spline. It shows the track layout from a top-down view, never terrain, always oriented "up" (not rotating with the camera).
+The minimap is a 2D projection of the 3D spline. It shows the track layout from a top-down view, never terrain. The minimap rotates so the player's forward direction is always "up" — the player is fixed at center, the map moves around them. See `technical/minimap.md` for the full implementation.
 
 ### Flattening 3D to 2D
 
@@ -367,25 +367,25 @@ func flatten_to_2d(step_count: int = 200) -> PackedVector2Array:
     return points_2d
 ```
 
-The flattened points are rendered as a line (or filled polygon using width data). The minimap texture is generated once per track at load time and cached.
+The 2D points are rendered procedurally each frame via `_draw()` — no pre-baked texture. See `technical/minimap.md` for the full rendering implementation.
 
 ### Four Minimap Modes
 
-1. **Spline zoomed out:** Full-track view — all paths visible at once. Cyclic tracks show the entire loop. Useful for overview.
+1. **Spline zoomed out:** Full spline visible in the minimap frame. Player is at center, map rotates so forward is "up."
 
-2. **Spline zoomed in:** Close-up around the player (20-30% of the total spline centered on the player's current t). Shows upcoming turns and nearby racers. The camera framing follows the player's t.
+2. **Spline zoomed in:** Same display, tighter zoom (~30% of total spline centered on player). Shows upcoming turns and nearby racers more precisely.
 
-3. **Vertical position comparison:** Side-view projection (Y vs Z or Y vs X). Shows altitude differences — who's above/below. Useful on tracks with elevation changes, multi-level sections, and shortcuts that go over/under.
+3. **Vertical position comparison:** A vertical bar chart on the right side of the screen. Player is fixed at center. Nearby racers appear as horizontal bars whose offset from center shows how far ahead/behind they are on the spline.
 
-4. **Screen-circling progress map:** The spline is drawn as an arc on the edge of the screen (like a bezel). Each racer is a dot on this arc. Shows relative position at a glance without taking up screen center. The arc fills clockwise as the race progresses (0% → 100%).
+4. **Screen-circling progress map:** The entire spline is mapped to the screen perimeter. Each racer's icon orbits along the edge at their spline t position. Further-ahead positions have higher Z-index.
 
 ### Minimap Orientation
 
-All modes are **always oriented "up"** — north-up relative to the track, not rotating with the camera or pod. This gives a stable spatial reference.
+The minimap rotates so the player's forward direction is always "up." The player icon is fixed at center; the spline and other racers move around them. When the player looks behind, the minimap mirrors to maintain this orientation.
 
 ### Rear-View Mirror
 
-The minimap mirrors in the rear-view camera (when look-behind is held). The minimap itself is horizontally flipped for the rear-view display, matching the driver's reversed perspective.
+When the player looks behind, the minimap still rotates so the player's forward direction is "up" — the minimap inverts to match the reversed camera direction, maintaining the consistent orientation rule.
 
 ---
 

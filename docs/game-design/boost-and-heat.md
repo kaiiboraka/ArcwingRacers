@@ -30,9 +30,10 @@ The boost/heat system is the core risk-reward mechanic of ArcwingRacers, copied 
 - Pushing the nose down (pitch forward) while **at or near maximum speed** fills the boost gauge.
 - The gauge only charges when the pod is moving fast enough. Coasting or slow speeds do not charge.
 - The gauge visually fills in the HUD. Audio pitch rises as it approaches full.
+- **Nose-down is only required to charge the gauge.** Once boost is active, the player can return to neutral pitch.
 
 ### 2. Activation
-- When the gauge is full, the player presses the Boost button to activate.
+- When the gauge is full, the player releases the accelerator and immediately presses it again to activate boost.
 - Boost immediately adds a flat amount to current speed.
 - The pod accelerates rapidly toward a higher **boost max speed**.
 - Boost can be activated at any time the gauge is full, including mid-turn or mid-air.
@@ -60,9 +61,28 @@ The boost/heat system is the core risk-reward mechanic of ArcwingRacers, copied 
 
 ---
 
-## Visual Feedback
+## Visual & Audio Feedback
 
-- **Boost gauge:** HUD element showing charge level.
-- **Heat gauge:** HUD element near speed gauge. Color shifts from green → yellow → red.
-- **Wing fire:** Particle effect on the flaming engine. Spreads audibly.
-- **Engine pitch:** Scales with speed and heat level.
+### Boost Gauge
+HUD element showing charge level. When fully charged, the gauge turns yellow — indicating boost is available.
+
+### Heat Gauge
+HUD element near the speed gauge. Color shifts from green → yellow → red as temperature rises.
+
+### Engine Smoke
+A smoke mesh/texture appears behind the engines during boost. Its opacity scales with heat level — barely visible at low heat, thick and opaque near overheat.
+
+### Heat Warning Border
+When heat exceeds ~50%, an orange border appears around the engine health display. "TEMP WARNING" text flashes at the top of the border.
+
+### Heat Audio Beeps
+A 3-phase audio warning tied to heat level:
+- **Phase 1 (~50–85% heat):** Slow beeps at low pitch
+- **Phase 2 (~85%+):** Fast beeps at high pitch — imminent overheat
+- **No beep** below ~50% heat
+
+### Wing Fire
+When overheat occurs, a particle effect ignites on one of the wings (the flaming engine). The fire spreads audibly and visually. Boost cannot be used again until the fire is fully extinguished.
+
+### Engine Pitch
+Engine sound pitch scales with both speed and heat level — hotter + faster = higher pitch.

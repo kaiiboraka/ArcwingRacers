@@ -1,7 +1,24 @@
 [gd_scene format=3 uid="uid://ta4rkqlgf5a0"]
 
 [ext_resource type="PackedScene" uid="uid://dylywca7tvxrp" path="res://Content/Scenes/Arcwing.tscn" id="1_26u2p"]
+[ext_resource type="PackedScene" uid="uid://t5yuqyp3wajp" path="res://Content/Scenes/Doodads/tree_round_01.tscn" id="1_nd3ke"]
+[ext_resource type="PackedScene" uid="uid://b3yor1g0ep1ph" path="res://Content/Models/Doodads/SM_tree_cone_01.glb" id="1_xk3qy"]
 [ext_resource type="PackedScene" uid="uid://v7n3qlho6kr3" path="res://Content/Scenes/starting_line.tscn" id="2_wg3kv"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_xk3qy"]
+sky_top_color = Color(0, 0.65882355, 0.9254902, 1)
+sky_horizon_color = Color(0.6424427, 0.79939854, 0.85706526, 1)
+ground_horizon_color = Color(0.6424427, 0.79939854, 0.85706526, 1)
+energy_multiplier = 1.05
+
+[sub_resource type="Sky" id="Sky_nd3ke"]
+sky_material = SubResource("ProceduralSkyMaterial_xk3qy")
+
+[sub_resource type="Environment" id="Environment_3r2hc"]
+background_mode = 2
+sky = SubResource("Sky_nd3ke")
+ssao_enabled = true
+glow_enabled = true
 
 [sub_resource type="Gradient" id="Gradient_8c3dd"]
 offsets = PackedFloat32Array(0.2, 1)
@@ -28,6 +45,9 @@ seamless = true
 _shader_parameters = {
 &"bias_distance": null,
 &"blend_sharpness": null,
+&"contour_color": null,
+&"contour_interval": null,
+&"contour_thickness": null,
 &"depth_blur": null,
 &"enable_macro_variation": null,
 &"enable_projection": null,
@@ -43,9 +63,12 @@ _shader_parameters = {
 &"noise_texture": SubResource("NoiseTexture2D_wg3kv"),
 &"projection_threshold": null
 }
+show_contours = true
+show_navigation = true
 show_checkered = true
+show_heightmap = true
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_nd3ke"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xk3qy"]
 transparency = 4
 cull_mode = 2
 vertex_color_use_as_albedo = true
@@ -58,23 +81,44 @@ distance_fade_max_distance = 96.0
 [sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_3r2hc"]
 generated_type = 1
 height_offset = 0.5
-material_override = SubResource("StandardMaterial3D_nd3ke")
+material_override = SubResource("StandardMaterial3D_xk3qy")
 last_lod = 0
 last_shadow_lod = 0
 lod0_range = 128.0
 
-[sub_resource type="Terrain3DAssets" id="Terrain3DAssets_iyl2v"]
-mesh_list = Array[Terrain3DMeshAsset]([SubResource("Terrain3DMeshAsset_3r2hc")])
+[sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_nd3ke"]
+name = "SM_tree_cone_01"
+id = 1
+scene_file = ExtResource("1_nd3ke")
+density = 0.03065487
+last_lod = 3
+last_shadow_lod = 3
 
-[node name="Node3D" type="Node3D" unique_id=421134206]
+[sub_resource type="Terrain3DAssets" id="Terrain3DAssets_iyl2v"]
+mesh_list = Array[Terrain3DMeshAsset]([SubResource("Terrain3DMeshAsset_3r2hc"), SubResource("Terrain3DMeshAsset_nd3ke")])
+
+[node name="Test_Level" type="Node3D" unique_id=421134206]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1725526313]
+transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
+shadow_enabled = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1043735818]
+environment = SubResource("Environment_3r2hc")
 
 [node name="Terrain3D" type="Terrain3D" parent="." unique_id=878803828]
 data_directory = "res://Content/Models/Terrain"
 material = SubResource("Terrain3DMaterial_xk3qy")
 assets = SubResource("Terrain3DAssets_iyl2v")
+show_contours = true
+show_navigation = true
 show_checkered = true
+show_heightmap = true
 top_level = true
 metadata/_edit_lock_ = true
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=353952505]
+transform = Transform3D(0.075994596, -0.21581383, 0.9734728, 0, 0.976296, 0.21643972, -0.9971082, -0.01644825, 0.07419322, 150.69771, 11.3431, 105.6802)
 
 [node name="Arcwing1" parent="." unique_id=612795873 instance=ExtResource("1_26u2p")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
@@ -103,3 +147,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 45, 0.2, -25)
 [node name="StartingLine" parent="." unique_id=583602706 node_paths=PackedStringArray("racers_to_load") instance=ExtResource("2_wg3kv")]
 racer_count = 8
 racers_to_load = [NodePath("../Arcwing1"), NodePath("../Arcwing2"), NodePath("../Arcwing3"), NodePath("../Arcwing4"), NodePath("../Arcwing5"), NodePath("../Arcwing6"), NodePath("../Arcwing7"), NodePath("../Arcwing8")]
+
+[node name="SM_tree_cone_01" parent="." unique_id=2101525822 instance=ExtResource("1_xk3qy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 65.63827, 0, 131.43817)

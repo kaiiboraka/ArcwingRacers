@@ -125,6 +125,102 @@ Before importing or committing any non-original audio asset, see `technical/audi
 3. **Custom Resource (`Godot.Resource`)** — Subclass of `RefCounted`. Used for static configuration assets, item/ability databases, or element presets. Saved to disk as `.tres` files. Must be marked with `[GlobalClass]`.
 4. **Godot Node (`Godot.Node` or Subclasses)** — Used only when the script needs scene tree presence, visual rendering, physics colliders, or lifecycle ticking.
 
+### `@export` vs Custom Resource
+
+| Use | When |
+|---|---|
+| `@export` on a node | Scene-specific wiring: node references, visual toggles, one-off tweaks. Data that only this scene instance cares about. |
+| Custom `Resource` class | Any data that should be **persistent, reusable, or shared** between scenes. Survives scene corruption. Can be repurposed across different scenes. |
+
+**Guideline: when in doubt, make it a Resource.** A `.tres` file on disk is never accidentally lost to scene corruption, can be assigned to multiple scenes, and can be iterated on independently of any scene. Scene exports are for *wiring*, not *data*.
+
+A good litmus test: if you could imagine wanting the same values on a different scene, or wanting to swap between presets in the inspector, it should be a `Resource`.
+
+```gdscript
+# Bad — data embedded in the scene
+@export var mana_value_percent: float = 0.05
+@export var respawn_time: float = 8.0
+
+# Good — data lives in a .tres, scene just references it
+@export var crystal_data: ManaCrystalResource
+```
+
+**Resource files (`.tres`/`.res`)** are Godot's serialized data containers. Create a `class_name` script extending `Resource`, define your exports, then instantiate presets in the inspector and save as `.tres` files. These live in `Content/Data/` (or wherever is appropriate for the system).
+
+### Scene Initialization from Data Resources
+
+Every scene that consumes a data Resource must expose an `init(data)` method. This keeps creation explicit, works whether the resource is assigned in the inspector or at runtime, and avoids scattering resource-reading logic across random call sites.
+
+```gdscript
+# mana_crystal.gd
+extends Area3D
+
+@export var crystal_data: ManaCrystalResource   # assigned in inspector or via init()
+
+func init(data: ManaCrystalResource):
+    crystal_data = data
+    _apply_data()
+
+func _ready():
+    if crystal_data:
+        _apply_data()
+
+func _apply_data():
+    sprite.texture = crystal_data.sprite
+    respawn_timer.wait_time = crystal_data.respawn_time
+```
+
+Two paths:
+- **Editor placement:** assign `crystal_data` in the inspector → `_ready()` applies it.
+- **Runtime spawn** (combat drops, pickups): call `init(data)` after instantiate — the method sets the export and applies.
+
+This replaces ad-hoc property copying after `instantiate()`. Never do:
+
+```gdscript
+# Wrong — scattering raw values, defeats the Resource pattern
+var crystal = scene.instantiate()
+crystal.mana_value_percent = 0.05
+crystal.respawn_time = 8.0
+
+# Right — assign a data Resource, _ready() applies it
+var crystal = scene.instantiate()
+crystal.crystal_data = preload("res://Content/Data/pickups/mana_crystal_small.tres")
+add_child(crystal)   # _ready() reads crystal_data and applies
+```
+
+One scene, N `.tres` files. The data drives appearance and behavior; the scene is a generic shell. Per-instance overrides (e.g. partial-mana combat drops) use an instance property that shadows the Resource — they never write to the Resource itself.
+
+Pattern for creating a custom data Resource:
+
+```gdscript
+# Content/Scripts/Data/mana_crystal_resource.gd
+class_name ManaCrystalResource
+extends Resource
+
+@export var display_name: String = "Small Crystal"
+@export var mana_value_percent: float = 0.05
+@export var respawn_time: float = 8.0
+@export var sprite: Texture2D
+```
+
+Then right-click in the FileSystem dock → New Resource → `ManaCrystalResource` → set values → Save As `mana_crystal_small.tres`.
+
+### Hard Rule: Resources Are Read-Only at Runtime
+
+**Never mutate a Resource's properties at runtime.** Resources are shared references — writing to one affects every scene that references it. A `.tres` is a template, not instance state.
+
+```gdscript
+# WRONG — corrupts the shared .tres for all other crystals
+crystal.crystal_data.mana_value_percent = percent
+
+# RIGHT — store the override on the instance, not the resource
+crystal.override_value_percent = percent
+```
+
+Exception: `@tool` scripts that generate or edit resources in the editor. Those run in editor context only — never in a running game.
+
+If you need per-instance variation of a resource-backed value, add an instance property that shadows or overrides the resource field. The resource itself stays pristine.
+
 **Singletons / Autoloads:** Use sparingly. Prefer Custom Resource files for shared data configuration. When a global coordinator is necessary, register it as an Autoload singleton in `project.godot` and expose a static `Instance` property.
 
 **Composition over inheritance.** Keep nodes small and focused. Prefer adding child component nodes (e.g. `HealthComponent` (Node), `HitboxComponent` (Area2D)) under a root gameplay entity rather than building deep inheritance hierarchies.
@@ -396,6 +492,19 @@ public partial class HealthBar : Node
         }
     }
 }
+```
+
+**Inspector buttons:** Use `@export_tool_button("Label")` in GDScript or `[ExportToolButton("Label")]` in C# (Godot 4.5+). Never use a bool-with-setter hack.
+
+```gdscript
+# GDScript
+@export_tool_button("Generate") var generate: Callable = _generate
+```
+
+```csharp
+// C#
+[ExportToolButton("Generate")]
+public Callable Generate = Callable.From(Generate);
 ```
 
 ---

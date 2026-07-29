@@ -2,9 +2,9 @@
 
 ## Overview
 
-Every racer in ArcwingRacers gets either an active ability (on cooldown + mana cost) or a powerful passive. Unlike EP1R where only Sebulba has a special move (flamejet), abilities are a core part of every character's identity.
+Every racer in ArcwingRacers gets either an active ability or a powerful passive. Unlike EP1R where only Sebulba has a special move (flamejet), abilities are a core part of every character's identity.
 
-The ability system uses a plug-and-play design: **weapon type × element**. The same weapon mechanic (e.g., projectile) can be paired with any element, producing different visual and gameplay effects.
+The ability system uses a plug-and-play design: **weapon type × element**. The same weapon mechanic (e.g., projectile) can be paired with any element, producing different visual and gameplay effects. One scene per weapon type — element drives visuals and flavor.
 
 ---
 
@@ -34,20 +34,55 @@ The ability system uses a plug-and-play design: **weapon type × element**. The 
 
 ## Element Interactions
 
-Abilities and hazards interact with each other when elements conflict:
+Element interactions are a **pre-race loadout concern**, not real-time combat mechanics. Before a race, players equip elemental modifications to counter track-specific threats (e.g., fire resistance for volcanic tracks, ice resistance for frozen tracks). During the race, elements do not interact reactively — there is no active combat advantage system.
 
-| Interaction | Effect |
+The interaction table below describes how elements relate for the purposes of loadout planning and track hazard design only:
+
+| Interaction | Context |
 |---|---|
-| Water washes off Ice | Removes ice/freeze status from surfaces or racers |
-| Wind blows away Water | Clears water hazards, dries surfaces |
-| Fire melts Ice | Removes ice obstacles, turns ice surfaces to water |
-| Water puts out Fire | Extinguishes fire hazards, removes fire status |
-| Earth blocks Wind | Earth walls block wind gusts |
-| Lightning conducts through Water | Chain lightning jumps further through water surfaces |
+| Water washes off Ice | Ice resistance counters water-hazard slowing effects |
+| Fire melts Ice | Fire resistance negates ice-hazard traction loss |
+| Lightning conducts through Water | Lightning mods are more effective on tracks with water hazards |
+| Earth blocks Wind | Earth mods provide wind resistance |
+
+This may be revisited if dedicated combat modes are added later. For standard racing, elements are about identity and visuals, not rock-paper-scissors during gameplay.
+
+---
+
+## Ability Slots
+
+Each racer has at least one ability slot. Some may have two (primary + secondary) depending on character design. The ability is determined by the character's element and cannot be changed — it's part of their identity.
+
+Actives and passives occupy the same slot system. A racer with a passive simply has no active activation — the effect applies continuously or triggers automatically.
+
+---
+
+## Cast Types (Active Abilities)
+
+Active abilities use one of four cast modes:
+
+| Cast Type | Behavior |
+|---|---|
+| **Instant** | Activates immediately on button press. Projectile fires, effect applies. |
+| **Cast Time** | Button press starts a wind-up channel. Ability fires after the cast time completes. Can be interrupted. |
+| **Charged** | Hold button to charge. Effect scales with charge duration (damage, range, size). Release to fire. |
+| **Channeled** | Hold button for continuous effect. Drains mana per second while held. Effect ends on release or mana depletion. |
+
+---
+
+## Resource Costs
+
+Each ability defines its cost model in data — costs are not fixed globally:
+
+- **Mana cost:** A flat amount deducted on activation (instant/cast time) or per-second while held (channeled).
+- **Cooldown:** A duration before the ability can be used again. Timer starts on activation (instant), on fire (cast time), on release (charged), or on release (channeled).
+- Some abilities may use only one, some both. All values are defined per ability in data and can be tuned independently during development.
 
 ---
 
 ## Ability Brainstorm by Element
+
+The following list is speculative — these are candidate ideas, not final designs. Each idea maps to a combination of weapon type (how it works mechanically) and element (visual flavor and identity).
 
 ### Fire
 - **Flame Jet:** Shoots flame sideways from the pod. Can ignite other racers.
@@ -90,10 +125,4 @@ Abilities and hazards interact with each other when elements conflict:
 - **Rooting Vines:** Vines wrap around a target's wheels, slowing or stopping them.
 - **Rolling Log:** Large log rolls down the track.
 
----
 
-## Ability Slots
-
-Each racer has at least one ability slot. Some may have two (primary + secondary) depending on character design. The ability is determined by the character's element and cannot be changed — it's part of their identity.
-
-Abilities use both **mana** and **cooldowns** (see [mana-and-shield.md](mana-and-shield.md)). This may vary per character — some may have shorter cooldowns with higher mana costs, others may have longer cooldowns with lower costs.

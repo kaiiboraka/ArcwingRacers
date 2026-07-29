@@ -11,4 +11,4 @@ In suggested order:
 7. **Ability system (technical)** — ability cast flow, targeting, cooldowns, mana costs, projectile/effect spawning
 8. **AI racer** — spline sampling for target position, steering toward target, boost/brake decisions, path selection on branches, difficulty scaling via randomized loadouts and behavior parameters
 9. **Minimap rendering** — the 4 modes (spline zoomed out, spline zoomed in, vertical position comparison, screen-circling progress map), spline → screen-edge rendering, follow-camera orientation
-10. **Audio** — engine pitch scaling with speed, boost/heat sounds, collision/scrape SFX, engine fire, music system
+10. ~~**Audio** — engine pitch scaling with speed, boost/heat sounds, collision/scrape SFX, engine fire, music system~~ ✅ `docs/technical/audio-system.md`

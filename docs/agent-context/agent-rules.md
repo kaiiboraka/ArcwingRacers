@@ -26,6 +26,7 @@
 
 ### When to Ask
 - Ask when the *intent* behind a design choice is unclear. Do not ask about minor phrasing or grammar — just fix it.
+- **If an instruction contradicts standard Godot conventions (e.g., colliders not under PhysicsBody, wrong node relationships), stop and ask — don't reinterpret literally and run with it.** The user may have misspoken; surface the contradiction rather than guessing.
 - If a doc is a stub (title only), do not infer its content from the filename. Ask.
 - If two docs contradict each other, surface the conflict and ask before editing either.
 

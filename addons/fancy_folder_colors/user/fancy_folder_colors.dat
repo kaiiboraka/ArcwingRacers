@@ -1,0 +1,7 @@
+[DAT]
+
+PTH={
+"res://Content/Models/": Color(0.88, 0.73039997, 0.7952267, 1),
+"res://Content/Scenes/": Color(0.88235295, 0.46666667, 0.5372549, 1),
+"res://Content/Scripts/": Color(0.79023993, 0.2816, 0.88, 1)
+}

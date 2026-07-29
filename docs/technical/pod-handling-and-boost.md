@@ -14,11 +14,11 @@ The Acceleration component (Injector) modifies the base factor — lower Acceler
 
 ---
 
-## Steering (TBD — needs playtesting)
+## Steering
 
-Steering is likely **yaw rotation** of the pod body, with the linear velocity following behind with lag (creating drift). Two approaches to test:
+Steering uses **yaw rotation** (Approach A below) — not lateral forces.
 
-### Approach A: Yaw + Traction-Gated Drift
+### Physics: Yaw + Traction-Gated Drift
 1. Steering input applies yaw angular velocity to the pod
 2. Pod's linear velocity aligns toward the new forward direction, gated by **Traction** stat
 3. Higher Traction = velocity aligns faster = less drift (better grip)
@@ -26,29 +26,204 @@ Steering is likely **yaw rotation** of the pod body, with the linear velocity fo
 
 This gives the "yank" feel (yaw rotation happens immediately on input) while the body's velocity catches up, creating the floaty drift EP1R is known for.
 
-### Approach B: Lateral Force
-1. Steering applies a lateral force at the wing positions, pulling the pod sideways
-2. Pod rotates as a result of the force offset
-3. Response is softer — less immediate yank, more inertia-driven
+### Visual: Chassis Sway
+From EP1R observation — the chassis (chariot body) swings much further than the engines during turns. The engines stay centered in the view while the chariot moves left/right. This is handled by the spring-offset nodes on the visual groups.
+
+### Visual: Engine Counter-Tilt
+During turns, the engines tilt in opposite vertical directions:
+- **Right turn:** Right engine tilts down, left engine tilts up
+- **Left turn:** Left engine tilts down, right engine tilts up
+
+This is separate from chassis sway — a per-engine rotation on the wing visual groups.
+
+### Visual: Mechanical Opening
+Fins, wings, vents, and other moving parts on each engine open as turn rate increases, stay open while the turn is held, and decay back to closed when the stick returns to neutral. Each part tracks its own openness — they can be at different levels simultaneously (e.g., partially open during a gentle turn). This is independent of the engine counter-tilt above.
+
+### Nose Tilt
+Engines tilt slightly up or down based on nose pitch input, matching the pod's pitch attitude. Purely visual on the engine visual groups.
+
+### Dismissed: Lateral Force
+Applying lateral force at wing positions was considered but produces a softer, more inertia-driven response. The EP1R reference requires the immediate yank of yaw rotation.
 
 ---
 
-## Boost
+## Boost System
 
-EP1R-style: when the boost gauge is full (charged by nose-down at speed), releasing and re-pressing accelerator activates boost.
+**Location:** `systems/boost/boost_component.gd`
+**Dependencies:** InputBuffer, EventBus
 
-### Boost Effect
-- Adds a flat **Boost Thrust** value to current max speed
-- The pod accelerates toward this new temporary max at the normal acceleration rate
-- While boosting, **traction is reduced** (handling worsens) — this is a baked-in risk, not a stat
-- Heat gauge rises at the pod's **Heat Rate** during boost
+### BoostComponent
+
+A per-pod node managing boost charge, activation, heat, and overheat.
+
+```gdscript
+# boost_component.gd
+class_name BoostComponent
+extends Node
+
+# ── VehicleStat-derived exports ──
+@export var heat_rate: float = 1.0        # heat units per second during boost
+@export var cool_rate: float = 1.0        # heat units per second after boost
+@export var boost_thrust: float = 200.0   # speed added during boost
+@export var boost_max_speed: float = 800.0
+
+# ── State ──
+enum State { CHARGING, READY, BOOSTING, OVERHEAT, COOLING }
+var state: State = State.CHARGING
+var charge: float = 0.0        # 0.0 → 1.0 (full)
+var heat: float = 0.0          # 0.0 → 1.0 (max = overheat)
+var max_heat: float = 1.0
+var min_charge_speed: float = 0.8  # fraction of max speed required to charge
+```
+
+### Charge Phase
+
+Nose-down while at speed fills the gauge. The gauge does not charge when coasting or slow.
+
+```gdscript
+func _charge(delta: float, nose_pitch: float, speed_fraction: float):
+    if state != State.CHARGING:
+        return
+    if nose_pitch >= 0.0 or speed_fraction < min_charge_speed:
+        return
+    charge += charge_rate * abs(nose_pitch) * delta
+    charge = min(charge, 1.0)
+    if charge >= 1.0:
+        state = State.READY
+        EventBus.boost_ready.emit()
+```
+
+### Boost Activation
+
+When the gauge is full (state = READY), the player releases the accelerator and presses it again. The hold-release-repress pattern is detected by the input buffer:
+
+```gdscript
+func try_activate(acceleration_held: bool, acceleration_just_pressed: bool):
+    if state != State.READY:
+        return
+    if acceleration_just_pressed:
+        _start_boost()
+
+func _start_boost():
+    state = State.BOOSTING
+    heat = 0.0
+    EventBus.boost_started.emit()
+```
+
+**Nose-down is only required to charge the gauge.** Once boost is active, the player returns to neutral pitch — boost continues regardless of nose position.
+
+### Boost Phase
+
+```gdscript
+func _boost_process(delta: float):
+    if state != State.BOOSTING:
+        return
+
+    heat += heat_rate * delta
+    if heat >= max_heat:
+        _overheat()
+        return
+
+    var heat_pct = heat / max_heat
+    # Emit heat level for audio/visual feedback
+    EventBus.boost_heat_updated.emit(heat_pct)
+
+    # Traction reduced during boost
+    EventBus.traction_modifier.emit(0.5)   # 50% traction
+```
 
 ### Boost End Conditions
-- Heat gauge reaches max → overheat (wing fire, forced cool-down, cannot boost again until fire out)
+
+Boost ends when any of:
+- Heat reaches max → overheat
 - Player releases accelerator
 - Player applies brakes
-- Significant collision
+- Significant collision (above damage threshold)
 - Pod crashes
+
+```gdscript
+func end_boost():
+    if state == State.BOOSTING:
+        state = State.COOLING
+        heat = max(heat, 0.1)   # preserve current heat for cooldown
+        EventBus.traction_modifier.emit(1.0)   # restore traction
+        EventBus.boost_ended.emit()
+```
+
+### Overheat
+
+When heat reaches maximum, boost forcibly disengages. Wing fire starts. The pod cannot boost again until the fire is extinguished — heat gauge must fully drain.
+
+```gdscript
+func _overheat():
+    state = State.OVERHEAT
+    EventBus.traction_modifier.emit(1.0)
+    EventBus.overheat_started.emit()   # triggers wing fire VFX + SFX
+```
+
+### Cooling
+
+After boost ends (voluntary or forced), heat depletes at the Cool Rate. During overheat, the gauge must fully drain before the fire goes out and the pod can boost again.
+
+```gdscript
+func _cool_process(delta: float):
+    if state != State.COOLING and state != State.OVERHEAT:
+        return
+
+    heat -= cool_rate * delta
+    heat = max(heat, 0.0)
+
+    if heat <= 0.0:
+        if state == State.OVERHEAT:
+            state = State.CHARGING
+            charge = 0.0
+            EventBus.overheat_ended.emit()   # extinguishes wing fire
+        else:
+            state = State.CHARGING
+```
+
+Braking while boosting also reduces heat (a skill move — trade speed for safety):
+
+```gdscript
+# Called from pod_controller when brake is held during boost
+func brake_cool(brake_strength: float, delta: float):
+    if state == State.BOOSTING:
+        heat -= brake_cool_rate * brake_strength * delta
+        heat = max(heat, 0.0)
+```
+
+---
+
+## Visual & Audio Feedback (Integration Points)
+
+All feedback is driven by `EventBus` signals, not direct calls from BoostComponent.
+
+### Engine Smoke
+A smoke particle system on each engine. Opacity driven by `boost_heat_updated(heat_pct)`:
+- `heat_pct < 0.3`: smoke invisible
+- `heat_pct 0.3–0.6`: light smoke, gaining opacity
+- `heat_pct 0.6–1.0`: thick smoke
+
+### Heat Warning Border
+When `heat_pct > 0.5`, the HUD shows an orange border around the engine health display with flashing "TEMP WARNING" text.
+
+### Heat Audio Beeps
+```gdscript
+# In audio controller:
+func _on_boost_heat_updated(heat_pct: float):
+    if heat_pct < 0.5:
+        _stop_beep()
+    elif heat_pct < 0.85:
+        _start_beep(beep_slow, pitch_low)
+    else:
+        _start_beep(beep_fast, pitch_high)
+```
+
+### Engine Pitch
+Pod engine audio pitch scales with `current_speed / max_speed` blended with `heat_pct`. Hotter + faster = higher pitch.
+
+### Wing Fire
+On `overheat_started`, a particle system ignites on the overheated engine wing. On `overheat_ended`, it extinguishes.
 
 ---
 

@@ -79,3 +79,21 @@ Each segment tracks its own health. When destroyed, the associated visual spring
 ## Fallback
 
 If the spring-offset fake proves insufficient for gameplay feel, each wing cluster becomes its own CharacterBody3D connected to the main body via a custom hard-coded constraint (distance + angular limits, no Godot joints). This adds significant complexity to the movement loop but provides real independent wing physics.
+
+---
+
+## Steering Visuals
+
+Three independent visual systems on the wing/engine groups, all driven by steering input:
+
+1. **Chassis sway** — The chariot body swings left/right on spring-offset nodes while engines stay centered.
+2. **Engine counter-tilt** — Right engine tilts down / left engine tilts up on right turn (and vice versa on left turn). Per-engine rotation on the wing visual groups.
+3. **Mechanical opening** — Fins, vents, wings open as turn rate increases, hold while turn is held, decay back to closed on neutral. Each part tracks its own openness independently.
+
+See `docs/technical/pod-handling-and-boost.md#steering` for the physics model.
+
+## Nose Tilt Visual
+Engines tilt slightly up or down based on nose pitch input, matching the pod's pitch attitude.
+
+## Boost Smoke
+A smoke effect emits from the rear of the engines during boost, gaining opacity as heat rises. See `docs/technical/pod-handling-and-boost.md#engine-smoke`.

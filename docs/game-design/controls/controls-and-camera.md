@@ -82,17 +82,40 @@ Same spline display, tighter zoom. More precise approach view for the upcoming s
 A "neck-and-neck" display showing nearby racers' relative positions as vertical bars. Who's furthest ahead is at the top. Useful for gauging distance to the next racer without the full minimap.
 
 ### Mode 4 — Screen-Circling Progress Map
-The entire race spline is flattened across all four edges of the screen:
-- Top-left corner = 0% track completion
-- Bottom-right corner = approximately 50% completion
-- Each racer shown as a small flag/icon orbiting along the screen edges at their position on the spline
-- A position number next to each flag
-- Player's flag uses double-large font in yellow for their position number
+The entire race spline is mapped to the screen perimeter. Each racer's icon orbits along the screen edge at their spline t position:
+- t=0% at top-left, moving clockwise around the border
+- Further-ahead positions draw on top (higher Z priority)
+- Player's icon is 1.5× larger
+- No other UI overlaps the edge area — the design intentionally leaves a gap around the border
+
+#### Top Bar Changes in Mode 4
+The standard top bar (lap counter | race timer | position) is restructured:
+- **Position counter** ("3/16") is hidden — redundant since all positions are visible on the edge
+- **Race timer** moves to the top-right corner
+- **Top bar background** is hidden so the edge-circling icons are not obscured
+
+### HUD Layout
+
+```
++------------------------------------------+
+| Lap 3      00:42.150          3/16       |  ← Top bar (24px)
+|                                  ┌──────┐|
+|                                  │ MINI │|  ← Minimap panel (modes 1/2, 120×120)
+|                                  │ MAP  │|
+|                                  └──────┘|
+|                                       ┌──┤  ← Position bars (mode 3, right side)
+|                                       │  │
+|                                       └──┤
++------------------------------------------+
+```
+
+The minimap panel sits in the top-right corner, just below the top bar. In mode 4, the top bar background hides and elements shift to make room for the edge-circling icons.
 
 ### Design Principles
 - **Never see the whole track layout during a race.** The minimap shows only the upcoming route — you learn the track geometry through practice, not a bird's-eye view. A full overview may be available in the pre-race menu.
-- **Spline follows camera direction.** The minimap always rotates so you're going "up." When looking behind, the minimap mirrors to maintain this orientation.
+- **Player is fixed at center, minimap rotates around them.** The minimap always rotates so you're going "up." When looking behind, the minimap mirrors to maintain this orientation.
 - **Spline only, no terrain.** The minimap communicates route intent, not environment detail.
+- **Racer icons.** Each racer has a nation/faction symbol or character portrait thumbnail. The player's icon is larger. Icons are small (8–12px) to avoid clutter.
 
 ---
 
