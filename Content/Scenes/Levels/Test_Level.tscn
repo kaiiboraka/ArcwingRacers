@@ -1,13 +1,8 @@
 [gd_scene format=3 uid="uid://ta4rkqlgf5a0"]
 
 [ext_resource type="PackedScene" uid="uid://dylywca7tvxrp" path="res://Content/Scenes/Arcwing.tscn" id="1_26u2p"]
-[ext_resource type="PackedScene" uid="uid://cejeemmuesllk" path="res://Content/Scenes/Doodads/tree_cone_01.tscn" id="1_dy8ob"]
-[ext_resource type="PackedScene" uid="uid://t5yuqyp3wajp" path="res://Content/Scenes/Doodads/tree_round_01.tscn" id="1_nd3ke"]
 [ext_resource type="PackedScene" uid="uid://b3yor1g0ep1ph" path="res://Content/Models/Doodads/SM_tree_cone_01.glb" id="1_xk3qy"]
-[ext_resource type="PackedScene" uid="uid://b6rnpsexxlt22" path="res://Content/Scenes/Doodads/tree_cone_02.tscn" id="2_5nm6p"]
 [ext_resource type="PackedScene" uid="uid://v7n3qlho6kr3" path="res://Content/Scenes/starting_line.tscn" id="2_wg3kv"]
-[ext_resource type="PackedScene" uid="uid://dgm57sxyljep3" path="res://Content/Scenes/Doodads/tree_round_02.tscn" id="4_dy8ob"]
-[ext_resource type="Texture2D" uid="uid://cr1dp714f64qq" path="res://Content/Textures/starting_position.png" id="7_e1xkc"]
 [ext_resource type="PackedScene" uid="uid://dlbbsmy08d4h8" path="res://Content/Scenes/Doodads/spire_01.tscn" id="8_5nm6p"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_xk3qy"]
@@ -25,92 +20,6 @@ sky = SubResource("Sky_nd3ke")
 ssao_enabled = true
 glow_enabled = true
 
-[sub_resource type="Gradient" id="Gradient_8c3dd"]
-offsets = PackedFloat32Array(0.2, 1)
-colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 1)
-
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_26u2p"]
-noise_type = 2
-frequency = 0.03
-cellular_jitter = 3.0
-cellular_return_type = 0
-domain_warp_enabled = true
-domain_warp_type = 1
-domain_warp_amplitude = 50.0
-domain_warp_fractal_type = 2
-domain_warp_fractal_lacunarity = 1.5
-domain_warp_fractal_gain = 1.0
-
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_wg3kv"]
-noise = SubResource("FastNoiseLite_26u2p")
-color_ramp = SubResource("Gradient_8c3dd")
-seamless = true
-
-[sub_resource type="Terrain3DMaterial" id="Terrain3DMaterial_xk3qy"]
-_shader_parameters = {
-&"bias_distance": null,
-&"blend_sharpness": null,
-&"contour_color": null,
-&"contour_interval": null,
-&"contour_thickness": null,
-&"depth_blur": null,
-&"enable_macro_variation": null,
-&"enable_projection": null,
-&"flat_terrain_normals": null,
-&"macro_variation1": null,
-&"macro_variation2": null,
-&"macro_variation_slope": null,
-&"mipmap_bias": null,
-&"noise1_angle": null,
-&"noise1_offset": null,
-&"noise1_scale": null,
-&"noise2_scale": null,
-&"noise_texture": SubResource("NoiseTexture2D_wg3kv"),
-&"projection_threshold": null
-}
-show_contours = true
-show_navigation = true
-show_checkered = true
-show_heightmap = true
-
-[sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_nd3ke"]
-name = "tree_cone_01"
-scene_file = ExtResource("1_dy8ob")
-density = 0.01
-last_lod = 0
-last_shadow_lod = 0
-lod0_range = 800.0
-
-[sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_mgmc7"]
-name = "tree_cone_02"
-id = 1
-scene_file = ExtResource("2_5nm6p")
-density = 0.011516059
-last_lod = 0
-last_shadow_lod = 0
-lod0_range = 800.0
-
-[sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_10ci5"]
-name = "tree_round_01"
-id = 2
-scene_file = ExtResource("1_nd3ke")
-density = 0.01
-last_lod = 0
-last_shadow_lod = 0
-lod0_range = 800.0
-
-[sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_ufwmt"]
-name = "tree_round_02"
-id = 3
-scene_file = ExtResource("4_dy8ob")
-density = 0.01
-last_lod = 0
-last_shadow_lod = 0
-lod0_range = 800.0
-
-[sub_resource type="Terrain3DAssets" id="Terrain3DAssets_iyl2v"]
-mesh_list = Array[Terrain3DMeshAsset]([SubResource("Terrain3DMeshAsset_nd3ke"), SubResource("Terrain3DMeshAsset_mgmc7"), SubResource("Terrain3DMeshAsset_10ci5"), SubResource("Terrain3DMeshAsset_ufwmt")])
-
 [node name="Test_Level" type="Node3D" unique_id=421134206]
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1725526313]
@@ -122,8 +31,6 @@ environment = SubResource("Environment_3r2hc")
 
 [node name="Terrain3D" type="Terrain3D" parent="." unique_id=878803828]
 data_directory = "res://Content/Models/Terrain"
-material = SubResource("Terrain3DMaterial_xk3qy")
-assets = SubResource("Terrain3DAssets_iyl2v")
 show_contours = true
 show_navigation = true
 show_checkered = true
@@ -160,102 +67,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 45, 0.2, -25)
 
 [node name="StartingLine" parent="." unique_id=583602706 node_paths=PackedStringArray("racers_to_load") instance=ExtResource("2_wg3kv")]
 racers_to_load = [NodePath("../Arcwing1"), NodePath("../Arcwing2"), NodePath("../Arcwing3"), NodePath("../Arcwing4"), NodePath("../Arcwing5"), NodePath("../Arcwing6"), NodePath("../Arcwing7"), NodePath("../Arcwing8")]
-
-[node name="GroundMarker" type="Sprite3D" parent="StartingLine" unique_id=1152354341]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0.2, 0)
-pixel_size = 0.017578125
-texture_filter = 2
-texture = ExtResource("7_e1xkc")
-
-[node name="GroundMarker2" type="Sprite3D" parent="StartingLine" unique_id=1602089519]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 15, 0.2, 0)
-pixel_size = 0.017578125
-texture_filter = 2
-texture = ExtResource("7_e1xkc")
-
-[node name="GroundMarker3" type="Sprite3D" parent="StartingLine" unique_id=195052848]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 30, 0.2, 0)
-pixel_size = 0.017578125
-texture_filter = 2
-texture = ExtResource("7_e1xkc")
-
-[node name="GroundMarker4" type="Sprite3D" parent="StartingLine" unique_id=2112118566]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 45, 0.2, 0)
-pixel_size = 0.017578125
-texture_filter = 2
-texture = ExtResource("7_e1xkc")
-
-[node name="GroundMarker5" type="Sprite3D" parent="StartingLine" unique_id=842218743]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0.2, -25)
-pixel_size = 0.017578125
-texture_filter = 2
-texture = ExtResource("7_e1xkc")
-
-[node name="GroundMarker6" type="Sprite3D" parent="StartingLine" unique_id=31490262]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 15, 0.2, -25)
-pixel_size = 0.017578125
-texture_filter = 2
-texture = ExtResource("7_e1xkc")
-
-[node name="GroundMarker7" type="Sprite3D" parent="StartingLine" unique_id=1334853479]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 30, 0.2, -25)
-pixel_size = 0.017578125
-texture_filter = 2
-texture = ExtResource("7_e1xkc")
-
-[node name="GroundMarker8" type="Sprite3D" parent="StartingLine" unique_id=688413858]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 45, 0.2, -25)
-pixel_size = 0.017578125
-texture_filter = 2
-texture = ExtResource("7_e1xkc")
-
-[node name="GroundMarker9" type="Sprite3D" parent="StartingLine" unique_id=2075696468]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0.2, -50)
-pixel_size = 0.017578125
-texture_filter = 2
-texture = ExtResource("7_e1xkc")
-
-[node name="GroundMarker10" type="Sprite3D" parent="StartingLine" unique_id=437445119]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 15, 0.2, -50)
-pixel_size = 0.017578125
-texture_filter = 2
-texture = ExtResource("7_e1xkc")
-
-[node name="GroundMarker11" type="Sprite3D" parent="StartingLine" unique_id=358664613]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 30, 0.2, -50)
-pixel_size = 0.017578125
-texture_filter = 2
-texture = ExtResource("7_e1xkc")
-
-[node name="GroundMarker12" type="Sprite3D" parent="StartingLine" unique_id=62620280]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 45, 0.2, -50)
-pixel_size = 0.017578125
-texture_filter = 2
-texture = ExtResource("7_e1xkc")
-
-[node name="GroundMarker13" type="Sprite3D" parent="StartingLine" unique_id=1533512333]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0.2, -75)
-pixel_size = 0.017578125
-texture_filter = 2
-texture = ExtResource("7_e1xkc")
-
-[node name="GroundMarker14" type="Sprite3D" parent="StartingLine" unique_id=151416750]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 15, 0.2, -75)
-pixel_size = 0.017578125
-texture_filter = 2
-texture = ExtResource("7_e1xkc")
-
-[node name="GroundMarker15" type="Sprite3D" parent="StartingLine" unique_id=865544991]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 30, 0.2, -75)
-pixel_size = 0.017578125
-texture_filter = 2
-texture = ExtResource("7_e1xkc")
-
-[node name="GroundMarker16" type="Sprite3D" parent="StartingLine" unique_id=698202042]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 45, 0.2, -75)
-pixel_size = 0.017578125
-texture_filter = 2
-texture = ExtResource("7_e1xkc")
 
 [node name="SM_tree_cone_01" parent="." unique_id=2101525822 instance=ExtResource("1_xk3qy")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 65.63827, 0, 131.43817)

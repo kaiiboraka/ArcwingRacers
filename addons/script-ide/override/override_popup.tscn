@@ -1,4 +1,4 @@
-[gd_scene load_steps=0 format=3 uid="uid://h6yqx6qlw1f3"]
+[gd_scene format=3 uid="uid://bb1n82qxlqanh"]
 
 [ext_resource type="Script" uid="uid://c4w55j4jswg2t" path="res://addons/script-ide/override/override_popup.gd" id="1_54se3"]
 

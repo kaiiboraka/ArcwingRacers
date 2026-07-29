@@ -1,6 +1,6 @@
 ﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArcwingRacers", "ArcwingRacers.csproj", "{FB8B1858-ED92-4034-BA32-670179863C64}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArcwingRacers", "ArcwingRacers.csproj", "{D8E7E0D7-5CE8-4C2C-BDC4-DC2AF4ED577E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -9,11 +9,11 @@ Global
 	ExportRelease|Any CPU = ExportRelease|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{FB8B1858-ED92-4034-BA32-670179863C64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FB8B1858-ED92-4034-BA32-670179863C64}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FB8B1858-ED92-4034-BA32-670179863C64}.ExportDebug|Any CPU.ActiveCfg = ExportDebug|Any CPU
-		{FB8B1858-ED92-4034-BA32-670179863C64}.ExportDebug|Any CPU.Build.0 = ExportDebug|Any CPU
-		{FB8B1858-ED92-4034-BA32-670179863C64}.ExportRelease|Any CPU.ActiveCfg = ExportRelease|Any CPU
-		{FB8B1858-ED92-4034-BA32-670179863C64}.ExportRelease|Any CPU.Build.0 = ExportRelease|Any CPU
+		{D8E7E0D7-5CE8-4C2C-BDC4-DC2AF4ED577E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8E7E0D7-5CE8-4C2C-BDC4-DC2AF4ED577E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8E7E0D7-5CE8-4C2C-BDC4-DC2AF4ED577E}.ExportDebug|Any CPU.ActiveCfg = ExportDebug|Any CPU
+		{D8E7E0D7-5CE8-4C2C-BDC4-DC2AF4ED577E}.ExportDebug|Any CPU.Build.0 = ExportDebug|Any CPU
+		{D8E7E0D7-5CE8-4C2C-BDC4-DC2AF4ED577E}.ExportRelease|Any CPU.ActiveCfg = ExportRelease|Any CPU
+		{D8E7E0D7-5CE8-4C2C-BDC4-DC2AF4ED577E}.ExportRelease|Any CPU.Build.0 = ExportRelease|Any CPU
 	EndGlobalSection
 EndGlobal
