@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://bhyatufb2dgfh"
-path="res://.godot/imported/SM_spire_01.glb-7c29cc5d04b837efbb1e1f71c17f1a30.scn"
+uid="uid://rpwlc74ytgcv"
+path="res://.godot/imported/SM_rock_wall_01.glb-ce6386a31e5e1e32f08481e03f5cc9e4.scn"
 
 [deps]
 
-source_file="res://Content/Models/Doodads/SM_spire_01.glb"
-dest_files=["res://.godot/imported/SM_spire_01.glb-7c29cc5d04b837efbb1e1f71c17f1a30.scn"]
+source_file="res://Content/Models/Doodads/SM_rock_wall_01.glb"
+dest_files=["res://.godot/imported/SM_rock_wall_01.glb-ce6386a31e5e1e32f08481e03f5cc9e4.scn"]
 
 [params]
 
@@ -41,14 +41,14 @@ materials/extract_format=0
 materials/extract_path=""
 _subresources={
 "meshes": {
-"SM_spire_01_spire_01": {
+"SM_rock_wall_01_rock_wall_01": {
 "generate/lightmap_uv": 0,
 "generate/lods": 0,
 "generate/shadow_meshes": 0,
 "lods/normal_merge_angle": 20.0,
 "save_to_file/enabled": false,
-"save_to_file/fallback_path": "res://Content/Models/Doodads/SM_spire_01_mesh.res",
-"save_to_file/path": "uid://bprvcbn3cxfq4"
+"save_to_file/fallback_path": "res://Content/Models/Doodads/SM_rock_wall_01_mesh.res",
+"save_to_file/path": "uid://21dy31vonkh3"
 }
 }
 }

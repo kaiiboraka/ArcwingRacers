@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://xvl6naxk8tyc"]
 
 [ext_resource type="Script" uid="uid://b2mbd0gtpnxds" path="res://addons/utility_scripts/glb_to_scene_generator.gd" id="1_r5ydp"]
+[ext_resource type="PackedScene" uid="uid://b2yqxwvo13kjj" path="res://Content/Scenes/Doodads/rock_wall_01.tscn" id="2_nj3ep"]
 [ext_resource type="PackedScene" uid="uid://dlbbsmy08d4h8" path="res://Content/Scenes/Doodads/spire_01.tscn" id="2_oxxat"]
 [ext_resource type="PackedScene" uid="uid://cejeemmuesllk" path="res://Content/Scenes/Doodads/tree_cone_01.tscn" id="3_nj3ep"]
 [ext_resource type="PackedScene" uid="uid://b6rnpsexxlt22" path="res://Content/Scenes/Doodads/tree_cone_02.tscn" id="4_qbhs8"]
@@ -10,18 +11,23 @@
 [node name="GLB_To_Scene_Generator" type="Node" unique_id=634243109]
 script = ExtResource("1_r5ydp")
 source = "res://Content/Models/Doodads/"
+skip_existing_terrain = false
+skip_existing_static_body = false
 
-[node name="spire_01" type="StaticBody3D" parent="." unique_id=146307552 instance=ExtResource("2_oxxat")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.864181, 0, 0)
+[node name="rock_wall_01" type="StaticBody3D" parent="." unique_id=1122508295 instance=ExtResource("2_nj3ep")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 49.06297, 0, 0)
+
+[node name="spire_01" type="StaticBody3D" parent="." unique_id=1102562153 instance=ExtResource("2_oxxat")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 97.61334, 0, 0)
 
 [node name="tree_cone_01" type="StaticBody3D" parent="." unique_id=1106800065 instance=ExtResource("3_nj3ep")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23.355785, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 112.10495, 0, 0)
 
 [node name="tree_cone_02" type="StaticBody3D" parent="." unique_id=119781199 instance=ExtResource("4_qbhs8")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 32.685886, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 121.43505, 0, 0)
 
 [node name="tree_round_01" type="StaticBody3D" parent="." unique_id=1630060168 instance=ExtResource("5_yvmx6")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 42.00178, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 130.75095, 0, 0)
 
-[node name="tree_round_02" type="StaticBody3D" parent="." unique_id=197147298 instance=ExtResource("6_bypa8")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 51.96621, 0, 0)
+[node name="tree_round_02" type="StaticBody3D" parent="." unique_id=1453702996 instance=ExtResource("6_bypa8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 140.71536, 0, 0)

@@ -2,5 +2,5 @@
 
 [ext_resource type="ArrayMesh" uid="uid://bprvcbn3cxfq4" path="res://Content/Models/Doodads/SM_spire_01_mesh.res" id="1_lub7p"]
 
-[node name="Mesh" type="MeshInstance3D" unique_id=1834860999]
+[node name="Mesh" type="MeshInstance3D" unique_id=1787500353]
 mesh = ExtResource("1_lub7p")

@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://dnef3pq1xe562"]
+
+[ext_resource type="ArrayMesh" uid="uid://21dy31vonkh3" path="res://Content/Models/Doodads/SM_rock_wall_01_mesh.res" id="1_fvc2t"]
+
+[node name="Mesh" type="MeshInstance3D" unique_id=110198453]
+mesh = ExtResource("1_fvc2t")

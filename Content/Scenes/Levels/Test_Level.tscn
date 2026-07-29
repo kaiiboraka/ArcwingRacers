@@ -1,8 +1,12 @@
 [gd_scene format=3 uid="uid://ta4rkqlgf5a0"]
 
 [ext_resource type="PackedScene" uid="uid://dylywca7tvxrp" path="res://Content/Scenes/Arcwing.tscn" id="1_26u2p"]
+[ext_resource type="PackedScene" uid="uid://cx02fgy0p5h8h" path="res://Content/Models/Doodads/SM_tree_cone_01_mesh.tscn" id="1_dy8ob"]
 [ext_resource type="PackedScene" uid="uid://b3yor1g0ep1ph" path="res://Content/Models/Doodads/SM_tree_cone_01.glb" id="1_xk3qy"]
+[ext_resource type="PackedScene" uid="uid://v88dobx56dj6" path="res://Content/Models/Doodads/SM_tree_cone_02_mesh.tscn" id="2_5nm6p"]
 [ext_resource type="PackedScene" uid="uid://v7n3qlho6kr3" path="res://Content/Scenes/starting_line.tscn" id="2_wg3kv"]
+[ext_resource type="PackedScene" uid="uid://bit6v0v6csmhb" path="res://Content/Models/Doodads/SM_tree_round_01_mesh.tscn" id="3_e1xkc"]
+[ext_resource type="PackedScene" uid="uid://cox65km7sw4fn" path="res://Content/Models/Doodads/SM_tree_round_02_mesh.tscn" id="4_f4ioe"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_xk3qy"]
 sky_top_color = Color(0, 0.65882355, 0.9254902, 1)
@@ -67,26 +71,43 @@ show_navigation = true
 show_checkered = true
 show_heightmap = true
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xk3qy"]
-transparency = 4
-cull_mode = 2
-vertex_color_use_as_albedo = true
-backlight_enabled = true
-backlight = Color(0.5, 0.5, 0.5, 1)
-distance_fade_mode = 1
-distance_fade_min_distance = 128.0
-distance_fade_max_distance = 96.0
-
 [sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_nd3ke"]
-generated_type = 1
-height_offset = 0.5
-material_override = SubResource("StandardMaterial3D_xk3qy")
+name = "SM_tree_cone_01"
+scene_file = ExtResource("1_dy8ob")
+density = 0.01
 last_lod = 0
 last_shadow_lod = 0
-lod0_range = 128.0
+lod0_range = 800.0
+
+[sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_mgmc7"]
+name = "SM_spire_01"
+id = 1
+scene_file = ExtResource("2_5nm6p")
+density = 0.011516059
+last_lod = 0
+last_shadow_lod = 0
+lod0_range = 800.0
+
+[sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_10ci5"]
+name = "SM_spire_01"
+id = 2
+scene_file = ExtResource("3_e1xkc")
+density = 0.01
+last_lod = 0
+last_shadow_lod = 0
+lod0_range = 800.0
+
+[sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_ufwmt"]
+name = "SM_spire_01"
+id = 3
+scene_file = ExtResource("4_f4ioe")
+density = 0.01
+last_lod = 0
+last_shadow_lod = 0
+lod0_range = 800.0
 
 [sub_resource type="Terrain3DAssets" id="Terrain3DAssets_iyl2v"]
-mesh_list = Array[Terrain3DMeshAsset]([SubResource("Terrain3DMeshAsset_nd3ke")])
+mesh_list = Array[Terrain3DMeshAsset]([SubResource("Terrain3DMeshAsset_nd3ke"), SubResource("Terrain3DMeshAsset_mgmc7"), SubResource("Terrain3DMeshAsset_10ci5"), SubResource("Terrain3DMeshAsset_ufwmt")])
 
 [node name="Test_Level" type="Node3D" unique_id=421134206]
 
