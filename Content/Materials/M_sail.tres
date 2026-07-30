@@ -1,0 +1,10 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://da2vnkdxlmtun"]
+
+[resource]
+resource_name = "M_glowy_pink"
+transparency = 1
+cull_mode = 2
+albedo_color = Color(2.1568185e-05, 1.2592124, 1.6224712, 0.584)
+emission_enabled = true
+emission = Color(0, 0.9875379, 2.454227, 0.58431375)
+emission_energy_multiplier = 1.1

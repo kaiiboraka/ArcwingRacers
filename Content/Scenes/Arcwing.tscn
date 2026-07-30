@@ -1,9 +1,8 @@
 [gd_scene format=3 uid="uid://dylywca7tvxrp"]
 
-[ext_resource type="PackedScene" uid="uid://dl6mkuvaaghqh" path="res://Content/Models/cart.fbx" id="1_u7qc7"]
-[ext_resource type="PackedScene" uid="uid://cr1b0vj6q8pgc" path="res://Content/Models/Blade.fbx" id="2_n3i6r"]
-[ext_resource type="PackedScene" uid="uid://dkmodmv14e1qx" path="res://Content/Models/Wing_Left.fbx" id="3_88bc5"]
-[ext_resource type="PackedScene" uid="uid://dltg56pmth6ok" path="res://Content/Models/Wing_Right.fbx" id="4_oi37l"]
+[ext_resource type="PackedScene" uid="uid://bp3uugks55bqc" path="res://Content/Models/SM_blade_chassis.glb" id="2_n3i6r"]
+[ext_resource type="PackedScene" uid="uid://cb5f2o34h6kep" path="res://Content/Models/SM_Wing_Left.glb" id="3_88bc5"]
+[ext_resource type="PackedScene" uid="uid://0bkf4l28oghc" path="res://Content/Models/SM_Wing_Right.glb" id="4_oi37l"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_wj5hs"]
 radius = 1.0
@@ -11,22 +10,21 @@ height = 6.0
 
 [node name="Arcwing" type="CharacterBody3D" unique_id=612795873]
 
-[node name="cart" parent="." unique_id=561818139 instance=ExtResource("1_u7qc7")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.878, 0)
+[node name="Visuals" type="Node3D" parent="." unique_id=1416543842]
 
-[node name="Blade" parent="." unique_id=687663419 instance=ExtResource("2_n3i6r")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.056709, 1.1415629)
+[node name="Blade" parent="Visuals" unique_id=687663419 instance=ExtResource("2_n3i6r")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.057, 0)
 
-[node name="Node3D" type="CollisionShape3D" parent="." unique_id=1686517842]
+[node name="Wing_Left" parent="Visuals" unique_id=1985836831 instance=ExtResource("3_88bc5")]
+transform = Transform3D(0.99998814, 0, 0.004869938, 0, 1, 0, -0.004869938, 0, 0.99998814, 3.3827162, 4.17, 3.3412623)
+
+[node name="Wing_Right" parent="Visuals" unique_id=1921984725 instance=ExtResource("4_oi37l")]
+transform = Transform3D(0.9998157, 1.3357019e-08, 0.019197434, -1.2336771e-08, 1, -5.3263534e-08, -0.019197434, 5.3016883e-08, 0.9998157, -3.3827162, 4.17, 3.3412626)
+
+[node name="WingLeft_Collider3D" type="CollisionShape3D" parent="." unique_id=1686517842]
 transform = Transform3D(0.96316254, -0.26891983, 1.1754859e-08, 0, -4.371139e-08, -1, 0.26891983, 0.96316254, -4.210117e-08, 3.337, 3.07, 3.505)
 shape = SubResource("CapsuleShape3D_wj5hs")
 
-[node name="Wing_Left" parent="Node3D" unique_id=1985836831 instance=ExtResource("3_88bc5")]
-transform = Transform3D(0.9618415, 0, 0.2736072, -0.2736072, -4.371139e-08, 0.9618415, 1.19597505e-08, -1, -4.204343e-08, 0, -0.17000008, -1.0999999)
-
-[node name="Node3D3" type="CollisionShape3D" parent="." unique_id=1912747007]
+[node name="WingRight_Collider3D" type="CollisionShape3D" parent="." unique_id=1912747007]
 transform = Transform3D(0.96316254, 0.26891983, -1.1754859e-08, 0, -4.371139e-08, -1, -0.26891983, 0.96316254, -4.210117e-08, -3.337, 3.07, 3.505)
 shape = SubResource("CapsuleShape3D_wj5hs")
-
-[node name="Wing_Right" parent="Node3D3" unique_id=1921984725 instance=ExtResource("4_oi37l")]
-transform = Transform3D(0.96814764, -1.392312e-09, -0.25038004, 0.25038004, 1.0944459e-08, 0.96814764, 1.392312e-09, -1, 1.0944459e-08, 0, -0.17, -1.1)
