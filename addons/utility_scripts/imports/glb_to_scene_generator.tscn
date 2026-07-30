@@ -1,7 +1,8 @@
 [gd_scene format=3 uid="uid://xvl6naxk8tyc"]
 
-[ext_resource type="Script" uid="uid://b2mbd0gtpnxds" path="res://addons/utility_scripts/glb_to_scene_generator.gd" id="1_r5ydp"]
+[ext_resource type="Script" uid="uid://b2mbd0gtpnxds" path="res://addons/utility_scripts/imports/glb_to_scene_generator.gd" id="1_r5ydp"]
 
 [node name="GLB_To_Scene_Generator" type="Node" unique_id=634243109]
 script = ExtResource("1_r5ydp")
 source = "res://Content/Models/Doodads/"
+skip_existing = false

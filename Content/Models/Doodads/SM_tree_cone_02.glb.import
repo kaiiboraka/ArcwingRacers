@@ -3,7 +3,7 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://bghkvvq1pe888"
+uid="uid://we1bqw3xdfua"
 path="res://.godot/imported/SM_tree_cone_02.glb-579c69843c573c87462837f346d649d8.scn"
 
 [deps]
@@ -35,10 +35,10 @@ animation/fps=30
 animation/trimming=false
 animation/remove_immutable_tracks=true
 animation/import_rest_as_RESET=false
-import_script/path=""
-materials/extract=0
+import_script/path="uid://d20dbntqagrlg"
+materials/extract=2
 materials/extract_format=0
-materials/extract_path=""
+materials/extract_path="res://Content/Materials"
 _subresources={}
 gltf/naming_version=2
 gltf/embedded_image_handling=1

@@ -3,7 +3,7 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://bhyatufb2dgfh"
+uid="uid://ymjhu8j5b0ul"
 path="res://.godot/imported/SM_spire_01.glb-7c29cc5d04b837efbb1e1f71c17f1a30.scn"
 
 [deps]
@@ -35,11 +35,18 @@ animation/fps=30
 animation/trimming=false
 animation/remove_immutable_tracks=true
 animation/import_rest_as_RESET=false
-import_script/path=""
-materials/extract=0
+import_script/path="uid://b2xg7mwurtyt4"
+materials/extract=2
 materials/extract_format=0
-materials/extract_path=""
+materials/extract_path="res://Content/Materials"
 _subresources={
+"materials": {
+"M_building": {
+"use_external/enabled": true,
+"use_external/fallback_path": "res://Content/Materials/M_building.tres",
+"use_external/path": "uid://nqb0sfw6aen4"
+}
+},
 "meshes": {
 "SM_spire_01_spire_01": {
 "generate/lightmap_uv": 0,
@@ -47,8 +54,14 @@ _subresources={
 "generate/shadow_meshes": 0,
 "lods/normal_merge_angle": 20.0,
 "save_to_file/enabled": false,
-"save_to_file/fallback_path": "res://Content/Models/Doodads/SM_spire_01_mesh.res",
-"save_to_file/path": "uid://bprvcbn3cxfq4"
+"save_to_file/fallback_path": "res://bodt.tres",
+"save_to_file/path": "uid://um1nxest5qti"
+}
+},
+"nodes": {
+"PATH:spire_01": {
+"generate/physics": true,
+"physics/shape_type": 2
 }
 }
 }

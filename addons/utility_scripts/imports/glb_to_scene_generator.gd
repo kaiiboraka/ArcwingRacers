@@ -85,18 +85,8 @@ func _build_static_body(glb_path: String, out: String) -> bool:
 
 	var instance = glb.instantiate()
 	var meshes = _collect_mesh_instances(instance)
-	instance.free()
 
-	var lines := PackedStringArray()
-	lines.append("[gd_scene format=3]")
-	lines.append("")
-
-	var glb_id = "1_" + glb_path.md5_text().left(5)
-	lines.append("[ext_resource type=\"PackedScene\" path=\"" + glb_path + "\" id=\"" + glb_id + "\"]")
-	lines.append("")
-
-	lines.append("[node name=\"" + glb_basename + "\" type=\"StaticBody3D\"]")
-
+	var shapes: Array[Dictionary] = []
 	var sub_idx := 1
 	for mi in meshes:
 		if not mi.mesh:
@@ -106,11 +96,28 @@ func _build_static_body(glb_path: String, out: String) -> bool:
 			col_name = "Collision_" + str(sub_idx)
 		var shape = mi.mesh.create_trimesh_shape()
 		if shape:
-			var shape_text = _resource_to_text(shape, "shape_" + str(sub_idx))
-			for line in shape_text.split("\n"):
-				lines.append(line)
-			lines.append("[node name=\"" + col_name + "\" type=\"CollisionShape3D\" parent=\".\"]")
-			lines.append("shape = SubResource(\"shape_" + str(sub_idx) + "\")")
+			shapes.append({name = col_name, shape = shape, idx = sub_idx})
+		sub_idx += 1
+
+	var lines := PackedStringArray()
+	lines.append("[gd_scene format=3]")
+	lines.append("")
+
+	var glb_id = "1_" + glb_path.md5_text().left(5)
+	lines.append("[ext_resource type=\"PackedScene\" path=\"" + glb_path + "\" id=\"" + glb_id + "\"]")
+	lines.append("")
+
+	for s in shapes:
+		var shape_text = _resource_to_text(s.shape, "shape_" + str(s.idx))
+		for line in shape_text.split("\n"):
+			lines.append(line)
+
+	lines.append("")
+	lines.append("[node name=\"" + glb_basename + "\" type=\"StaticBody3D\"]")
+	for s in shapes:
+		var col_name = s.name
+		lines.append("[node name=\"" + col_name + "\" type=\"CollisionShape3D\" parent=\".\"]")
+		lines.append("shape = SubResource(\"shape_" + str(s.idx) + "\")")
 
 	lines.append("[node name=\"Mesh\" parent=\".\" instance=ExtResource(\"" + glb_id + "\")]")
 	lines.append("")
@@ -126,6 +133,8 @@ func _build_static_body(glb_path: String, out: String) -> bool:
 	for line in lines:
 		f.store_line(line)
 	f.close()
+
+	instance.free()
 
 	Log.pr("  ", out)
 	return true

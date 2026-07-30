@@ -26,6 +26,7 @@ func _combine():
 		return
 
 	var combined = ArrayMesh.new()
+	var total := 0
 	for mi in meshes:
 		var src = mi.mesh
 		if not src:
@@ -41,8 +42,7 @@ func _combine():
 				combined.surface_set_material(si, mat)
 			if not name.is_empty():
 				combined.surface_set_name(si, name)
-
-	instance.free()
+			total += 1
 
 	var mesh_node = get_node_or_null("Mesh") as MeshInstance3D
 	if not mesh_node:
@@ -54,10 +54,8 @@ func _combine():
 
 	mesh_node.mesh = combined
 
-	var total = 0
-	for mi in meshes:
-		if mi.mesh:
-			total += mi.mesh.get_surface_count()
+	instance.free()
+
 	Log.pr("Combined " + str(total) + " surfaces from " + str(meshes.size()) + " meshes")
 
 func _collect_mesh_instances(node: Node) -> Array[MeshInstance3D]:

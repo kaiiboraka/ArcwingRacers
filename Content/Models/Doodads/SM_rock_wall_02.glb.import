@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://cwwjf60364b7f"
-path="res://.godot/imported/SM_tree_round_02.glb-ba75183d57c94a477d29d2ca4200aaa0.scn"
+uid="uid://b5b8qekgninyb"
+path="res://.godot/imported/SM_rock_wall_02.glb-77103c783e2def1bf2dfc18cfed6b3e4.scn"
 
 [deps]
 
-source_file="res://Content/Models/Doodads/SM_tree_round_02.glb"
-dest_files=["res://.godot/imported/SM_tree_round_02.glb-ba75183d57c94a477d29d2ca4200aaa0.scn"]
+source_file="res://Content/Models/Doodads/SM_rock_wall_02.glb"
+dest_files=["res://.godot/imported/SM_rock_wall_02.glb-77103c783e2def1bf2dfc18cfed6b3e4.scn"]
 
 [params]
 
@@ -35,11 +35,18 @@ animation/fps=30
 animation/trimming=false
 animation/remove_immutable_tracks=true
 animation/import_rest_as_RESET=false
-import_script/path="uid://d20dbntqagrlg"
-materials/extract=2
+import_script/path=""
+materials/extract=0
 materials/extract_format=0
-materials/extract_path="res://Content/Materials"
-_subresources={}
+materials/extract_path=""
+_subresources={
+"nodes": {
+"PATH:rock_wall_02/cliff2": {
+"generate/physics": true,
+"physics/shape_type": 2
+}
+}
+}
 gltf/naming_version=2
 gltf/embedded_image_handling=1
 gltf/texture_map_mode=1

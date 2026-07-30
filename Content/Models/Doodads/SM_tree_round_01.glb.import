@@ -3,7 +3,7 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://bcuymkc84rj0p"
+uid="uid://b5vctu3uy8b4o"
 path="res://.godot/imported/SM_tree_round_01.glb-b09bd0d479719ef19a87fe6de64e9d8f.scn"
 
 [deps]
@@ -35,10 +35,10 @@ animation/fps=30
 animation/trimming=false
 animation/remove_immutable_tracks=true
 animation/import_rest_as_RESET=false
-import_script/path=""
-materials/extract=0
+import_script/path="uid://d20dbntqagrlg"
+materials/extract=2
 materials/extract_format=0
-materials/extract_path=""
+materials/extract_path="res://Content/Materials"
 _subresources={}
 gltf/naming_version=2
 gltf/embedded_image_handling=1

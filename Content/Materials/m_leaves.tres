@@ -1,6 +1,6 @@
 [gd_resource type="StandardMaterial3D" format=3 uid="uid://drrbetrjsuufb"]
 
 [resource]
-resource_name = "m_leaves"
+resource_name = "M_leaves"
 albedo_color = Color(0.6009266, 0.7419053, 0.461392, 1)
 roughness = 0.7703349
