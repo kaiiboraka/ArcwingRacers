@@ -6,22 +6,26 @@ Tasks explicitly deferred to a later session — not urgent, not forgotten. Remo
 
 ## Deferred Tasks
 
-- **Write `game-design/overview.md` for ArcwingRacers.** Currently contains Fantasy X 2D action-RPG design. Needs full rewrite describing the high-speed low-poly 3D racing game, its setting, core pillars, and scope targets.
+- **Write `game-design/overview.md` for ArcwingRacers.** ✅ Done — racing game design replaces Fantasy X.
 
-- **Document starting grid system.** The `starting_line.gd` @tool script at `Content/Scripts/starting_line.gd` is the first authored system. Write a design doc for it (grid layout, racer positions, visibility, public API).
+- **Document starting grid system.** ✅ Done in `technical/starting-grid-and-race-start.md`.
 
-- **Write ADR for folder architecture.** The four-pillar split (addons/systems/ui/content) was adopted from the GDQuest Epictellers pattern. Record ADR 0001 documenting the decision, dependency rules, and accepted tradeoffs.
+- **Write ADR for folder architecture.** ✅ Done — ADR 0001.
 
-- **Replace legacy `game-design/` content.** All docs under `game-design/` currently describe Fantasy X (2D platformer combat). Rewrite or replace for ArcwingRacers: movement/racing physics, abilities, characters, tracks, art direction, audio.
+- **Populate `decisions/adrs/`.** ✅ 9 ADRs recorded (0001–0009), including modeling pipeline.
 
-- **Replace legacy `systems/` content.** Game-saving, dialog, and other systems from the previous project need rewriting for racing game systems (lap tracking, boost, heat, pod stats, economy).
+- **Replace legacy `game-design/` content.** Most core docs rewritten. Still pending: `game-design/world/locations/`, `game-design/gameplay/enemies/`, `game-design/art-direction/` need review and replacement.
 
-- **Replace legacy `game-design/world/` content.** Location docs describe Zelda-like dungeon/town areas. Needs replacement with racetrack biomes and circuit layouts.
+- **Audit `technical/` docs for 3D vs 2D correctness.** Several were written for 2D tilemaps/collisions. Check: `technical/tilemaps.md`, `technical/collisions.md`, `technical/state-machines.md`, `technical/animation.md`.
 
-- **Replace legacy `game-design/gameplay/enemies/` content.** Enemy behavior docs for archers, soldiers, etc. need replacement with racer AI opponent design.
+- **Replace legacy `systems/` content.** `systems/game-saving.md`, `systems/dialog.md` still describe Fantasy X. Replace for racing game.
 
-- **Audit `technical/` docs for 3D vs 2D correctness.** The technical docs were written for Godot 4 2D (tilemaps, collisions, animation). Review for 3D applicability and update where needed.
+- **Clear `unfiled-ideas.md`.** Currently empty — new items filed as they come.
 
-- **Populate `decisions/adrs/`.** No ADRs recorded for ArcwingRacers yet. Record decisions as they're made (folder architecture, grid system, boost mechanic, etc.).
+- **Input buffer implementation.** Item 2 on `technical/next-technical-breakdowns.md`. Needed before full pod controller — decides whether to build it first or use raw input for MVP.
 
-- **Clear `unfiled-ideas.md`.** Currently empty. File new ideas into appropriate design docs as they come.
+- **Pod steering implementation detail.** `technical/pod-handling-and-boost.md` defines steering conceptually (yaw + traction) but has no implementation reference for the steering controller component.
+
+- **Banking model (TBD).** `technical/pod-hover-system.md` has banking as TBD. Needs EP1R playtesting notes before settling.
+
+- **Legacy doc review.** `game-design/world/locations/`, `game-design/gameplay/enemies/`, `game-design/art-direction/` still describe Fantasy X. Replace for racing game.

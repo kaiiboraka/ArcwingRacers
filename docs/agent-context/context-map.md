@@ -78,6 +78,9 @@ Built on **Godot 4** (GDScript). 3D. See `technical/code-standards.md` for the p
 **Delivering Godot scenes, resources, or editor integration steps**
 → Read `agent-context/workflows/godot-editor-workflow.md`.
 
+**Setting up environment model physics (GLB import pipeline)**
+→ Read ADR 0009 (`decisions/adrs/0009-environment-modeling-pipeline.md`). Each .glb's import settings configure per-mesh collision generation — no wrapper scenes, no scripts.
+
 ---
 
 ## Key Vocabulary
@@ -147,7 +150,7 @@ Built on **Godot 4** (GDScript). 3D. See `technical/code-standards.md` for the p
 | `technical/pod-handling-and-boost.md` | ✅ Written — acceleration catch-up model, boost, air control (gravity modulation), steering TBD |
 | `technical/pod-collision-response.md` | ✅ Written — scrape vs crash, pod-on-pod damage, one-shot destruction, death spin |
 | `technical/next-technical-breakdowns.md` | 📋 Planned — 10 subjects queued for next session |
-| `decisions/adrs/` | ✅ 7 ADRs recorded (0001–0007) |
+| `decisions/adrs/` | ✅ 9 ADRs recorded (0001–0009) |
 | `agent-context/` | ✅ All files updated for ArcwingRacers |
 | Legacy Fantasy X docs | 🗑️ Legacy — keep for reference until replaced |
 
