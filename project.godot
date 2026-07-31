@@ -38,6 +38,15 @@ LayerNames="*uid://cfuv1yauxwtgd"
 DebugManager="*uid://g77bng7caocf"
 InputCollector="*res://Systems/Input/InputCollector.gd"
 PhantomCameraManager="*uid://duq6jhf6unyis"
+CameraRoot="*uid://btveng6akpeug"
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/size/mode=2
+window/size/extend_to_title=true
+window/size/sharp_corners=true
 
 [dotnet]
 
@@ -45,7 +54,7 @@ project/assembly_name="ArcwingRacers"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/ColorPreview/plugin.cfg", "res://addons/Todo_Manager/plugin.cfg", "res://addons/explore-editor-theme/plugin.cfg", "res://addons/fancy_editor_sounds/plugin.cfg", "res://addons/fancy_folder_colors/plugin.cfg", "res://addons/godot_ai/plugin.cfg", "res://addons/layerNames/plugin.cfg", "res://addons/log/plugin.cfg", "res://addons/netfox.extras/plugin.cfg", "res://addons/netfox.internals/plugin.cfg", "res://addons/netfox.noray/plugin.cfg", "res://addons/netfox/plugin.cfg", "res://addons/phantom_camera/plugin.cfg", "res://addons/plugin_refresher/plugin.cfg", "res://addons/reload_current_scene/plugin.cfg", "res://addons/resource_namer/plugin.cfg", "res://addons/script-ide/plugin.cfg", "res://addons/terrain_3d/plugin.cfg")
+enabled=PackedStringArray("res://addons/ColorPreview/plugin.cfg", "res://addons/Todo_Manager/plugin.cfg", "res://addons/explore-editor-theme/plugin.cfg", "res://addons/fancy_editor_sounds/plugin.cfg", "res://addons/fancy_folder_colors/plugin.cfg", "res://addons/godot_ai/plugin.cfg", "res://addons/layerNames/plugin.cfg", "res://addons/log/plugin.cfg", "res://addons/netfox.extras/plugin.cfg", "res://addons/netfox.internals/plugin.cfg", "res://addons/netfox.noray/plugin.cfg", "res://addons/netfox/plugin.cfg", "res://addons/phantom_camera/plugin.cfg", "res://addons/plugin_refresher/plugin.cfg", "res://addons/reload_current_scene/plugin.cfg", "res://addons/resource_namer/plugin.cfg", "res://addons/script-ide/plugin.cfg")
 
 [file_customization]
 
@@ -187,12 +196,12 @@ Debug_Camera_Visibility={
 }
 Debug_Game_speed_up={
 "deadzone": 0.5,
-"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":44,"physical_keycode":0,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":46,"physical_keycode":0,"key_label":0,"unicode":46,"location":0,"echo":false,"script":null)
 ]
 }
 Debug_Game_slow_down={
 "deadzone": 0.5,
-"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":46,"physical_keycode":0,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":44,"physical_keycode":0,"key_label":0,"unicode":44,"location":0,"echo":false,"script":null)
 ]
 }
 Debug_switch_player={
@@ -220,4 +229,5 @@ Debug_Mouse_Toggle={
 
 [physics]
 
-common/physics_ticks_per_second=240
+common/physics_ticks_per_second=120
+jolt_physics_3d/simulation/velocity_steps=11

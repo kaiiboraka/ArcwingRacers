@@ -34,7 +34,9 @@ func _exit_tree() -> void:
 
 
 func _ready() -> void:
-	_game_size = get_viewport().get_visible_rect().size
+	var base_width = ProjectSettings.get_setting("display/window/size/viewport_width")
+	var base_height = ProjectSettings.get_setting("display/window/size/viewport_height")
+	_game_size = Vector2(base_width, base_height);
 	_debug_inputs = get_node("DebugInputs")
 	debug_logger = DebugLogger.new(self)
 
@@ -114,6 +116,7 @@ func update_hud_values() -> void:
 
 func _update_property_movement() -> void:
 	update_property("~~_ Movement _~~", "~~~~~~~~~~~~")
+	#update_property("Current Speed", get_tree().root.get_camera_3d().)
 
 
 func _update_property_game_info() -> void:

@@ -1,5 +1,5 @@
 @tool
-class_name StartingLine extends Node3D;
+class_name StartingLine extends Node3D
 ## TODO: add some column offsets so next racers also move back a little bit as they move down the row.
 
 const MAX_RACER_SLOTS: int = 16;
@@ -26,7 +26,7 @@ const STARTING_POSITION : Texture = preload("uid://cr1dp714f64qq");
 		racer_count = v;
 		_rebuild_grid.call_deferred();
 
-@export var racers_to_load : Array[Node3D] = []
+@export var racers_to_load : Array[Node3D] = [];
 
 var start_positions: Array[Marker3D] = [];
 
@@ -66,7 +66,7 @@ func _rebuild_grid():
 
 		var col: int = i % GRID_COLS;
 		var row: int = i / GRID_COLS;
-		marker.position = Vector3(col * RACER_POSITION_WIDTH, RACER_POSITION_MARKER_HEIGHT, -row * RACER_ROWS_SPACING);
+		marker.position = Vector3(-col * RACER_POSITION_WIDTH, RACER_POSITION_MARKER_HEIGHT, row * RACER_ROWS_SPACING);
 
 		_clean_child_mesh(marker);
 		_set_marker_sprite(marker, i);

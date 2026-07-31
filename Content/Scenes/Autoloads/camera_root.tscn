@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://btveng6akpeug"]
+
+[ext_resource type="Script" uid="uid://bd046eokvcnu2" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_pourw"]
+
+[node name="CameraRoot" type="Node3D" unique_id=1062846461]
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=1233165285]
+doppler_tracking = 2
+fov = 90.0
+near = 0.05
+far = 4000.0
+
+[node name="PhantomCameraHost" type="Node" parent="Camera3D" unique_id=203341143]
+process_priority = 300
+process_physics_priority = 300
+script = ExtResource("1_pourw")
+metadata/_custom_type_script = "uid://bd046eokvcnu2"

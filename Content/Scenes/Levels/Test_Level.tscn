@@ -25,74 +25,7 @@ fog_mode = 1
 fog_light_color = Color(0.85, 0.90749997, 1, 1)
 fog_density = 1.0
 
-[sub_resource type="Gradient" id="Gradient_nd3ke"]
-offsets = PackedFloat32Array(0.2, 1)
-colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 1)
-
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_3r2hc"]
-noise_type = 2
-frequency = 0.03
-cellular_jitter = 3.0
-cellular_return_type = 0
-domain_warp_enabled = true
-domain_warp_type = 1
-domain_warp_amplitude = 50.0
-domain_warp_fractal_type = 2
-domain_warp_fractal_lacunarity = 1.5
-domain_warp_fractal_gain = 1.0
-
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_iyl2v"]
-noise = SubResource("FastNoiseLite_3r2hc")
-color_ramp = SubResource("Gradient_nd3ke")
-seamless = true
-
-[sub_resource type="Terrain3DMaterial" id="Terrain3DMaterial_dy8ob"]
-_shader_parameters = {
-&"bias_distance": null,
-&"blend_sharpness": null,
-&"contour_color": null,
-&"contour_interval": null,
-&"contour_thickness": null,
-&"depth_blur": null,
-&"enable_macro_variation": null,
-&"enable_projection": null,
-&"flat_terrain_normals": null,
-&"macro_variation1": null,
-&"macro_variation2": null,
-&"macro_variation_slope": null,
-&"mipmap_bias": null,
-&"noise1_angle": null,
-&"noise1_offset": null,
-&"noise1_scale": null,
-&"noise2_scale": null,
-&"noise_texture": SubResource("NoiseTexture2D_iyl2v"),
-&"projection_threshold": null
-}
-show_contours = true
-show_navigation = true
-show_checkered = true
-show_heightmap = true
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5nm6p"]
-transparency = 4
-cull_mode = 2
-vertex_color_use_as_albedo = true
-backlight_enabled = true
-backlight = Color(0.5, 0.5, 0.5, 1)
-distance_fade_mode = 1
-distance_fade_min_distance = 128.0
-distance_fade_max_distance = 96.0
-
-[sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_e1xkc"]
-generated_type = 1
-height_offset = 0.5
-material_override = SubResource("StandardMaterial3D_5nm6p")
-last_lod = 0
-last_shadow_lod = 0
-lod0_range = 128.0
-
-[sub_resource type="Terrain3DAssets" id="Terrain3DAssets_f4ioe"]
-mesh_list = Array[Terrain3DMeshAsset]([SubResource("Terrain3DMeshAsset_e1xkc")])
+[sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_wj5hs"]
 
 [node name="Test_Level" type="Node3D" unique_id=421134206]
 
@@ -103,63 +36,33 @@ shadow_enabled = true
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1043735818]
 environment = SubResource("Environment_3r2hc")
 
-[node name="Terrain3D" type="Terrain3D" parent="." unique_id=878803828]
-data_directory = "res://Content/Models/Terrain"
-material = SubResource("Terrain3DMaterial_dy8ob")
-assets = SubResource("Terrain3DAssets_f4ioe")
-collision_mask = 16
-show_contours = true
-show_navigation = true
-show_checkered = true
-show_heightmap = true
-top_level = true
-metadata/_edit_lock_ = true
-
 [node name="Arcwing1" parent="." unique_id=612795873 instance=ExtResource("1_26u2p")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
-
-[node name="Arcwing2" parent="." unique_id=590529740 instance=ExtResource("1_26u2p")]
-process_mode = 4
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 0.2, 0)
-
-[node name="Arcwing3" parent="." unique_id=490624005 instance=ExtResource("1_26u2p")]
-process_mode = 4
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 0.2, 0)
-
-[node name="Arcwing4" parent="." unique_id=1868689680 instance=ExtResource("1_26u2p")]
-process_mode = 4
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 45, 0.2, 0)
-
-[node name="Arcwing5" parent="." unique_id=1973779646 instance=ExtResource("1_26u2p")]
-process_mode = 4
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, -25)
-
-[node name="Arcwing6" parent="." unique_id=89871901 instance=ExtResource("1_26u2p")]
-process_mode = 4
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 0.2, -25)
-
-[node name="Arcwing7" parent="." unique_id=1063328069 instance=ExtResource("1_26u2p")]
-process_mode = 4
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 0.2, -25)
-
-[node name="Arcwing8" parent="." unique_id=1547816581 instance=ExtResource("1_26u2p")]
-process_mode = 4
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 45, 0.2, -25)
 
 [node name="StartingLine" parent="." unique_id=583602706 node_paths=PackedStringArray("racers_to_load") instance=ExtResource("2_wg3kv")]
-racers_to_load = [NodePath("../Arcwing1"), NodePath("../Arcwing2"), NodePath("../Arcwing3"), NodePath("../Arcwing4"), NodePath("../Arcwing5"), NodePath("../Arcwing6"), NodePath("../Arcwing7"), NodePath("../Arcwing8")]
+racers_to_load = [null]
 
 [node name="SM_rock_wall_01" parent="." unique_id=1856049593 instance=ExtResource("3_xk3qy")]
-transform = Transform3D(-0.017090486, 0, -0.99985397, 0, 1, 0, 0.99985397, 0, -0.017090486, 128.58461, -3.795579, 39.263214)
+transform = Transform3D(-0.017090486, 0, -0.99985397, 0, 1, 0, 0.99985397, 0, -0.017090486, -128.585, -3.796, -39.263)
 
 [node name="SM_rock_wall_02" parent="." unique_id=1452402156 instance=ExtResource("5_3r2hc")]
-transform = Transform3D(-0.06902268, -0.49575096, -0.86571753, -0.039400633, 0.8684647, -0.49418283, 0.99683666, 8.0574936e-10, -0.07947664, -74.28685, -3.8942451, 34.787773)
+transform = Transform3D(-0.06902268, -0.49575096, -0.86571753, -0.039400633, 0.8684647, -0.49418283, 0.99683666, 8.0574936e-10, -0.07947664, 74.287, -3.894, -34.788)
 
 [node name="SM_rock_wall_03" parent="." unique_id=2118265676 instance=ExtResource("6_iyl2v")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 71.34105, 4.326233, 135.53831)
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -71.341, 4.326, -135.538)
 
 [node name="SM_spire_01" parent="." unique_id=634929499 instance=ExtResource("6_dy8ob")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21.083706, -1.0292377, 28.346298)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.084, -1.029, -28.346)
 
 [node name="SM_spire_02" parent="." unique_id=438218648 instance=ExtResource("6_dy8ob")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 71.184814, -1.0292377, 28.346298)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -71.185, -1.029, -28.346)
+
+[node name="SM_spire_03" parent="." unique_id=2122090247 instance=ExtResource("6_dy8ob")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 3.6120317, -33.877, 0, -385.7556)
+
+[node name="SM_spire_04" parent="." unique_id=1452509985 instance=ExtResource("6_dy8ob")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 3.6120317, 36.351234, 0, -385.7556)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." unique_id=1223787576]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" unique_id=1157489449]
+shape = SubResource("WorldBoundaryShape3D_wj5hs")

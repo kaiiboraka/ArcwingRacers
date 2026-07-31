@@ -54,12 +54,14 @@ func _physics_process(delta):
 	_accelerate(delta, input)
 	_steer(delta, input)
 	_boost_process(delta, input)
-
+	
 	move_and_slide()
 
 	_handle_collisions()
 
 	_current_speed = velocity.length()
+	DebugManager.update_property("Current Speed", _current_speed);
+
 
 func _hover(delta):
 	velocity.y -= gravity * delta
@@ -98,14 +100,15 @@ func _accelerate(delta, input):
 	velocity += forward * (new_forward_speed - current_forward_speed)
 
 func _steer(delta, input):
-	var turn = input.steer * max_turn_rate * delta
+	var turn = -input.steer * max_turn_rate * delta
 	rotate_y(turn)
 
 	var forward = -global_transform.basis.z
+	var right = global_transform.basis.x
 	var forward_speed = velocity.dot(forward)
 	var lat = velocity - forward * forward_speed
 
-	var lat_target = forward * input.steer * traction * delta
+	var lat_target = right * input.steer * traction * delta
 	velocity -= lat * min(1.0, traction * delta)
 	velocity += lat_target
 
@@ -170,7 +173,10 @@ func _handle_collisions():
 		var col = get_slide_collision(i)
 		if not col:
 			continue
-		var hit_angle = abs(col.get_normal().angle_to(-global_transform.basis.z))
+		var normal = col.get_normal()
+		if normal.angle_to(Vector3.UP) < deg_to_rad(70.0):
+			continue
+		var hit_angle = abs(normal.angle_to(-global_transform.basis.z))
 		if hit_angle < deg_to_rad(45.0):
 			velocity *= 0.3
 		else:

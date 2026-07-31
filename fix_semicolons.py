@@ -1,8 +1,8 @@
 import os, re
 
-GODOT_SCRIPTS_DIR = r"C:\Projects\ArcwingRacers\Content"
-GODOT_SCRIPTS_DIR2 = r"C:\Projects\ArcwingRacers\UI"
-GODOT_SCRIPTS_DIR3 = r"C:\Projects\ArcwingRacers\Systems"
+GODOT_SCRIPTS_DIR = r"C:\Projects\ArcwingRacers\Content\**\*"
+GODOT_SCRIPTS_DIR2 = r"C:\Projects\ArcwingRacers\UI\**\*"
+GODOT_SCRIPTS_DIR3 = r"C:\Projects\ArcwingRacers\Systems\**\*"
 
 
 def extract_code(line: str) -> tuple[str, str]:

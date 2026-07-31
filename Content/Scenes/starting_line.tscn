@@ -10,142 +10,142 @@ racer_count = 16
 [node name="Position_01" type="Marker3D" parent="." unique_id=463994972]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
 
-[node name="GroundMarker" type="Sprite3D" parent="Position_01" unique_id=2133849720]
+[node name="GroundMarker" type="Sprite3D" parent="Position_01" unique_id=1002114660]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
 pixel_size = 0.017578125
 texture_filter = 2
 texture = ExtResource("2_dno7x")
 
 [node name="Position_02" type="Marker3D" parent="." unique_id=939449287]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 0.2, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15, 0.2, 0)
 
-[node name="GroundMarker" type="Sprite3D" parent="Position_02" unique_id=1037635217]
+[node name="GroundMarker" type="Sprite3D" parent="Position_02" unique_id=1598035040]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
 pixel_size = 0.017578125
 texture_filter = 2
 texture = ExtResource("2_dno7x")
 
 [node name="Position_03" type="Marker3D" parent="." unique_id=1920088122]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 0.2, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30, 0.2, 0)
 
-[node name="GroundMarker" type="Sprite3D" parent="Position_03" unique_id=244056886]
+[node name="GroundMarker" type="Sprite3D" parent="Position_03" unique_id=917664148]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
 pixel_size = 0.017578125
 texture_filter = 2
 texture = ExtResource("2_dno7x")
 
 [node name="Position_04" type="Marker3D" parent="." unique_id=1393455172]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 45, 0.2, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -45, 0.2, 0)
 
-[node name="GroundMarker" type="Sprite3D" parent="Position_04" unique_id=818407772]
+[node name="GroundMarker" type="Sprite3D" parent="Position_04" unique_id=1972302579]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
 pixel_size = 0.017578125
 texture_filter = 2
 texture = ExtResource("2_dno7x")
 
 [node name="Position_05" type="Marker3D" parent="." unique_id=1411984636]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, -25)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 25)
 
-[node name="GroundMarker" type="Sprite3D" parent="Position_05" unique_id=283082975]
+[node name="GroundMarker" type="Sprite3D" parent="Position_05" unique_id=205263129]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
 pixel_size = 0.017578125
 texture_filter = 2
 texture = ExtResource("2_dno7x")
 
 [node name="Position_06" type="Marker3D" parent="." unique_id=778106743]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 0.2, -25)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15, 0.2, 25)
 
-[node name="GroundMarker" type="Sprite3D" parent="Position_06" unique_id=1265430730]
+[node name="GroundMarker" type="Sprite3D" parent="Position_06" unique_id=2140347953]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
 pixel_size = 0.017578125
 texture_filter = 2
 texture = ExtResource("2_dno7x")
 
 [node name="Position_07" type="Marker3D" parent="." unique_id=791104937]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 0.2, -25)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30, 0.2, 25)
 
-[node name="GroundMarker" type="Sprite3D" parent="Position_07" unique_id=1271225140]
+[node name="GroundMarker" type="Sprite3D" parent="Position_07" unique_id=429126191]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
 pixel_size = 0.017578125
 texture_filter = 2
 texture = ExtResource("2_dno7x")
 
 [node name="Position_08" type="Marker3D" parent="." unique_id=1446210696]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 45, 0.2, -25)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -45, 0.2, 25)
 
-[node name="GroundMarker" type="Sprite3D" parent="Position_08" unique_id=1906106743]
+[node name="GroundMarker" type="Sprite3D" parent="Position_08" unique_id=153855762]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
 pixel_size = 0.017578125
 texture_filter = 2
 texture = ExtResource("2_dno7x")
 
 [node name="Position_09" type="Marker3D" parent="." unique_id=1993130635]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, -50)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 50)
 
-[node name="GroundMarker" type="Sprite3D" parent="Position_09" unique_id=1360146805]
+[node name="GroundMarker" type="Sprite3D" parent="Position_09" unique_id=729801056]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
 pixel_size = 0.017578125
 texture_filter = 2
 texture = ExtResource("2_dno7x")
 
 [node name="Position_10" type="Marker3D" parent="." unique_id=1592398758]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 0.2, -50)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15, 0.2, 50)
 
-[node name="GroundMarker" type="Sprite3D" parent="Position_10" unique_id=1889313740]
+[node name="GroundMarker" type="Sprite3D" parent="Position_10" unique_id=76444924]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
 pixel_size = 0.017578125
 texture_filter = 2
 texture = ExtResource("2_dno7x")
 
 [node name="Position_11" type="Marker3D" parent="." unique_id=2071193434]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 0.2, -50)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30, 0.2, 50)
 
-[node name="GroundMarker" type="Sprite3D" parent="Position_11" unique_id=280687354]
+[node name="GroundMarker" type="Sprite3D" parent="Position_11" unique_id=1558859631]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
 pixel_size = 0.017578125
 texture_filter = 2
 texture = ExtResource("2_dno7x")
 
 [node name="Position_12" type="Marker3D" parent="." unique_id=1478605023]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 45, 0.2, -50)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -45, 0.2, 50)
 
-[node name="GroundMarker" type="Sprite3D" parent="Position_12" unique_id=1420634780]
+[node name="GroundMarker" type="Sprite3D" parent="Position_12" unique_id=1840197112]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
 pixel_size = 0.017578125
 texture_filter = 2
 texture = ExtResource("2_dno7x")
 
 [node name="Position_13" type="Marker3D" parent="." unique_id=1242778607]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, -75)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 75)
 
-[node name="GroundMarker" type="Sprite3D" parent="Position_13" unique_id=1423021079]
+[node name="GroundMarker" type="Sprite3D" parent="Position_13" unique_id=401877638]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
 pixel_size = 0.017578125
 texture_filter = 2
 texture = ExtResource("2_dno7x")
 
 [node name="Position_14" type="Marker3D" parent="." unique_id=1839712686]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 0.2, -75)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15, 0.2, 75)
 
-[node name="GroundMarker" type="Sprite3D" parent="Position_14" unique_id=64228069]
+[node name="GroundMarker" type="Sprite3D" parent="Position_14" unique_id=1553712058]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
 pixel_size = 0.017578125
 texture_filter = 2
 texture = ExtResource("2_dno7x")
 
 [node name="Position_15" type="Marker3D" parent="." unique_id=1252839969]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 0.2, -75)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30, 0.2, 75)
 
-[node name="GroundMarker" type="Sprite3D" parent="Position_15" unique_id=1692774750]
+[node name="GroundMarker" type="Sprite3D" parent="Position_15" unique_id=1776019805]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
 pixel_size = 0.017578125
 texture_filter = 2
 texture = ExtResource("2_dno7x")
 
 [node name="Position_16" type="Marker3D" parent="." unique_id=732840104]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 45, 0.2, -75)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -45, 0.2, 75)
 
-[node name="GroundMarker" type="Sprite3D" parent="Position_16" unique_id=98108195]
+[node name="GroundMarker" type="Sprite3D" parent="Position_16" unique_id=199947760]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
 pixel_size = 0.017578125
 texture_filter = 2
