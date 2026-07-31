@@ -96,23 +96,23 @@ enum WallAngleCurve {
 ## Higher = quicker, more aggressive lean-in and recovery; lower = lazier, laggier banking.
 @export var bank_speed: float = 5.0
 ## Maximum degrees the pod rolls about its forward axis from the Ship Tilt input (right stick horizontal / Q / E) at full deflection.[br][br]
-## Intended purpose: the 90-degree ship tilt used to thread narrow gaps; stacks on top of the steering bank so tilting while steering rolls further.[br][br]
+## Intended purpose: the whole pod (chassis + wings) rolls together about its own center axis — the classic knife-edge pass — so at full tilt the chassis sits centered between the two wings, tilted onto its side and still hovering.[br][br]
 ## Higher = ship can roll further over (set to 90 for full wing-vertical clearance); lower = shallower tilt. Set 0 to disable the tilt ability.
 @export var tilt_max_angle: float = 90.0
 ## How fast the pod's roll responds to the Ship Tilt input each frame.[br][br]
 ## Intended purpose: response speed of the deliberate 90-degree tilt, separate from the steering bank response (bank_speed).[br][br]
 ## Higher = tilt snaps to full roll quickly; lower = tilt takes longer to reach full roll.
 @export var tilt_speed: float = 5.0
-## Meters from the pod's center axis to the pivot point the Ship Tilt rolls around — the pod tips over its engine edge instead of rolling about its own centerline.[br][br]
-## Intended purpose: match the EP1R deadlift feel — tilting one way anchors the far engine edge at hover height while the near side lifts up and over it.[br][br]
-## Higher = wider lever arm, more pronounced "tipping up from the other side"; lower = pivot sits closer to center (0 = plain center-axis roll).
-@export var tilt_pivot_offset: float = 1.5
+## Multiplier applied to yaw turn rate while the pod is tilted (1.0 = no change, 0.5 = half turn rate).[br][br]
+## Intended purpose: matching the boost penalty, a committed 90-degree tilt costs agility — the pod turns sluggishly while rolled over, so you commit to the knife-edge line (the EP1R "handling loss" tradeoff). Scales with how far the tilt has actually rolled.[br][br]
+## Higher = tilt barely affects steering (agile); lower = tilt makes the pod much harder to steer (committed, risky).
+@export var tilt_turn_rate_penalty: float = 0.5
 ## Fraction (0–1) of max speed the pod must be moving at before the Ship Tilt input is allowed.[br][br]
 ## Intended purpose: the 90-degree tilt is a high-speed maneuver — below this speed the pod won't roll over, keeping low-speed handling stable.[br][br]
 ## Higher = tilt locks until the pod is faster; lower = tilt unlocks at lower speeds (0 = always available).
 @export var tilt_min_speed_fraction: float = 0.5
 ## Maximum degrees of nose pitch from manual pitch input at full stick deflection.[br][br]
-## Intended purpose: the player-visible range of nose-up / nose-down attitude control.[br][br]
+## Intended purpose: the player-visible nose-up / nose-down attitude control. While grounded it does NOT rotate the pod body — it rotates the wings and chassis in place (see wing_nose_tilt_deg); airborne it pitches the whole pod for climbs/dives.[br][br]
 ## Higher = wider pitch travel, more dramatic climbs/dives; lower = shallower, subtler pitch.
 @export var manual_pitch_angle: float = 20.0
 ## How fast pitch settles toward its target angle each frame.[br][br]
@@ -131,6 +131,18 @@ enum WallAngleCurve {
 ## Intended purpose: guarantee the pod never tips past a sane attitude regardless of how slope and input stack.[br][br]
 ## Higher = more extreme combined pitch allowed; lower = keeps the body closer to level.
 @export var max_pitch_angle: float = 50.0
+## m/s the cruise speed target shifts at full nose-down (+gain) / nose-up (−gain), stacked on top of max_speed and boost.[br][br]
+## Intended purpose: give the nose attitude a real speed tradeoff — diving (nose down) raises cruising speed, climbing (nose up) bleeds it, scaled by how far the nose is pitched.[br][br]
+## Higher = nose-down is a bigger speed boost and nose-up a bigger slow-down; lower = subtler.
+@export var pitch_speed_gain: float = 15.0
+## Fractional change to the acceleration factor at full nose-down (+gain) / nose-up (−gain): nose-down accelerates harder, nose-up accelerates more sluggishly.[br][br]
+## Intended purpose: layer the speed change onto thrust so pitch is felt as acceleration, not just a retargeted cruise speed.[br][br]
+## Higher = stronger acceleration swing with pitch; lower = gentler.
+@export var pitch_accel_gain: float = 0.15
+## Maximum degrees the wings and chassis (Blade) rotate IN PLACE to show nose-up / nose-down input while grounded — the pod body itself does not pitch.[br][br]
+## Intended purpose: the visible nose attitude the player gets from pitch input when grounded, applied to the wing and chassis visuals (fades out while tilted). This is separate from wing_nose_tilt_deg, which is the airborne counter-pitch that holds the wings level with the horizon.[br][br]
+## Higher = more dramatic in-place nose tilt on the wings/chassis; lower = subtler.
+@export var visual_nose_deg: float = 20.0
 
 @export_category("Terrain & Arc Pitch")
 ## Fraction (0–1) of the ground slope the pod's body pitches to follow while grounded (any hover ray compressing).[br][br]
@@ -155,9 +167,9 @@ enum WallAngleCurve {
 ## Intended purpose: tunable wing-bob height; upright, the wing on the outside of the turn rises this far while the turn-side wing drops by wing_down_vert_travel.[br][br]
 ## Higher = taller rise on the outside wing (upright); lower = subtler. Set 0 to disable the upward motion entirely.
 @export var wing_up_vert_travel: float = 1.0
-## Degrees the wings pitch to mirror the pod's nose attitude.[br][br]
-## Intended purpose: keep the wing visual groups in sync with nose-up / nose-down motion.[br][br]
-## Higher = wings tilt more with the nose; lower = wings stay more level.
+## Maximum degrees the wings pitch to hold level with the world horizon as the pod's nose pitches (nose pulled up counter-pitches the wings so they keep tilting toward world up).[br][br]
+## Intended purpose: once in the tilted state the wings stay put in every way except rotation — their only motion is this counter-pitch, keeping the wing faces level with the world instead of mirroring the body's nose attitude.[br][br]
+## Higher = wings counter-pitch further as the nose pitches (stay more level); lower = wings share more of the body's pitch.
 @export var wing_nose_tilt_deg: float = 20.0
 ## How fast the wings lerp toward their target lift/tilt each frame.[br][br]
 ## Intended purpose: response speed of both the wing vertical shift and nose tilt.[br][br]
@@ -165,8 +177,8 @@ enum WallAngleCurve {
 @export var wing_tilt_speed: float = 6.0
 
 @export_category("Chassis Sway")
-## Meters the chassis (Blade) body swings LATERALLY (left/right) in the pod's local frame during a turn — the chariot body swings further than the engines, which stay centered in view.[br][br]
-## Intended purpose: sell the weight-shift of the body against the turn while the engines hold station; applied to the Blade visual node only.[br][br]
+## Meters the chassis (Blade) body swings LATERALLY (left/right) during a turn — the chariot body swings further than the engines, which stay centered in view.[br][br]
+## Intended purpose: sell the weight-shift of the body against the turn while the engines hold station; applied to the Blade visual node only. While the pod is tilted, the same turn-driven shift redirects to the pod's up/down axis (read as left/right in world once rolled over) so the chassis moves with the tilt turn instead of fighting it.[br][br]
 ## Higher = more dramatic body whip to the outside of the turn; lower = subtler shift. Set 0 to disable chassis sway entirely.
 @export var chassis_sway_travel: float = 1.5
 ## How fast the chassis body lerps toward its target lateral sway each frame.[br][br]
@@ -268,6 +280,7 @@ enum WallAngleCurve {
 @onready var wing_right: Node3D = %Wing_Right
 @onready var blade: Node3D = $Visuals/Blade
 @onready var pcam_noise_emitter: PhantomCameraNoiseEmitter3D = $CameraMount/PhantomCameraNoiseEmitter3D
+@onready var hover_raycasts_root: Node3D = %HoverRaycasts
 
 enum BoostState { NORMAL, CHARGING, READY, BOOSTING, OVERHEAT }
 enum BoostLight { OFF, GREEN, YELLOW, RED }
@@ -280,6 +293,7 @@ var _yaw: float = 0.0
 var _yaw_rate: float = 0.0
 var _pitch: float = 0.0
 var _roll: float = 0.0
+var _visual_nose: float = 0.0
 var _tilt_roll: float = 0.0
 var _wing_left_base_rot: Vector3
 var _wing_right_base_rot: Vector3
@@ -288,6 +302,8 @@ var _wing_right_base_pos: Vector3
 var _wing_left_lift: float = 0.0
 var _wing_right_lift: float = 0.0
 var _wing_nose: float = 0.0
+var _wing_left_particles: Array[GPUParticles3D] = []
+var _wing_right_particles: Array[GPUParticles3D] = []
 var _blade_base_pos: Vector3
 var _blade_base_rot: Vector3
 var _chassis_sway_amount: float = 0.0
@@ -307,18 +323,19 @@ func _ready():
 		if ray:
 			ray.enabled = true
 	if hover_raycasts.is_empty():
-		var rays_root: Node = get_node_or_null("HoverRaycasts")
-		if rays_root:
-			for child in rays_root.get_children():
+		if hover_raycasts_root:
+			for child in hover_raycasts_root.get_children():
 				if child is RayCast3D:
 					hover_raycasts.append(child)
 					child.enabled = true
 	if wing_left:
 		_wing_left_base_rot = wing_left.rotation
 		_wing_left_base_pos = wing_left.position
+		_wing_left_particles = _get_wing_particles(wing_left)
 	if wing_right:
 		_wing_right_base_rot = wing_right.rotation
 		_wing_right_base_pos = wing_right.position
+		_wing_right_particles = _get_wing_particles(wing_right)
 	if blade:
 		_blade_base_pos = blade.position
 		_blade_base_rot = blade.rotation
@@ -343,6 +360,7 @@ func _physics_process(delta):
 	_build_pod_basis()
 	_counter_rotate_camera(delta)
 	_boost_process(delta, input)
+	_update_thruster_particles(input)
 	
 	move_and_slide()
 
@@ -439,6 +457,11 @@ func _accelerate(delta, input):
 	if _boost_state == BoostState.BOOSTING:
 		target = max_speed + boost_speed_bonus
 
+	var nose_bias: float = -input.pitch
+	target += nose_bias * pitch_speed_gain
+	target = maxf(target, 0.0)
+	var accel: float = acceleration_factor * (1.0 + nose_bias * pitch_accel_gain)
+
 	var forward = _flat_forward()
 	var current_forward_speed = velocity.dot(forward)
 
@@ -466,7 +489,11 @@ func _steer(delta, input):
 	var boost_turn_mult: float = 1.0
 	if _boost_state == BoostState.BOOSTING:
 		boost_turn_mult = boost_turn_rate_penalty
-	var max_rate: float = max_turn_rate * turn_mult * boost_turn_mult
+	var tilt_turn_mult: float = 1.0
+	if tilt_max_angle > 0.0:
+		var tilt_frac: float = clampf(absf(_tilt_roll) / deg_to_rad(tilt_max_angle), 0.0, 1.0)
+		tilt_turn_mult = lerp(1.0, tilt_turn_rate_penalty, tilt_frac)
+	var max_rate: float = max_turn_rate * turn_mult * boost_turn_mult * tilt_turn_mult
 	var target_rate: float = -input.steer * max_rate
 	_yaw_rate = lerp(_yaw_rate, target_rate, turn_response * delta)
 	_yaw += _yaw_rate * delta
@@ -477,20 +504,15 @@ func _steer(delta, input):
 	velocity = forward * forward_speed + lat * (1.0 - min(1.0, traction * delta))
 
 func _build_pod_basis():
-	var pivot_local: Vector3 = Vector3.ZERO
-	if tilt_pivot_offset > 0.0 and absf(_tilt_roll) > 0.0001:
-		pivot_local.x = -signf(_tilt_roll) * tilt_pivot_offset
-	var pivot_world: Vector3 = global_transform * pivot_local
-
 	var basis: Basis = Basis(Vector3.UP, _yaw)
 	basis = basis.rotated(basis.z, _roll + _tilt_roll)
 	basis = basis.rotated(basis.x, _pitch)
 	global_transform.basis = basis
-	global_position = pivot_world - basis * pivot_local
 
 func _tilt(delta, input):
 	var speed_frac = clampf(_current_speed / max_speed, 0.0, 1.0) if max_speed > 0.0 else 0.0
-	var target_roll = -input.steer * deg_to_rad(max_bank_angle) * speed_frac
+	var tilt_mix: float = clampf(abs(input.tilt), 0.0, 1.0)
+	var target_roll = -input.steer * deg_to_rad(max_bank_angle) * speed_frac * (1.0 - tilt_mix)
 	_roll = lerp(_roll, target_roll, bank_speed * delta)
 
 	var target_tilt_roll = 0.0
@@ -500,11 +522,14 @@ func _tilt(delta, input):
 
 	var base_pitch: float = _pitch_attitude_target()
 	var target_pitch: float = base_pitch
-	target_pitch += input.pitch * deg_to_rad(manual_pitch_angle)
-	target_pitch += input.accelerate * deg_to_rad(pitch_accel_angle)
-	target_pitch -= input.brake * deg_to_rad(pitch_brake_angle)
+	var manual_nose: float = input.pitch * deg_to_rad(manual_pitch_angle)
+	manual_nose += input.accelerate * deg_to_rad(pitch_accel_angle)
+	manual_nose -= input.brake * deg_to_rad(pitch_brake_angle)
+	if not _grounded:
+		target_pitch += manual_nose
 	target_pitch = clampf(target_pitch, -deg_to_rad(max_pitch_angle), deg_to_rad(max_pitch_angle))
 	_pitch = lerp(_pitch, target_pitch, pitch_rate * delta)
+	_visual_nose = lerp(_visual_nose, input.pitch * deg_to_rad(visual_nose_deg), pitch_rate * delta)
 
 func _pitch_attitude_target() -> float:
 	var max_arc: float = deg_to_rad(arc_pitch_max_deg)
@@ -532,8 +557,14 @@ func _chassis_sway(delta, input):
 	var sway_target: float = turn_frac * chassis_sway_travel
 	_chassis_sway_amount = lerp(_chassis_sway_amount, sway_target, chassis_sway_speed * delta)
 	var tilt_mix: float = clampf(abs(input.tilt), 0.0, 1.0)
-	var sway_world: Vector3 = global_transform.basis * Vector3(_chassis_sway_amount, 0.0, 0.0)
-	var sway_flat: Vector3 = Vector3(sway_world.x, 0.0, sway_world.z)
+	var tilt_frac: float = 0.0
+	if tilt_max_angle > 0.0:
+		tilt_frac = clampf(absf(_tilt_roll) / deg_to_rad(tilt_max_angle), 0.0, 1.0)
+	var sway_x_world: Vector3 = global_transform.basis * Vector3(_chassis_sway_amount, 0.0, 0.0)
+	var sway_y_world: Vector3 = global_transform.basis * Vector3(0.0, _chassis_sway_amount, 0.0)
+	var sway_x_flat: Vector3 = Vector3(sway_x_world.x, 0.0, sway_x_world.z)
+	var sway_y_flat: Vector3 = Vector3(sway_y_world.x, 0.0, sway_y_world.z)
+	var sway_flat: Vector3 = sway_x_flat * (1.0 - tilt_mix) + sway_y_flat * tilt_mix
 	var sway_local: Vector3 = Vector3.ZERO
 	if sway_flat.length() > 0.001:
 		sway_local = global_transform.basis.inverse() * sway_flat
@@ -542,10 +573,11 @@ func _chassis_sway(delta, input):
 	var sway_frac: float = 0.0
 	if chassis_sway_travel > 0.0:
 		sway_frac = clampf(_chassis_sway_amount / chassis_sway_travel, -1.0, 1.0)
-	var sway_mag: float = sway_frac * deg_to_rad(chassis_sway_roll_deg)
-	var sway_roll: float = -sway_mag * (1.0 - tilt_mix)
-	var sway_pitch: float = sway_mag * tilt_mix
-	blade.rotation = _blade_base_rot + Vector3(sway_pitch, 0.0, sway_roll)
+	var sway_roll: float = -sway_frac * deg_to_rad(chassis_sway_roll_deg) * (1.0 - tilt_mix)
+	var chassis_nose: float = 0.0
+	if _grounded:
+		chassis_nose = clampf(_visual_nose, -deg_to_rad(visual_nose_deg), deg_to_rad(visual_nose_deg)) * (1.0 - tilt_mix)
+	blade.rotation = _blade_base_rot + Vector3(chassis_nose, 0.0, sway_roll)
 
 func _wing_tilt(delta, input):
 	if not wing_left or not wing_right:
@@ -555,7 +587,13 @@ func _wing_tilt(delta, input):
 		turn_frac = clampf(_yaw_rate / max_turn_rate, -1.0, 1.0)
 	var turn_intensity: float = -turn_frac
 
-	_wing_nose = lerp(_wing_nose, input.pitch * deg_to_rad(wing_nose_tilt_deg), wing_tilt_speed * delta)
+	var tilt_mix: float = clampf(abs(input.tilt), 0.0, 1.0)
+	var nose_target: float
+	if _grounded:
+		nose_target = clampf(_visual_nose, -deg_to_rad(visual_nose_deg), deg_to_rad(visual_nose_deg))
+	else:
+		nose_target = -clampf(_pitch, -deg_to_rad(wing_nose_tilt_deg), deg_to_rad(wing_nose_tilt_deg))
+	_wing_nose = lerp(_wing_nose, nose_target * (1.0 - tilt_mix), wing_tilt_speed * delta)
 
 	var up: float = abs(turn_intensity) * wing_up_vert_travel
 	var down: float = -abs(turn_intensity) * wing_down_vert_travel
@@ -566,7 +604,6 @@ func _wing_tilt(delta, input):
 		_wing_left_lift = lerp(_wing_left_lift, down, wing_tilt_speed * delta)
 		_wing_right_lift = lerp(_wing_right_lift, up, wing_tilt_speed * delta)
 
-	var tilt_mix: float = clampf(abs(input.tilt), 0.0, 1.0)
 	var lift_scale: float = 1.0 - tilt_mix
 	var diff_left_world: Vector3 = Vector3(0.0, _wing_left_lift, 0.0) * lift_scale
 	var diff_right_world: Vector3 = Vector3(0.0, _wing_right_lift, 0.0) * lift_scale
@@ -583,6 +620,22 @@ func _world_offset(world_vec: Vector3, wing: Node3D) -> Vector3:
 		return Vector3.ZERO
 	var parent: Node3D = wing.get_parent()
 	return parent.global_transform.affine_inverse().basis * world_vec
+
+func _get_wing_particles(node: Node3D) -> Array[GPUParticles3D]:
+	var particles : Array[GPUParticles3D] = []
+	for child in node.get_children():
+		if child is GPUParticles3D:
+			particles.append(child);
+	return particles
+
+func _update_thruster_particles(input):
+	var emitting: bool = input.accelerate > 0.0;
+	for particles in _wing_left_particles:
+		particles.amount_ratio = _speed_fraction();
+		particles.emitting = emitting;
+	for particles in _wing_right_particles:
+		particles.amount_ratio = _speed_fraction();
+		particles.emitting = emitting;
 
 # TODO(mechanical-opening): Provisional per-wing mechanical opening infrastructure.
 # When turn rate rises, fins/vents/wings open; they hold while the turn is held and decay
@@ -613,6 +666,7 @@ func _world_offset(world_vec: Vector3, wing: Node3D) -> Vector3:
 func _boost_process(delta, input):
 	match _boost_state:
 		BoostState.NORMAL:
+			_cool_heat(delta)
 			_normal_boost(delta, input)
 		BoostState.CHARGING:
 			_cool_heat(delta)
@@ -668,10 +722,12 @@ func _ready_boost(delta, input):
 	if input.boost_just_pressed:
 		_start_boost()
 
+func _reset_charge_level():
+	_charge = 0.0;
+
 func _start_boost():
 	_boost_state = BoostState.BOOSTING
-	_heat = 0.0
-	_charge = 0.0
+	_reset_charge_level();
 	velocity += _flat_forward() * boost_thrust
 
 func _boost_update(delta, input):
@@ -690,7 +746,7 @@ func _overheat():
 
 func _end_boost():
 	_boost_state = BoostState.NORMAL
-	_charge = 0.0
+	_reset_charge_level();
 	_heat = max(_heat, 0.1)
 
 func _cool_after_overheat(delta):
@@ -698,7 +754,7 @@ func _cool_after_overheat(delta):
 	_heat = max(_heat, 0.0)
 	if _heat <= 0.0:
 		_boost_state = BoostState.NORMAL
-		_charge = 0.0
+		_reset_charge_level();
 
 func get_boost_light() -> BoostLight:
 	match _boost_state:

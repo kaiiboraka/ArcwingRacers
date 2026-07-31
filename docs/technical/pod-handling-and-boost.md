@@ -33,22 +33,26 @@ This gives the "yank" feel (yaw rotation starts immediately on input, ramping to
 ### Visual: Chassis Sway
 From EP1R observation — the chassis (chariot body) swings much further than the engines during turns. The engines stay centered in the view while the chariot moves left/right. Implemented on `PodController` by translating the `Blade` node laterally in the pod's local frame: the body shifts to the outside of the turn (opposite the steer direction), scaled by steer × speed fraction and lerped by `chassis_sway_speed`. Tunable via `chassis_sway_travel` (lateral distance in meters) and `chassis_sway_speed` (response rate).
 
+While the pod is tilted the same turn-driven shift redirects to the pod's **up/down axis** — read as left/right in world once rolled over — so the chassis moves with the tilt turn instead of fighting it. The upright barrel-roll (`chassis_sway_roll_deg`) fades out as the pod tilts, replaced by a subtle few-degree nose pitch toward the turn (`tilt_turn_nose_deg`: right tilt + right turn = nose up, right tilt + left turn = nose down).
+
 ### Visual: Ship Tilt (90°)
-The Ship Tilt ability rolls the pod up to 90° about its forward axis using the right analog stick horizontal or Q / E. It stacks on top of the steering bank — tilting while steering rolls further. Tunable via `tilt_max_angle` (max roll degrees) and `tilt_speed` (roll response). Purely visual on the pod's roll axis; used to thread narrow gaps and hazards.
+The Ship Tilt ability rolls the **entire pod** (chassis + wings) up to ~90° about its own forward axis using the right analog stick horizontal or Q / E — the whole ship rotates together, so at full tilt the chassis sits centered between the two wings, tilted onto its side and still hovering. Tunable via `tilt_max_angle` (max roll degrees) and `tilt_speed` (roll response). Used to thread narrow gaps and hazards.
+
+While tilted the pod takes a **turn-rate penalty** mirroring the boost tradeoff: yaw turn rate scales toward `tilt_turn_rate_penalty` (default 0.5) as the tilt rolls further in, so a committed knife-edge pass costs agility.
 
 ### Visual: Engine Vertical Shift
 During turns the engines shift vertically **in world space** — the arc-rig beams connecting the wings to the blade transfer the turn into vertical motion. The behavior is **tilt-gated**:
 
 - **Upright (differential):** the wing on the inside of the turn drops and the opposite wing rises — Right turn: Right engine down, left engine up. Left turn: Left engine down, right engine up.
-- **Tilted (together):** both wings shift **together** along the pod's local up/down axis, toward the direction of the turn in world space — the pod-local up/down maps to absolute left/right at full roll, so the wings sweep sideways with the tilt.
+- **Tilted (stay put):** the wing shift fades out entirely — once in the tilted state the wings stay put in every way except rotation.
 
-Magnitude scales with steer × speed fraction and is tunable via `wing_down_vert_travel` (how far the turn-side wing drops upright, or the down-local shift tilted) and `wing_up_vert_travel` (how far the opposite wing rises upright, or the up-local shift tilted) on `PodController` — both values apply to both wings. It is a translation — the wing models stay upright while they bob, they do not roll in place. This is separate from chassis sway.
+Magnitude scales with steer × speed fraction and is tunable via `wing_down_vert_travel` (how far the turn-side wing drops upright) and `wing_up_vert_travel` (how far the opposite wing rises upright) on `PodController`. It is a translation — the wing models stay upright while they bob, they do not roll in place. This is separate from chassis sway.
 
 ### Visual: Mechanical Opening
 Fins, wings, vents, and other moving parts on each engine open as turn rate increases, stay open while the turn is held, and decay back to closed when the stick returns to neutral. Each part tracks its own openness — they can be at different levels simultaneously (e.g., partially open during a gentle turn). This is independent of the engine vertical shift above.
 
 ### Nose Tilt
-Engines tilt slightly up or down based on nose pitch input, matching the pod's pitch attitude. Purely visual on the engine visual groups.
+Engines tilt slightly up or down to hold level with the world horizon as the pod's nose pitches (nose pulled up counter-pitches the wings toward world up). Purely visual on the engine visual groups, capped by `wing_nose_tilt_deg`.
 
 ### Dismissed: Lateral Force
 Applying lateral force at wing positions was considered but produces a softer, more inertia-driven response. The EP1R reference requires the immediate yank of yaw rotation.

@@ -87,16 +87,16 @@ If the spring-offset fake proves insufficient for gameplay feel, each wing clust
 
 Three independent visual systems on the wing/engine groups, all driven by steering input:
 
-1. **Chassis sway** — The chariot body (the `Blade` node) translates left/right in the pod's local frame while the engines stay centered: to the outside of the turn, scaled by steer × speed fraction. Driven by `PodController._chassis_sway()`, tunable via `chassis_sway_travel` / `chassis_sway_speed`.
-2. **Engine vertical shift** — Tilt-gated. Upright, the engines translate up/down **in world space** during turns (turn-side engine drops, opposite rises — left turn → left down / right up; right turn → right down / left up), driven by the beams (arc-rigs) connecting wings to the blade. Tilted, both engines shift **together** along the pod's local up/down toward the turn's world direction (left/right at full roll). Travel tunable on PodController (`wing_down_vert_travel` for the drop/down-local shift, `wing_up_vert_travel` for the rise/up-local shift — both apply to both wings).
+1. **Chassis sway** — The chariot body (the `Blade` node) translates left/right in the pod's local frame while the engines stay centered: to the outside of the turn, scaled by steer × speed fraction. Driven by `PodController._chassis_sway()`, tunable via `chassis_sway_travel` / `chassis_sway_speed`. Tilted, the shift redirects to the pod's up/down axis (world left/right once rolled) and gains a small nose pitch toward the turn (`tilt_turn_nose_deg`).
+2. **Engine vertical shift** — Tilt-gated. Upright, the engines translate up/down **in world space** during turns (turn-side engine drops, opposite rises — left turn → left down / right up; right turn → right down / left up), driven by the beams (arc-rigs) connecting wings to the blade. Tilted, the shift fades out entirely — the wings stay put positionally. Travel tunable on PodController (`wing_down_vert_travel` for the drop, `wing_up_vert_travel` for the rise).
 3. **Mechanical opening** — Fins, vents, wings open as turn rate increases, hold while turn is held, decay back to closed on neutral. Each part tracks its own openness independently.
 
-A fourth system, the **Ship Tilt** ability, rolls the entire pod up to 90° about its forward axis (right stick horizontal / Q / E) — see `docs/technical/pod-handling-and-boost.md#visual-ship-tilt-90`. It stacks on the steering bank (`PodController._tilt()`, `tilt_max_angle` / `tilt_speed`).
+A fourth system, the **Ship Tilt** ability, rolls the **entire pod** (chassis + wings together) up to 90° about its own forward axis (right analog horizontal / Q / E) — see `docs/technical/pod-handling-and-boost.md#visual-ship-tilt-90`. No pivot or edge lift: the whole ship rotates about the pod's center axis. Applies a turn-rate penalty scaling with tilt roll-in (`tilt_turn_rate_penalty`). `PodController._tilt()`, `tilt_max_angle` / `tilt_speed`.
 
 See `docs/technical/pod-handling-and-boost.md#steering` for the physics model.
 
 ## Nose Tilt Visual
-Engines tilt slightly up or down based on nose pitch input, matching the pod's pitch attitude.
+Engines tilt slightly up or down to hold level with the world horizon as the pod pitches, capped by `wing_nose_tilt_deg`.
 
 ## Boost Smoke
 A smoke effect emits from the rear of the engines during boost, gaining opacity as heat rises. See `docs/technical/pod-handling-and-boost.md#engine-smoke`.

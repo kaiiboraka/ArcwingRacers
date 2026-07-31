@@ -16,7 +16,7 @@ shader_parameter/center_visibility = 1.0
 shader_parameter/hit_position = Vector3(0, 0, 0)
 shader_parameter/hit_progress = 0.0
 shader_parameter/hit_color = Color(1, 1, 1, 1)
-shader_parameter/hit_radius = 1.5350000000000001
+shader_parameter/hit_radius = 1.535
 shader_parameter/hit_ring_width = 0.40000000596048
 shader_parameter/hit_push_force = 0.67
 
