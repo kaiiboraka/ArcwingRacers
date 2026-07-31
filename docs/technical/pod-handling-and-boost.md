@@ -233,10 +233,12 @@ On `overheat_started`, a particle system ignites on the overheated engine wing. 
 
 ## Air Control
 
-Nose pitch (left stick vertical) does NOT directly rotate the pod. It **modulates gravity** — but only while **airborne**. When any hover ray is within hover range (grounded, wings near the ground), pitch does nothing: `gravity_mod_nose_up` / `gravity_mod_nose_down` are only applied when no hover ray is compressing. Nose-down charging still works grounded because the boost gauge reads `input.pitch` directly, independent of the gravity path.
+Nose pitch (left stick vertical) does NOT directly rotate the pod. It **modulates gravity** — always, grounded or not. `_hover` lerps effective gravity between base `gravity` and fixed `gravity_nose_up` (nose-up) or `gravity_nose_down` (nose-down) by stick deflection. Nose-down therefore presses the pod toward the ground even when the hover springs are engaged. Nose-down charging works grounded because the boost gauge reads `input.pitch` directly.
+
+Thrust and braking are driven along the **yaw-only** forward direction (`_flat_forward()`), NOT the body's pitched forward — body pitch is cosmetic, so arcing the nose up/down never redirects thrust vertically (prevents pitch-induced flyaways and dives).
 
 - **Nose up (pull back):** Reduces effective gravity → pod stays airborne longer, falls slower, reduces landing impact
-- **Nose down (push forward):** Increases effective gravity → pod drops faster, can take landing damage on hard impact
+- **Nose down (push forward):** Increases effective gravity → pod drops faster, presses into the ground, can take landing damage on hard impact
 - This is the mechanism for surviving long jumps and controlling descent on shortcut drops
 
 ### Rotation Limits

@@ -24,7 +24,7 @@ Each raycast:
 - Detects terrain, walls, and any solid-collision surface
 - Only applies spring force when a surface is within range
 
-The hover rays double as the **grounded detector**. If any ray is compressing (`hover_height - dist > 0`), the pod is grounded; in that state `_hover` applies gravity at its base rate and ignores nose-pitch gravity modulation entirely (`gravity_mod_nose_up`/`gravity_mod_nose_down` only apply while airborne — see Air Control in `pod-handling-and-boost.md`). No separate grounded collision area or ray is needed.
+The hover rays double as the **grounded detector**. A ray is "compressing" when within `hover_height + grounded_band`; if the pod was already grounded it stays grounded while *any* ray is in that band (latch/hysteresis), otherwise it grounds only when a ray is actually compressing (`hover_height - dist > 0`). No separate grounded collision area or ray is needed. Nose-pitch gravity modulation applies **always** (grounded or not) via fixed `gravity_nose_up` / `gravity_nose_down` values — see Air Control in `pod-handling-and-boost.md`.
 
 ---
 

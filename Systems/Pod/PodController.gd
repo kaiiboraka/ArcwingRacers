@@ -187,9 +187,18 @@ enum WallAngleCurve {
 @export var charge_pitch_deadzone_deg: float = 10.0
 
 @export_category("Gravity")
+## Base downward acceleration in m/s² applied every physics frame; the hover springs lift against it.[br][br]
+## Intended purpose: the reference gravity that sets how hard the springs must push to hold hover height.[br][br]
+## Higher = stronger pull to the ground (springs work harder); lower = floatier pod.
 @export var gravity: float = 25.0
-@export var gravity_mod_nose_up: float = 0.5
-@export var gravity_mod_nose_down: float = 1.6
+## Downward acceleration in m/s² applied when the pitch stick is held fully nose-up (fixed value, lighter than base gravity).[br][br]
+## Intended purpose: holding nose-up reduces effective gravity so the pod floats up and lofts over crests — a fixed value rather than a multiplier so it stays predictable at any base gravity.[br][br]
+## Higher = still heavy while nose-up (barely rises); lower = floats strongly nose-up (can launch off crests).
+@export var gravity_nose_up: float = 20.0
+## Downward acceleration in m/s² applied when the pitch stick is held fully nose-down (fixed value, heavier than base gravity).[br][br]
+## Intended purpose: holding nose-down presses the pod toward the ground hard enough to sink the hover springs — this is what makes nose-down actually push you down, and it applies whether or not the pod is grounded.[br][br]
+## Higher = dives/presses harder nose-down; lower = gentler descent.
+@export var gravity_nose_down: float = 120.0
 
 @export_category("Collision")
 ## Fraction of velocity lost on a glancing wall hit at LOW speed.[br][br]
@@ -242,6 +251,7 @@ var _chassis_sway_amount: float = 0.0
 var _grounded: bool = false
 var _ground_normal: Vector3 = Vector3.UP
 var _camera_mount_base_rot: Vector3
+var _camera_mount_base_pos: Vector3
 
 func _ready():
 	if Engine.is_editor_hint():
@@ -263,6 +273,7 @@ func _ready():
 		_blade_base_rot = blade.rotation
 	if camera_mount:
 		_camera_mount_base_rot = camera_mount.rotation
+		_camera_mount_base_pos = camera_mount.position
 
 func _physics_process(delta):
 	if Engine.is_editor_hint():
@@ -312,6 +323,7 @@ func _physics_process(delta):
 
 func _hover(delta, input):
 	var grounded: bool = false
+	var near_ground: bool = false
 	var normal_sum: Vector3 = Vector3.ZERO
 	var normal_count: int = 0
 	var max_upward: float = -999.0
@@ -320,6 +332,8 @@ func _hover(delta, input):
 			continue
 		var point = ray.get_collision_point()
 		var dist = ray.global_position.distance_to(point)
+		if dist < hover_height + grounded_band:
+			near_ground = true
 		var compression = hover_height - dist
 		if compression <= 0.0:
 			continue
@@ -331,19 +345,21 @@ func _hover(delta, input):
 		var correction = compression * spring_stiffness - velocity.y * spring_damping
 		if correction > max_upward:
 			max_upward = correction
-	_grounded = grounded
+	if _grounded:
+		_grounded = near_ground
+	else:
+		_grounded = grounded
 	if normal_count > 0:
 		_ground_normal = (normal_sum / float(normal_count)).normalized()
 	else:
 		_ground_normal = Vector3.UP
 
-	var grav_scale: float = 1.0
-	if not grounded:
-		if input.pitch > 0.0:
-			grav_scale = lerp(1.0, gravity_mod_nose_up, input.pitch)
-		elif input.pitch < 0.0:
-			grav_scale = lerp(1.0, gravity_mod_nose_down, -input.pitch)
-	velocity.y -= gravity * grav_scale * delta
+	var eff_gravity: float = gravity
+	if input.pitch > 0.0:
+		eff_gravity = lerp(gravity, gravity_nose_up, input.pitch)
+	elif input.pitch < 0.0:
+		eff_gravity = lerp(gravity, gravity_nose_down, -input.pitch)
+	velocity.y -= eff_gravity * delta
 
 	if max_upward > -999.0:
 		if max_upward > velocity.y:
@@ -357,7 +373,7 @@ func _accelerate(delta, input):
 	if _boost_state == BoostState.BOOSTING:
 		target = max_speed + boost_speed_bonus
 
-	var forward = -global_transform.basis.z
+	var forward = _flat_forward()
 	var current_forward_speed = velocity.dot(forward)
 
 	var target_forward = input.accelerate * target
@@ -368,7 +384,7 @@ func _accelerate(delta, input):
 func _brake(delta, input):
 	if input.brake <= 0.0:
 		return
-	var forward = -global_transform.basis.z
+	var forward = _flat_forward()
 	var forward_speed = velocity.dot(forward)
 	if forward_speed <= 0.0:
 		return
@@ -387,8 +403,8 @@ func _steer(delta, input):
 	var turn = -input.steer * max_turn_rate * turn_mult * boost_turn_mult * delta
 	_yaw += turn
 
-	var forward = -global_transform.basis.z
-	var right = global_transform.basis.x
+	var forward = _flat_forward()
+	var right = _flat_right()
 	var forward_speed = velocity.dot(forward)
 	var lat = velocity - forward * forward_speed
 	var lat_target = right * input.steer * traction * turn_mult * boost_turn_mult * delta
@@ -426,6 +442,7 @@ func _counter_rotate_camera(delta):
 		return
 	var counter: float = -(_roll + _tilt_roll) * camera_roll_counter
 	camera_mount.rotation = _camera_mount_base_rot + Vector3(0.0, 0.0, counter)
+	camera_mount.position = _camera_mount_base_pos.rotated(Vector3(0.0, 0.0, 1.0), counter)
 
 func _chassis_sway(delta, input):
 	if not blade:
@@ -525,6 +542,12 @@ func _boost_process(delta, input):
 func _speed_fraction() -> float:
 	return _current_speed / max_speed if max_speed > 0 else 0.0
 
+func _flat_forward() -> Vector3:
+	return Vector3(-sin(_yaw), 0.0, -cos(_yaw))
+
+func _flat_right() -> Vector3:
+	return Vector3(cos(_yaw), 0.0, -sin(_yaw))
+
 func _normal_boost(delta, input):
 	_cool_heat(delta)
 	if _charging_input(input) and _speed_fraction() >= min_charge_speed_fraction:
@@ -564,7 +587,7 @@ func _start_boost():
 	_boost_state = BoostState.BOOSTING
 	_heat = 0.0
 	_charge = 0.0
-	velocity += -global_transform.basis.z * boost_thrust
+	velocity += _flat_forward() * boost_thrust
 
 func _boost_update(delta, input):
 	_heat += heat_rate * delta
@@ -619,7 +642,7 @@ func _handle_collisions():
 		var into_frac: float = into_wall / speed
 		if into_frac <= 0.001:
 			continue
-		var head_on: float = clampf(-global_transform.basis.z.dot(normal), 0.0, 1.0)
+		var head_on: float = clampf(_flat_forward().dot(normal), 0.0, 1.0)
 		var angle_frac: float = 1.0 - acos(head_on) / deg_to_rad(90.0)
 		var angle_factor: float = _curve_angle(angle_frac)
 		var speed_frac: float = clampf(speed / max_speed, 0.0, 1.0)
