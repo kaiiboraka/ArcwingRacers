@@ -92,7 +92,7 @@ func _input(event):
 			JOY_AXIS_LEFT_X:
 				steer = event.axis_value;
 			JOY_AXIS_LEFT_Y:
-				pitch = -event.axis_value;
+				pitch = event.axis_value;
 			JOY_AXIS_TRIGGER_RIGHT:
 				accelerate = event.axis_value;
 			JOY_AXIS_TRIGGER_LEFT:

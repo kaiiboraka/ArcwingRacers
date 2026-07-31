@@ -118,4 +118,4 @@ mesh = SubResource("PlaneMesh_wj5hs")
 
 [node name="ExtendableWall" parent="." unique_id=1149585584 instance=ExtResource("7_dy8ob")]
 transform = Transform3D(1, 0, 0, 0, 0.47549102, 0.87972057, 0, -0.87972057, 0.47549102, -0.56981564, -0.62518835, -51.513325)
-size = Vector3(20, 26, 10)
+size = Vector3(20, 26, 11.599998)
