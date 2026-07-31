@@ -1,5 +1,6 @@
 [gd_scene format=3 uid="uid://ta4rkqlgf5a0"]
 
+[ext_resource type="PackedScene" uid="uid://bnl37xwq7n50n" path="res://Content/Scenes/Skyboxes/skybox_cloudy_sunset.tscn" id="1_5nm6p"]
 [ext_resource type="PackedScene" uid="uid://dylywca7tvxrp" path="res://Content/Scenes/Arcwing.tscn" id="1_26u2p"]
 [ext_resource type="PackedScene" uid="uid://v7n3qlho6kr3" path="res://Content/Scenes/starting_line.tscn" id="2_wg3kv"]
 [ext_resource type="PackedScene" uid="uid://dvywxboih5khm" path="res://Content/Models/Doodads/SM_rock_wall_01.glb" id="3_xk3qy"]
@@ -7,24 +8,6 @@
 [ext_resource type="PackedScene" uid="uid://ymjhu8j5b0ul" path="res://Content/Models/Doodads/SM_spire_01.glb" id="6_dy8ob"]
 [ext_resource type="PackedScene" uid="uid://bdnuklyimpace" path="res://Content/Models/Doodads/SM_rock_wall_03.glb" id="6_iyl2v"]
 [ext_resource type="PackedScene" uid="uid://xskqf03ju65p" path="res://addons/Custom_Nodes/ExtendableWall/ExtendableWall.tscn" id="7_dy8ob"]
-
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_xk3qy"]
-sky_top_color = Color(0, 0.65882355, 0.9254902, 1)
-sky_horizon_color = Color(0.6424427, 0.79939854, 0.85706526, 1)
-ground_horizon_color = Color(0.6424427, 0.79939854, 0.85706526, 1)
-energy_multiplier = 1.05
-
-[sub_resource type="Sky" id="Sky_nd3ke"]
-sky_material = SubResource("ProceduralSkyMaterial_xk3qy")
-
-[sub_resource type="Environment" id="Environment_3r2hc"]
-background_mode = 2
-sky = SubResource("Sky_nd3ke")
-ssao_enabled = true
-glow_enabled = true
-fog_mode = 1
-fog_light_color = Color(0.85, 0.90749997, 1, 1)
-fog_density = 1.0
 
 [sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_wj5hs"]
 
@@ -40,12 +23,7 @@ size = Vector2(20000, 20000)
 
 [node name="Test_Level" type="Node3D" unique_id=421134206]
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1725526313]
-transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
-shadow_enabled = true
-
-[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1043735818]
-environment = SubResource("Environment_3r2hc")
+[node name="Skybox_CloudySunset" parent="." unique_id=21218273 instance=ExtResource("1_5nm6p")]
 
 [node name="StartingLine" parent="." unique_id=583602706 node_paths=PackedStringArray("racers_to_load") instance=ExtResource("2_wg3kv")]
 racers_to_load = [NodePath("../Arcwing")]

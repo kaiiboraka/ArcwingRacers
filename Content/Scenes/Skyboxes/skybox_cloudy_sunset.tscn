@@ -1,0 +1,29 @@
+[gd_scene format=3 uid="uid://bnl37xwq7n50n"]
+
+[ext_resource type="Texture2D" uid="uid://cwlq4m2xrp41l" path="res://addons/AllSkyFree/AllSkyFree_Skyboxes/Epic_BlueSunset_EquiRect_flat.png" id="1_pkki6"]
+
+[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_xbqbp"]
+panorama = ExtResource("1_pkki6")
+
+[sub_resource type="Sky" id="Sky_dk75f"]
+sky_material = SubResource("PanoramaSkyMaterial_xbqbp")
+radiance_size = 4
+
+[sub_resource type="Environment" id="Environment_qupf0"]
+background_mode = 2
+sky = SubResource("Sky_dk75f")
+sky_rotation = Vector3(0, 3.1415927, 0)
+ssao_enabled = true
+glow_enabled = true
+fog_mode = 1
+fog_light_color = Color(0.85, 0.90749997, 1, 1)
+fog_density = 1.0
+
+[node name="Skybox_CloudySunset" type="Node3D" unique_id=21218273]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1507576649]
+transform = Transform3D(0.98480767, 0.030153709, 0.17101005, 0, -0.98480767, 0.17364828, 0.17364816, -0.17101017, -0.9698462, 0, 0, 6.8512335)
+shadow_enabled = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=275291158]
+environment = SubResource("Environment_qupf0")
