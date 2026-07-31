@@ -29,6 +29,10 @@ enum WallAngleCurve {
 ## Intended purpose: prevent hover bounce and smooth out landings.[br][br]
 ## Higher = heavily damped, planted, no bounce but slower to settle into drops; lower = bouncier, more lively ride but can oscillate up and down.
 @export var spring_damping: float = 3.0
+## Hysteresis band in meters ABOVE hover_height within which the pod is still treated as grounded while it bobs through its hover altitude.[br][br]
+## Intended purpose: keep the grounded flag latched during normal hover bounce. Without a band, grounded drops the moment the pod passes hover_height, which flicks the pod into "airborne" arc pitch (nose-up while climbing) — that nose-up tilts the forward thrust vector upward, so the pod climbs and flies away in a runaway feedback loop.[br][br]
+## Higher = pod stays grounded longer as it rises (more stable hover, arc pitch only on real launches); lower = grounded drops sooner past hover_height (more arc pitch during hover, livelier but risks the climb-away).
+@export var grounded_band: float = 1.5
 
 @export_category("Movement")
 ## Top forward speed in m/s reached when the accelerator is held at full input.[br][br]
@@ -109,6 +113,10 @@ enum WallAngleCurve {
 ## Intended purpose: response speed of the body's weight-shift into and out of turns.[br][br]
 ## Higher = body snaps to the outside of the turn; lower = body floats slowly.
 @export var chassis_sway_speed: float = 6.0
+## Degrees the chassis (Blade) body barrel-rolls about its forward (local Z) axis at full sway, so the sway reads as a full-body weight shift instead of a flat slide.[br][br]
+## Intended purpose: add a roll component to the chassis sway — the body twists about its own axis as it swings out in a turn.[br][br]
+## Higher = more dramatic barrel roll in hard turns; lower = subtler twist. Set 0 to disable the roll (sway stays a pure lateral slide).
+@export var chassis_sway_roll_deg: float = 12.0
 ## Maximum degrees the pod rolls about its forward axis from the Ship Tilt input (right stick horizontal / Q / E) at full deflection.[br][br]
 ## Intended purpose: the 90-degree ship tilt used to thread narrow gaps; stacks on top of the steering bank so tilting while steering rolls further.[br][br]
 ## Higher = ship can roll further over (set to 90 for full wing-vertical clearance); lower = shallower tilt. Set 0 to disable the tilt ability.
@@ -117,6 +125,26 @@ enum WallAngleCurve {
 ## Intended purpose: response speed of the deliberate 90-degree tilt, separate from the steering bank response (bank_speed).[br][br]
 ## Higher = tilt snaps to full roll quickly; lower = tilt takes longer to reach full roll.
 @export var tilt_speed: float = 5.0
+## Fraction (0–1) of the ground slope the pod's body pitches to follow while grounded (any hover ray compressing).[br][br]
+## Intended purpose: climbing a ramp tilts the pod's nose up to match the ground normal beneath it — the whole pod pitches, not just the wings.[br][br]
+## Higher = nose tracks the slope steeply; lower = shallower, calmer body pitch. Set 0 to disable terrain-following pitch.
+@export var terrain_pitch_align: float = 1.0
+## Degrees of body pitch added per m/s of vertical speed while airborne (climbing pitches the nose up, diving pitches it down, level at the apex of an arc).[br][br]
+## Intended purpose: make the pod visibly nose-down as it falls faster, nose-up while climbing, and level out at the peak of a jump before starting the dive.[br][br]
+## Higher = more dramatic arc pitch (nose dives sharply on fast falls); lower = subtler.
+@export var arc_pitch_gain: float = 1.5
+## Cap on the terrain/arc body-pitch contribution, in degrees.[br][br]
+## Intended purpose: keep the pod from pitching past a readable envelope on steep slopes or fast vertical falls.[br][br]
+## Higher = allows steeper body pitch; lower = flatter, more restrained.
+@export var arc_pitch_max_deg: float = 35.0
+## Cap on the TOTAL body pitch (terrain/arc alignment + manual pitch input), in degrees.[br][br]
+## Intended purpose: guarantee the pod never tips past a sane attitude regardless of how slope and input stack.[br][br]
+## Higher = more extreme combined pitch allowed; lower = keeps the body closer to level.
+@export var max_pitch_angle: float = 50.0
+## Fraction (0–1) of the pod's total roll (steering bank + ship tilt) that the camera mount counter-rotates.[br][br]
+## Intended purpose: counter-roll keeps the chase camera upright and stops the world from "orbiting" around the pod during a 90° ship tilt — the pod visibly tilts in frame while the horizon stays level.[br][br]
+## Higher = camera stays more level (1.0 = pod appears to roll fully against a level camera); lower = camera rolls more with the pod.
+@export var camera_roll_counter: float = 1.0
 
 @export_category("Boost")
 ## Flat speed in m/s instantly added to velocity on boost activation.[br][br]
@@ -209,7 +237,11 @@ var _wing_left_lift: float = 0.0
 var _wing_right_lift: float = 0.0
 var _wing_nose: float = 0.0
 var _blade_base_pos: Vector3
+var _blade_base_rot: Vector3
 var _chassis_sway_amount: float = 0.0
+var _grounded: bool = false
+var _ground_normal: Vector3 = Vector3.UP
+var _camera_mount_base_rot: Vector3
 
 func _ready():
 	if Engine.is_editor_hint():
@@ -228,6 +260,9 @@ func _ready():
 		_wing_right_base_pos = wing_right.position
 	if blade:
 		_blade_base_pos = blade.position
+		_blade_base_rot = blade.rotation
+	if camera_mount:
+		_camera_mount_base_rot = camera_mount.rotation
 
 func _physics_process(delta):
 	if Engine.is_editor_hint():
@@ -242,7 +277,8 @@ func _physics_process(delta):
 	_tilt(delta, input)
 	_wing_tilt(delta, input)
 	_chassis_sway(delta, input)
-	rotation = Vector3(0.0, _yaw, _roll + _tilt_roll)
+	rotation = Vector3(_pitch, _yaw, _roll + _tilt_roll)
+	_counter_rotate_camera(delta)
 	_boost_process(delta, input)
 	
 	move_and_slide()
@@ -276,6 +312,8 @@ func _physics_process(delta):
 
 func _hover(delta, input):
 	var grounded: bool = false
+	var normal_sum: Vector3 = Vector3.ZERO
+	var normal_count: int = 0
 	var max_upward: float = -999.0
 	for ray in hover_raycasts:
 		if not ray.is_colliding():
@@ -286,9 +324,18 @@ func _hover(delta, input):
 		if compression <= 0.0:
 			continue
 		grounded = true
+		var n: Vector3 = ray.get_collision_normal()
+		if n.length() > 0.001:
+			normal_sum += n
+			normal_count += 1
 		var correction = compression * spring_stiffness - velocity.y * spring_damping
 		if correction > max_upward:
 			max_upward = correction
+	_grounded = grounded
+	if normal_count > 0:
+		_ground_normal = (normal_sum / float(normal_count)).normalized()
+	else:
+		_ground_normal = Vector3.UP
 
 	var grav_scale: float = 1.0
 	if not grounded:
@@ -356,10 +403,29 @@ func _tilt(delta, input):
 	var target_tilt_roll = -input.tilt * deg_to_rad(tilt_max_angle)
 	_tilt_roll = lerp(_tilt_roll, target_tilt_roll, tilt_speed * delta)
 
-	var target_pitch = input.pitch * deg_to_rad(manual_pitch_angle)
+	var base_pitch: float = _pitch_attitude_target()
+	var target_pitch: float = base_pitch
+	target_pitch += input.pitch * deg_to_rad(manual_pitch_angle)
 	target_pitch += input.accelerate * deg_to_rad(pitch_accel_angle)
 	target_pitch -= input.brake * deg_to_rad(pitch_brake_angle)
+	target_pitch = clampf(target_pitch, -deg_to_rad(max_pitch_angle), deg_to_rad(max_pitch_angle))
 	_pitch = lerp(_pitch, target_pitch, pitch_rate * delta)
+
+func _pitch_attitude_target() -> float:
+	var max_arc: float = deg_to_rad(arc_pitch_max_deg)
+	if _grounded:
+		var local_n: Vector3 = global_transform.basis.inverse() * _ground_normal
+		local_n = local_n.normalized()
+		if local_n.length() > 0.001:
+			return clampf(atan2(local_n.z, local_n.y) * terrain_pitch_align, -max_arc, max_arc)
+		return 0.0
+	return clampf(velocity.y * deg_to_rad(arc_pitch_gain), -max_arc, max_arc)
+
+func _counter_rotate_camera(delta):
+	if not camera_mount:
+		return
+	var counter: float = -(_roll + _tilt_roll) * camera_roll_counter
+	camera_mount.rotation = _camera_mount_base_rot + Vector3(0.0, 0.0, counter)
 
 func _chassis_sway(delta, input):
 	if not blade:
@@ -368,6 +434,10 @@ func _chassis_sway(delta, input):
 	var sway_target = -input.steer * chassis_sway_travel * speed_frac
 	_chassis_sway_amount = lerp(_chassis_sway_amount, sway_target, chassis_sway_speed * delta)
 	blade.position = _blade_base_pos + Vector3(_chassis_sway_amount, 0.0, 0.0)
+	var sway_frac: float = 0.0
+	if chassis_sway_travel > 0.0:
+		sway_frac = clampf(_chassis_sway_amount / chassis_sway_travel, -1.0, 1.0)
+	blade.rotation = _blade_base_rot + Vector3(0.0, 0.0, -sway_frac * deg_to_rad(chassis_sway_roll_deg))
 
 func _wing_tilt(delta, input):
 	if not wing_left or not wing_right:
