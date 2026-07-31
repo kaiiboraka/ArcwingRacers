@@ -16,6 +16,8 @@
 | Ship Tilt (90° left/right) | Right Analog Stick (horizontal only) |
 | Shield (hold to block) | Left Trigger |
 | Ability | Right Trigger |
+
+Analog sticks have a **deadzone** (`InputCollector.ANALOG_DEADZONE`, default 0.2): tiny stick values below the threshold snap to 0 and the remaining range is rescaled to full deflection. The per-action `deadzone` in Project Settings → Input Map (0.5) only applies to button-style reads (`Input.get_action_strength`); `InputCollector` reads raw joypad motion events, so its own deadzone governs steer/pitch/tilt sensitivity and prevents stick jitter from registering as input.
 | Boost (activate) | TBD — no gamepad binding yet |
 | Item | TBD — see preset variations below |
 | Repair (hold) | TBD — see preset variations below |

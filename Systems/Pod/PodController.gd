@@ -262,6 +262,13 @@ func _ready():
 	for ray in hover_raycasts:
 		if ray:
 			ray.enabled = true
+	if hover_raycasts.is_empty():
+		var rays_root: Node = get_node_or_null("HoverRaycasts")
+		if rays_root:
+			for child in rays_root.get_children():
+				if child is RayCast3D:
+					hover_raycasts.append(child)
+					child.enabled = true
 	if wing_left:
 		_wing_left_base_rot = wing_left.rotation
 		_wing_left_base_pos = wing_left.position

@@ -1,5 +1,13 @@
 extends Node;
 
+## Analog stick deadzone (fraction of full deflection, 0.0-1.0).
+## Raw InputEventJoypadMotion axis values are read directly here, which
+## bypasses the per-action deadzone in Project Settings -> Input Map
+## (that only applies when reading through Input.get_action_strength()).
+## Values below this threshold are snapped to 0; the remaining range is
+## rescaled back to full deflection so full stick travel still reaches 1.0.
+const ANALOG_DEADZONE: float = 0.2;
+
 var steer: float = 0.0;
 var accelerate: float = 0.0;
 var brake: float = 0.0;
@@ -107,11 +115,14 @@ func _input(event):
 	if event is InputEventJoypadMotion:
 		match event.axis:
 			JOY_AXIS_LEFT_X:
-				steer = event.axis_value;
+				if not _steer_left and not _steer_right:
+					steer = _apply_deadzone(event.axis_value);
 			JOY_AXIS_LEFT_Y:
-				pitch = event.axis_value;
+				if not _pitch_up and not _pitch_down:
+					pitch = _apply_deadzone(event.axis_value);
 			JOY_AXIS_RIGHT_X:
-				tilt = event.axis_value;
+				if not _tilt_left and not _tilt_right:
+					tilt = _apply_deadzone(event.axis_value);
 			JOY_AXIS_TRIGGER_LEFT:
 				shield_held = event.axis_value > 0.1;
 
@@ -149,3 +160,11 @@ func _update_tilt_from_keyboard():
 		tilt = 1.0;
 	else:
 		tilt = 0.0;
+
+
+func _apply_deadzone(value: float) -> float:
+	var abs_val: float = absf(value);
+	if abs_val <= ANALOG_DEADZONE:
+		return 0.0;
+	var rescaled: float = (abs_val - ANALOG_DEADZONE) / (1.0 - ANALOG_DEADZONE);
+	return signf(value) * clampf(rescaled, 0.0, 1.0);
