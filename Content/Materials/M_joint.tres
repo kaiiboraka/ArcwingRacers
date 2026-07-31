@@ -2,9 +2,15 @@
 
 [resource]
 resource_name = "M_glowy_pink"
+transparency = 1
 cull_mode = 2
-albedo_color = Color(1, 0.57, 0.9856667, 1)
-metallic = 0.2
-roughness = 0.45
+albedo_color = Color(1.4918425, 0.41662815, 1.4688432, 0.5019608)
+metallic_specular = 1.0
+roughness = 0.0
 emission = Color(2.454227, 0, 2.454227, 0.58431375)
 emission_energy_multiplier = 1.1
+clearcoat_enabled = true
+clearcoat_roughness = 0.0
+backlight_enabled = true
+backlight = Color(0, 1, 1, 1)
+refraction_enabled = true

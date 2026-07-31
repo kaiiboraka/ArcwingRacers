@@ -1,5 +1,21 @@
 extends CharacterBody3D
 
+## Wall-angle penalty curve. x = angle fraction (0 = grazing side-scrape, 1 = dead-on nose hit).
+## Penalty factor at 45° off-dead-on: COSINE 0.71, LINEAR 0.50, QUADRATIC 0.25, CUBIC 0.13, SMOOTHSTEP 0.25.
+## COSINE hits hard even on shallow clips; CUBIC barely touches you until near-perfect head-ons.
+enum WallAngleCurve {
+	## cos(angle) — the raw metric. Harsh falloff: 0.71 penalty even at 45° off-dead-on. Default.
+	COSINE,
+	## Flat in angle: penalty = 1 - angle/90. 0.50 at 45° off-dead-on.
+	LINEAR,
+	## penalty = x^2. Forgiving: 0.25 at 45° off-dead-on.
+	QUADRATIC,
+	## penalty = x^3. Most forgiving: only dead-on hits hurt (0.13 at 45° off-dead-on).
+	CUBIC,
+	## S-curve: penalty = x^2 * (3 - 2x). Soft shoulder, snaps to full near dead-on (0.25 at 45°).
+	SMOOTHSTEP,
+}
+
 @export_category("Hover")
 @export var hover_height: float = 3.0
 @export var spring_stiffness: float = 8.0
@@ -11,6 +27,8 @@ extends CharacterBody3D
 @export var max_turn_rate: float = 2.0
 @export var traction: float = 8.0
 @export var brake_deceleration: float = 8.0
+@export var nose_up_turn_multiplier: float = 1.5
+@export var nose_down_turn_multiplier: float = 0.5
 
 @export_category("Tilt")
 @export var max_bank_angle: float = 25.0
@@ -19,8 +37,9 @@ extends CharacterBody3D
 @export var pitch_brake_angle: float = 5.0
 @export var pitch_rate: float = 3.0
 @export var manual_pitch_angle: float = 20.0
-@export var wing_counter_tilt: float = 0.6
-@export var wing_nose_tilt: float = 0.5
+@export var wing_counter_tilt_deg: float = 25.0
+@export var wing_nose_tilt_deg: float = 20.0
+@export var wing_tilt_speed: float = 6.0
 
 @export_category("Boost")
 @export var boost_thrust: float = 15.0
@@ -35,12 +54,19 @@ extends CharacterBody3D
 
 @export_category("Gravity")
 @export var gravity: float = 25.0
+@export var gravity_mod_nose_up: float = 0.5
+@export var gravity_mod_nose_down: float = 1.6
+
+@export_category("Collision")
+@export var wall_impact_loss: float = 0.7
+@export var wall_brute_force_loss: float = 0.15
+@export var wall_angle_curve: WallAngleCurve = WallAngleCurve.COSINE
 
 @export_category("Node References")
 @export var hover_raycasts: Array[RayCast3D] = []
 @export var camera_mount: Node3D
-@export var wing_left: Node3D
-@export var wing_right: Node3D
+@onready var wing_left: Node3D = %Wing_Left
+@onready var wing_right: Node3D = %Wing_Right
 @onready var pcam_noise_emitter: PhantomCameraNoiseEmitter3D = $CameraMount/PhantomCameraNoiseEmitter3D
 
 enum BoostState { CHARGING, READY, BOOSTING, OVERHEAT, COOLING }
@@ -56,6 +82,8 @@ var _pitch: float = 0.0
 var _roll: float = 0.0
 var _wing_left_base: Vector3
 var _wing_right_base: Vector3
+var _wing_bank: float = 0.0
+var _wing_nose: float = 0.0
 
 func _ready():
 	if Engine.is_editor_hint():
@@ -77,13 +105,13 @@ func _physics_process(delta):
 
 	var input = InputCollector
 
-	_hover(delta)
+	_hover(delta, input)
 	_accelerate(delta, input)
 	_brake(delta, input)
 	_steer(delta, input)
 	_tilt(delta, input)
-	_wing_tilt(input)
-	rotation = Vector3(_pitch, _yaw, _roll)
+	_wing_tilt(delta, input)
+	rotation = Vector3(0.0, _yaw, _roll)
 	_boost_process(delta, input)
 	
 	move_and_slide()
@@ -91,13 +119,36 @@ func _physics_process(delta):
 	_handle_collisions()
 
 	_current_speed = velocity.length()
-	DebugManager.update_property("Current Speed", _current_speed);
+	DebugManager.update_property("~~_ Movement _~~", "~~~~~~~~~~~~")
+	DebugManager.update_property("Current Speed", String.num(_current_speed, 2));
+	DebugManager.update_property("Speed Fraction", String.num(_current_speed / max_speed, 2));
+	DebugManager.update_property("Vertical Speed", String.num(velocity.y, 2));
+	DebugManager.update_property("Heading (deg)", String.num(rad_to_deg(_yaw), 2));
+	DebugManager.update_property("Bank (deg)", String.num(rad_to_deg(_roll), 2));
+	DebugManager.update_property("Pitch (deg)", String.num(rad_to_deg(_pitch), 2));
+	DebugManager.update_property("Wing Bank (deg)", String.num(rad_to_deg(_wing_bank), 2));
+	DebugManager.update_property("Wing Nose (deg)", String.num(rad_to_deg(_wing_nose), 2));
+	DebugManager.update_property("~~_ BOOST _~~", "~~~~~~~~~~~~")
+	DebugManager.update_property("Boost State", BoostState.keys()[_boost_state]);
+	DebugManager.update_property("Boost Charge (%)", roundi(_charge * 100.0));
+	DebugManager.update_property("Heat (%)", roundi(_heat * 100.0));
+	DebugManager.update_property("~~_ INPUT _~~", "~~~~~~~~~~~~")
+	DebugManager.update_property("Steer Input", input.steer);
+	DebugManager.update_property("Accelerate Input", input.accelerate);
+	DebugManager.update_property("Brake Input", input.brake);
+	DebugManager.update_property("Pitch Input", input.pitch);
+	
 
 
-func _hover(delta):
-	velocity.y -= gravity * delta
+func _hover(delta, input):
+	var grav_scale: float = 1.0
+	if input.pitch > 0.0:
+		grav_scale = lerp(1.0, gravity_mod_nose_up, input.pitch)
+	elif input.pitch < 0.0:
+		grav_scale = lerp(1.0, gravity_mod_nose_down, -input.pitch)
+	velocity.y -= gravity * grav_scale * delta
 
-	var max_upward := -999.0
+	var max_upward: float = -999.0
 	for ray in hover_raycasts:
 		if not ray.is_colliding():
 			continue
@@ -141,7 +192,12 @@ func _brake(delta, input):
 	velocity += forward * (new_forward_speed - forward_speed)
 
 func _steer(delta, input):
-	var turn = -input.steer * max_turn_rate * delta
+	var turn_mult: float = 1.0
+	if input.pitch > 0.0:
+		turn_mult = lerp(1.0, nose_up_turn_multiplier, input.pitch)
+	elif input.pitch < 0.0:
+		turn_mult = lerp(1.0, nose_down_turn_multiplier, -input.pitch)
+	var turn = -input.steer * max_turn_rate * turn_mult * delta
 	_yaw += turn
 
 	var forward = -global_transform.basis.z
@@ -149,7 +205,7 @@ func _steer(delta, input):
 	var forward_speed = velocity.dot(forward)
 	var lat = velocity - forward * forward_speed
 
-	var lat_target = right * input.steer * traction * delta
+	var lat_target = right * input.steer * traction * turn_mult * delta
 	velocity -= lat * min(1.0, traction * delta)
 	velocity += lat_target
 
@@ -163,13 +219,18 @@ func _tilt(delta, input):
 	target_pitch -= input.brake * deg_to_rad(pitch_brake_angle)
 	_pitch = lerp(_pitch, target_pitch, pitch_rate * delta)
 
-func _wing_tilt(input):
+func _wing_tilt(delta, input):
 	if not wing_left or not wing_right:
 		return
-	var bank = _roll * wing_counter_tilt
-	var nose = _pitch * wing_nose_tilt
-	wing_left.rotation = _wing_left_base + Vector3(nose, 0.0, bank)
-	wing_right.rotation = _wing_right_base + Vector3(nose, 0.0, bank)
+	var roll_frac: float = 0.0
+	if max_bank_angle > 0.0:
+		roll_frac = clampf(_roll / deg_to_rad(max_bank_angle), -1.0, 1.0)
+	var bank_target : float = roll_frac * deg_to_rad(wing_counter_tilt_deg)
+	var nose_target : float = input.pitch * deg_to_rad(wing_nose_tilt_deg)
+	_wing_bank = lerp(_wing_bank, bank_target, wing_tilt_speed * delta)
+	_wing_nose = lerp(_wing_nose, nose_target, wing_tilt_speed * delta)
+	wing_left.rotation = _wing_left_base + Vector3(_wing_nose, 0.0, _wing_bank)
+	wing_right.rotation = _wing_right_base + Vector3(_wing_nose, 0.0, _wing_bank)
 
 # TODO(mechanical-opening): Provisional per-wing mechanical opening infrastructure.
 # When turn rate rises, fins/vents/wings open; they hold while the turn is held and decay
@@ -265,8 +326,30 @@ func _handle_collisions():
 			pcam_noise_emitter.emit();
 		if normal.angle_to(Vector3.UP) < deg_to_rad(70.0):
 			continue
-		var hit_angle = abs(normal.angle_to(-global_transform.basis.z))
-		if hit_angle < deg_to_rad(45.0):
-			velocity *= 0.3
-		else:
-			velocity *= 0.85
+		var speed: float = velocity.length()
+		if speed <= 0.001:
+			continue
+		var into_wall: float = maxf(-velocity.dot(normal), 0.0)
+		var into_frac: float = into_wall / speed
+		if into_frac <= 0.001:
+			continue
+		var head_on: float = clampf(-global_transform.basis.z.dot(normal), 0.0, 1.0)
+		var angle_frac: float = 1.0 - acos(head_on) / deg_to_rad(90.0)
+		var angle_factor: float = _curve_angle(angle_frac)
+		var speed_frac: float = clampf(speed / max_speed, 0.0, 1.0)
+		var penalty: float = lerp(wall_impact_loss, wall_brute_force_loss, speed_frac)
+		velocity *= 1.0 - (penalty * angle_factor * into_frac)
+
+func _curve_angle(x: float) -> float:
+	match wall_angle_curve:
+		WallAngleCurve.COSINE:
+			return cos((1.0 - x) * deg_to_rad(90.0))
+		WallAngleCurve.LINEAR:
+			return x
+		WallAngleCurve.QUADRATIC:
+			return x * x
+		WallAngleCurve.CUBIC:
+			return x * x * x
+		WallAngleCurve.SMOOTHSTEP:
+			return x * x * (3.0 - 2.0 * x)
+	return x

@@ -111,11 +111,10 @@ func update_hud_values() -> void:
 	if not visuals_active:
 		return
 	_update_property_game_info()
-	_update_property_movement()
+	#_update_property_movement()
 
 
-func _update_property_movement() -> void:
-	update_property("~~_ Movement _~~", "~~~~~~~~~~~~")
+#func _update_property_movement() -> void:
 	#update_property("Current Speed", get_tree().root.get_camera_3d().)
 
 

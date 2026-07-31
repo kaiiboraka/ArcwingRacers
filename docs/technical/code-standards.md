@@ -126,6 +126,24 @@ Before importing or committing any non-original audio asset, see `technical/audi
 3. **Custom Resource (`Godot.Resource`)** — Subclass of `RefCounted`. Used for static configuration assets, item/ability databases, or element presets. Saved to disk as `.tres` files. Must be marked with `[GlobalClass]`.
 4. **Godot Node (`Godot.Node` or Subclasses)** — Used only when the script needs scene tree presence, visual rendering, physics colliders, or lifecycle ticking.
 
+### GDScript Typing
+
+**Always annotate types explicitly. Never use the `:=` (walrus) inference operator.** Inferred types can differ from the intended type and surface only as runtime-exclusive compilation errors when the script loads — the exact failure mode that GDScript's explicit syntax exists to prevent.
+
+```gdscript
+# Wrong — inferred type (runtime-exclusive errors)
+var speed := 30.0
+var mid := (a + b) * 0.5
+
+# Right — explicit
+var speed: float = 30.0
+var mid: Vector3 = (a + b) * 0.5
+```
+
+Exceptions: only where dynamic typing is genuinely required (polymorphic `Variant` values), and even then annotate `Variant` explicitly rather than inferring.
+
+---
+
 ### `@export` vs Custom Resource
 
 | Use | When |
@@ -457,14 +475,25 @@ private float _speed;
 [Export(PropertyHint.Range, "1,999")] public float MaxHP { get; set; } = 100f;
 ```
 
-**Node references:** Export direct typed Node references rather than `NodePath` strings.
+**Node references:** Prefer `@onready` lookups and reserve `@export` for cases that genuinely need inspector wiring. Reference lookup hierarchy (cheapest → most expensive):
+
+1. **Direct child** → `@onready var mesh := $BeamMesh`. No inspector wiring. Breaks only if the child is renamed/reparented.
+2. **Unique-name node** → set *Unique Name* (`access as unique name`) on the target in the editor, then `@onready var wing := %Wing_Left`. Lets a distant node be fetched with `@onready` after a one-time editor setup — zero ongoing wiring, and refactor-safe against reparenting. Example: `PodController.gd` → `%Wing_Left` / `%Wing_Right`.
+3. **Otherwise** → `@export` typed reference, wired in the inspector. Use only when the target is far away and non-trivial to locate, or genuinely swappable from the inspector.
+
+Every unwired `@export` node reference is a silent null that makes code early-return. `@onready` / `%UniqueName` eliminate the wiring step entirely — whenever a node reference can be a direct child or a unique-named node, it must not be an `@export`. Only the third case creates a user action item (see **Editor Handoff** above).
 
 ```csharp
-// Wrong
-[Export] public NodePath SpawnPointPath { get; set; }
+// Wrong — export for a direct child (silent null until wired)
+[Export] public MeshInstance3D BeamMesh { get; set; }
 
-// Right
-[Export] public Marker2D SpawnPoint { get; set; }
+// Right — direct child fetched in _Ready
+private MeshInstance3D _beamMesh;
+public override void _Ready() => _beamMesh = GetNode<MeshInstance3D>("BeamMesh");
+
+// Right — distant node with Unique Name set in the editor, zero wiring
+private Marker2D _spawnPoint;
+public override void _Ready() => _spawnPoint = GetNode<Marker2D>("%SpawnPoint");
 ```
 
 **Missing required references:** Godot has no `[RequireComponent]` equivalent. Assert required exports in `_Ready()` to fail loudly (fast-fail, per existing rules).
@@ -506,6 +535,38 @@ public partial class HealthBar : Node
 // C#
 [ExportToolButton("Generate")]
 public Callable Generate = Callable.From(Generate);
+```
+
+---
+
+## Editor Handoff — User Action Items (MANDATORY)
+
+**Any change that requires editor interface interaction creates user action items. The agent MUST explicitly surface them — never assume the user notices a change they didn't write.**
+
+When a change adds or alters anything the user must touch in the Godot editor, the agent's final message MUST include a clearly marked `ACTION REQUIRED` callout listing every follow-up item, with the exact node path and what to set.
+
+This applies to, but is not limited to:
+
+- **New `@export` (or `[Export]`) variables** that need inspector wiring — especially typed node references / `NodePath` exports (`@export var wing_left: Node3D`). Any export with a non-safe default that the scene must override.
+- **New scene nodes** the user may want to inspect, move, or verify.
+- **Renamed / reparented nodes** — breaks existing inspector references.
+- **New input actions, autoloads, project settings, layers/masks** — anything persisted to `project.godot`.
+- **New signals / signal connections** that must be wired in the editor.
+
+Rules:
+
+1. **Exports default to safe, functional defaults when possible** so an unwired export fails softly. A node reference export that will be null if not wired must be explicitly called out as a required wiring step.
+2. **Call out before the code lands, and after.** If exports were added in a previous turn, the current turn's report must still list them as outstanding action items until the user confirms they've done them.
+3. **Do not say "done" when a change depends on editor work the user hasn't performed.** Say what the code does *and* what the user must still do.
+4. **When exports are the difference between working and not working** (e.g. a null node reference makes a function early-return), say so in plain language — "the wings do nothing until you wire `wing_left`/`wing_right`."
+
+Example callout format:
+
+```
+## ACTION REQUIRED (editor)
+1. Select `/Arcwing` → Inspector → `wing_left` = `Visuals/Wing_Left`, `wing_right` = `Visuals/Wing_Right`.
+2. Select `/Visuals/Rigs/Beam_Left` → Inspector → `beam_mesh` = `BeamMesh`.
+   (Repeat for `Beam_Right`.)
 ```
 
 ---

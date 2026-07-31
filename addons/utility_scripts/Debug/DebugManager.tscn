@@ -19,6 +19,48 @@ property_entry_scene = ExtResource("2_bw1w2")
 [node name="DebugInputs" type="Node" parent="." unique_id=865701920]
 script = ExtResource("2_2al1m")
 
+[node name="WindowMarginContainer" type="MarginContainer" parent="." unique_id=906945608]
+offset_right = 640.0
+offset_bottom = 360.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="DebugPanelContainer" type="PanelContainer" parent="WindowMarginContainer" unique_id=990884276]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+mouse_filter = 2
+mouse_behavior_recursive = 1
+theme_override_styles/panel = SubResource("StyleBoxFlat_uoyte")
+
+[node name="DebugMarginContainer" type="MarginContainer" parent="WindowMarginContainer/DebugPanelContainer" unique_id=1085551423]
+layout_mode = 2
+mouse_filter = 2
+mouse_behavior_recursive = 1
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 5
+
+[node name="PropertyList" type="VBoxContainer" parent="WindowMarginContainer/DebugPanelContainer/DebugMarginContainer" unique_id=17570385]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+mouse_filter = 2
+mouse_behavior_recursive = 1
+theme_override_constants/separation = 2
+
+[node name="PropertyEntry" parent="WindowMarginContainer/DebugPanelContainer/DebugMarginContainer/PropertyList" unique_id=855682829 instance=ExtResource("2_bw1w2")]
+layout_mode = 2
+
+[node name="PropertyEntry2" parent="WindowMarginContainer/DebugPanelContainer/DebugMarginContainer/PropertyList" unique_id=1986630401 instance=ExtResource("2_bw1w2")]
+layout_mode = 2
+
 [node name="SubViewportContainer" type="SubViewportContainer" parent="." unique_id=637909699]
 anchors_preset = 15
 anchor_right = 1.0
@@ -33,49 +75,5 @@ scale = Vector2(0.333, 0.333)
 transparent_bg = true
 handle_input_locally = false
 msaa_2d = 3
-size = Vector2i(2560, 1440)
+size = Vector2i(1920, 1080)
 render_target_update_mode = 4
-
-[node name="WindowMarginContainer" type="MarginContainer" parent="SubViewportContainer/SubViewport" unique_id=906945608]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-scale = Vector2(3, 3)
-theme_override_constants/margin_left = 10
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 10
-theme_override_constants/margin_bottom = 10
-
-[node name="DebugPanelContainer" type="PanelContainer" parent="SubViewportContainer/SubViewport/WindowMarginContainer" unique_id=990884276]
-layout_mode = 2
-size_flags_horizontal = 0
-size_flags_vertical = 0
-mouse_filter = 2
-mouse_behavior_recursive = 1
-theme_override_styles/panel = SubResource("StyleBoxFlat_uoyte")
-
-[node name="DebugMarginContainer" type="MarginContainer" parent="SubViewportContainer/SubViewport/WindowMarginContainer/DebugPanelContainer" unique_id=1085551423]
-layout_mode = 2
-mouse_filter = 2
-mouse_behavior_recursive = 1
-theme_override_constants/margin_left = 10
-theme_override_constants/margin_top = 5
-theme_override_constants/margin_right = 10
-theme_override_constants/margin_bottom = 5
-
-[node name="PropertyList" type="VBoxContainer" parent="SubViewportContainer/SubViewport/WindowMarginContainer/DebugPanelContainer/DebugMarginContainer" unique_id=17570385]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 0
-size_flags_vertical = 0
-mouse_filter = 2
-mouse_behavior_recursive = 1
-theme_override_constants/separation = 2
-
-[node name="PropertyEntry" parent="SubViewportContainer/SubViewport/WindowMarginContainer/DebugPanelContainer/DebugMarginContainer/PropertyList" unique_id=855682829 instance=ExtResource("2_bw1w2")]
-layout_mode = 2
-
-[node name="PropertyEntry2" parent="SubViewportContainer/SubViewport/WindowMarginContainer/DebugPanelContainer/DebugMarginContainer/PropertyList" unique_id=1986630401 instance=ExtResource("2_bw1w2")]
-layout_mode = 2
