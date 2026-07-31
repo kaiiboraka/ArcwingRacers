@@ -27,6 +27,7 @@ extends CharacterBody3D
 @export_category("Node References")
 @export var hover_raycasts: Array[RayCast3D] = []
 @export var camera_mount: Node3D
+@onready var pcam_noise_emitter: PhantomCameraNoiseEmitter3D = $CameraMount/PhantomCameraNoiseEmitter3D
 
 enum BoostState { CHARGING, READY, BOOSTING, OVERHEAT, COOLING }
 
@@ -174,6 +175,9 @@ func _handle_collisions():
 		if not col:
 			continue
 		var normal = col.get_normal()
+		if (!pcam_noise_emitter.is_emitting()):
+			pcam_noise_emitter.emit();
+		print("pcam_noise_emitter.emit();")
 		if normal.angle_to(Vector3.UP) < deg_to_rad(70.0):
 			continue
 		var hit_angle = abs(normal.angle_to(-global_transform.basis.z))

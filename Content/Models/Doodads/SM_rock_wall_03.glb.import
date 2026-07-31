@@ -46,6 +46,15 @@ _subresources={
 "use_external/fallback_path": "res://Content/Materials/stone.tres",
 "use_external/path": "uid://bk5ua8nwtyg7c"
 }
+},
+"nodes": {
+"PATH:rock_wall_03": {
+"decomposition/precision": 9,
+"generate/physics": true,
+"physics/layer": 3,
+"physics/mask": 16,
+"physics/shape_type": 0
+}
 }
 }
 gltf/naming_version=2

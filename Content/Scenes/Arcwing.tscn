@@ -7,14 +7,20 @@
 [ext_resource type="Script" uid="uid://csjccrhj5wnx7" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="5_88bc5"]
 [ext_resource type="Script" uid="uid://8umksf8e80fw" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="6_oi37l"]
 [ext_resource type="Script" uid="uid://b8hhnqsugykly" path="res://addons/phantom_camera/scripts/resources/camera_3d_resource.gd" id="7_oi37l"]
+[ext_resource type="Script" uid="uid://ccmiitq0sdh7j" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_noise_emitter_3d.gd" id="8_r5cq2"]
+[ext_resource type="Script" uid="uid://cuffvge5ad4aa" path="res://addons/phantom_camera/scripts/resources/phantom_camera_noise_3d.gd" id="9_jtdhu"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_wj5hs"]
 radius = 1.0
 height = 6.0
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_n3i6r"]
-radius = 2.3330078
+radius = 1.0
 height = 11.376404
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_oi37l"]
+radius = 1.1
+height = 4.6
 
 [sub_resource type="Resource" id="Resource_futn5"]
 script = ExtResource("6_oi37l")
@@ -25,6 +31,20 @@ script = ExtResource("7_oi37l")
 fov = 90.0
 metadata/_custom_type_script = "uid://b8hhnqsugykly"
 
+[sub_resource type="Resource" id="Resource_wj5hs"]
+script = ExtResource("9_jtdhu")
+amplitude = 60.0
+frequency = 3.0
+noise_seed = 168
+positional_noise = true
+rotational_multiplier_x = 0.1
+rotational_multiplier_y = 0.1
+rotational_multiplier_z = 0.1
+positional_multiplier_x = 0.8
+positional_multiplier_y = 0.3
+positional_multiplier_z = 0.0
+metadata/_custom_type_script = "uid://cuffvge5ad4aa"
+
 [node name="Arcwing" type="CharacterBody3D" unique_id=612795873 node_paths=PackedStringArray("hover_raycasts", "camera_mount")]
 collision_layer = 16
 collision_mask = 451
@@ -32,8 +52,7 @@ floor_max_angle = 0.87266463
 platform_floor_layers = 11
 script = ExtResource("1_u7qc7")
 max_speed = 200.0
-gravity = 150.0
-hover_raycasts = [NodePath("HoverRaycasts/front_left"), NodePath("HoverRaycasts/front_right"), NodePath("HoverRaycasts/mid_right"), NodePath("HoverRaycasts/mid_left"), NodePath("HoverRaycasts/back_left"), NodePath("HoverRaycasts/back_right")]
+hover_raycasts = [NodePath("HoverRaycasts/front_left"), NodePath("HoverRaycasts/front_right"), NodePath("HoverRaycasts/back_left"), NodePath("HoverRaycasts/back_right")]
 camera_mount = NodePath("CameraMount")
 
 [node name="Visuals" type="Node3D" parent="." unique_id=1416543842]
@@ -59,6 +78,10 @@ shape = SubResource("CapsuleShape3D_wj5hs")
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 1.836, -2.693)
 shape = SubResource("CapsuleShape3D_n3i6r")
 
+[node name="Blade_Wing_Collider3D" type="CollisionShape3D" parent="." unique_id=73402569]
+transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, 0, 1.4182973, -0.8065549)
+shape = SubResource("CapsuleShape3D_oi37l")
+
 [node name="CameraMount" type="Node3D" parent="." unique_id=861221765]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, -1)
 
@@ -74,15 +97,22 @@ tween_resource = SubResource("Resource_futn5")
 tween_on_load = false
 camera_3d_resource = SubResource("Resource_88bc5")
 follow_damping = true
+follow_damping_value = Vector3(0.01, 0.01, 0.01)
 follow_distance = 12.0
 spring_length = 12.0
 collision_mask = 7
 look_at_damping = true
-align_transform_with_view = Callable()
-align_position_with_view = Callable()
-align_rotation_with_view = Callable()
+look_at_damping_value = 0.1
+noise_emitter_layer = 1
 draw_follow_line = true
 metadata/_custom_type_script = "uid://csjccrhj5wnx7"
+
+[node name="PhantomCameraNoiseEmitter3D" type="Node3D" parent="CameraMount" unique_id=1401221650]
+script = ExtResource("8_r5cq2")
+noise = SubResource("Resource_wj5hs")
+duration = 0.3
+decay_time = 0.1
+metadata/_custom_type_script = "uid://ccmiitq0sdh7j"
 
 [node name="SpringArm3D" type="SpringArm3D" parent="CameraMount" unique_id=2135855330]
 transform = Transform3D(1, 0, 0, 0, 0.9781476, 0.2079117, 0, -0.2079117, 0.9781476, 0, 0, 0)
@@ -95,36 +125,36 @@ spring_length = 12.0
 
 [node name="front_left" type="RayCast3D" parent="HoverRaycasts" unique_id=2000857133]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.097, 1, -5.839)
-target_position = Vector3(0, -2.5, 0)
+target_position = Vector3(0, -6, 0)
 collision_mask = 7
 hit_from_inside = true
 
 [node name="front_right" type="RayCast3D" parent="HoverRaycasts" unique_id=1532000685]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.097, 1, -5.839)
-target_position = Vector3(0, -2.5, 0)
+target_position = Vector3(0, -6, 0)
 collision_mask = 7
 hit_from_inside = true
 
 [node name="mid_right" type="RayCast3D" parent="HoverRaycasts" unique_id=756928922]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.129, 1, 0)
-target_position = Vector3(0, -2.5, 0)
+target_position = Vector3(0, -6, 0)
 collision_mask = 7
 hit_from_inside = true
 
 [node name="mid_left" type="RayCast3D" parent="HoverRaycasts" unique_id=767161446]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.129, 1, 0)
-target_position = Vector3(0, -2.5, 0)
+target_position = Vector3(0, -6, 0)
 collision_mask = 7
 hit_from_inside = true
 
 [node name="back_left" type="RayCast3D" parent="HoverRaycasts" unique_id=1784262134]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.271, 1, 2.755)
-target_position = Vector3(0, -2.5, 0)
+target_position = Vector3(0, -6, 0)
 collision_mask = 7
 hit_from_inside = true
 
 [node name="back_right" type="RayCast3D" parent="HoverRaycasts" unique_id=566016364]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.271, 1, 2.755)
-target_position = Vector3(0, -2.5, 0)
+target_position = Vector3(0, -6, 0)
 collision_mask = 7
 hit_from_inside = true
