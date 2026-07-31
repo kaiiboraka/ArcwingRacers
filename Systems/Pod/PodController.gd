@@ -147,13 +147,13 @@ enum WallAngleCurve {
 @export var arc_pitch_max_deg: float = 35.0
 
 @export_category("Wing Motion")
-## Meters the turn-side (inside) wing drops DOWN in world space during an UNTILTED turn — applied to both wings. While tilted, both wings instead shift TOGETHER along the pod's local up/down (down-local = this value, up-local = wing_up_vert_travel).[br][br]
-## Intended purpose: tunable wing-bob depth; upright, the wing on the inside of the turn drops this far while the opposite wing rises by wing_up_vert_travel — the differential mode.[br][br]
-## Higher = deeper dive on the inside wing (upright) and a stronger down-local shift (tilted); lower = subtler. Set 0 to disable the downward motion entirely.
+## Meters the turn-side (inside) wing drops DOWN in world space during an UNTILTED turn — the differential mode (one wing down, the other up). While tilted, the wing shift fades out entirely so the wings only rotate in place with the pod.[br][br]
+## Intended purpose: tunable wing-bob depth; upright, the wing on the inside of the turn drops this far while the opposite wing rises by wing_up_vert_travel.[br][br]
+## Higher = deeper dive on the inside wing (upright); lower = subtler. Set 0 to disable the downward motion entirely.
 @export var wing_down_vert_travel: float = 1.0
-## Meters the opposite (outside) wing rises UP in world space during an UNTILTED turn — applied to both wings. While tilted, both wings instead shift TOGETHER along the pod's local up/down (up-local = this value, down-local = wing_down_vert_travel).[br][br]
-## Intended purpose: tunable wing-bob height; upright, the wing on the outside of the turn rises this far while the turn-side wing drops by wing_down_vert_travel — the differential mode.[br][br]
-## Higher = taller rise on the outside wing (upright) and a stronger up-local shift (tilted); lower = subtler. Set 0 to disable the upward motion entirely.
+## Meters the opposite (outside) wing rises UP in world space during an UNTILTED turn — the differential mode (one wing up, the other down). While tilted, the wing shift fades out entirely so the wings only rotate in place with the pod.[br][br]
+## Intended purpose: tunable wing-bob height; upright, the wing on the outside of the turn rises this far while the turn-side wing drops by wing_down_vert_travel.[br][br]
+## Higher = taller rise on the outside wing (upright); lower = subtler. Set 0 to disable the upward motion entirely.
 @export var wing_up_vert_travel: float = 1.0
 ## Degrees the wings pitch to mirror the pod's nose attitude.[br][br]
 ## Intended purpose: keep the wing visual groups in sync with nose-up / nose-down motion.[br][br]
@@ -531,12 +531,17 @@ func _chassis_sway(delta, input):
 		turn_frac = clampf(_yaw_rate / max_turn_rate, -1.0, 1.0)
 	var sway_target: float = turn_frac * chassis_sway_travel
 	_chassis_sway_amount = lerp(_chassis_sway_amount, sway_target, chassis_sway_speed * delta)
-	var part_bob: float = idle_part_bob_amplitude * sin(_hover_time * TAU * idle_bob_frequency * 1.3 + PI)
-	blade.position = _blade_base_pos + Vector3(_chassis_sway_amount, part_bob, 0.0)
+	var tilt_mix: float = clampf(abs(input.tilt), 0.0, 1.0)
+	var sway_world: Vector3 = global_transform.basis * Vector3(_chassis_sway_amount, 0.0, 0.0)
+	var sway_flat: Vector3 = Vector3(sway_world.x, 0.0, sway_world.z)
+	var sway_local: Vector3 = Vector3.ZERO
+	if sway_flat.length() > 0.001:
+		sway_local = global_transform.basis.inverse() * sway_flat
+	var part_bob: float = idle_part_bob_amplitude * sin(_hover_time * TAU * idle_bob_frequency * 1.3 + PI) * (1.0 - tilt_mix)
+	blade.position = _blade_base_pos + sway_local + Vector3(0.0, part_bob, 0.0)
 	var sway_frac: float = 0.0
 	if chassis_sway_travel > 0.0:
 		sway_frac = clampf(_chassis_sway_amount / chassis_sway_travel, -1.0, 1.0)
-	var tilt_mix: float = clampf(abs(input.tilt), 0.0, 1.0)
 	var sway_mag: float = sway_frac * deg_to_rad(chassis_sway_roll_deg)
 	var sway_roll: float = -sway_mag * (1.0 - tilt_mix)
 	var sway_pitch: float = sway_mag * tilt_mix
@@ -562,27 +567,16 @@ func _wing_tilt(delta, input):
 		_wing_right_lift = lerp(_wing_right_lift, up, wing_tilt_speed * delta)
 
 	var tilt_mix: float = clampf(abs(input.tilt), 0.0, 1.0)
-	var together_world: Vector3 = Vector3.ZERO
-	if tilt_mix > 0.0 and abs(input.steer) > 0.0001:
-		var pod_right: Vector3 = global_transform.basis.x
-		var horizontal: Vector3 = Vector3(pod_right.x, 0.0, pod_right.z)
-		if horizontal.length() < 0.001:
-			horizontal = Vector3.RIGHT
-		var world_turn: Vector3 = horizontal.normalized() * signf(input.steer)
-		var local_turn: Vector3 = global_transform.basis.inverse() * world_turn
-		var together_dir: float = 1.0 if local_turn.y >= 0.0 else -1.0
-		var together_mag: float = abs(turn_intensity) * (wing_up_vert_travel if together_dir > 0.0 else wing_down_vert_travel)
-		together_world = global_transform.basis.y * (together_dir * together_mag)
-
-	var diff_left_world: Vector3 = Vector3(0.0, _wing_left_lift, 0.0)
-	var diff_right_world: Vector3 = Vector3(0.0, _wing_right_lift, 0.0)
-	var engine_bob: float = idle_part_bob_amplitude * sin(_hover_time * TAU * idle_bob_frequency * 1.3)
+	var lift_scale: float = 1.0 - tilt_mix
+	var diff_left_world: Vector3 = Vector3(0.0, _wing_left_lift, 0.0) * lift_scale
+	var diff_right_world: Vector3 = Vector3(0.0, _wing_right_lift, 0.0) * lift_scale
+	var engine_bob: float = idle_part_bob_amplitude * sin(_hover_time * TAU * idle_bob_frequency * 1.3) * lift_scale
 	diff_left_world.y += engine_bob
 	diff_right_world.y += engine_bob
 	wing_left.rotation = _wing_left_base_rot + Vector3(_wing_nose, 0.0, 0.0)
 	wing_right.rotation = _wing_right_base_rot + Vector3(_wing_nose, 0.0, 0.0)
-	wing_left.position = _wing_left_base_pos + _world_offset(diff_left_world.lerp(together_world, tilt_mix), wing_left)
-	wing_right.position = _wing_right_base_pos + _world_offset(diff_right_world.lerp(together_world, tilt_mix), wing_right)
+	wing_left.position = _wing_left_base_pos + _world_offset(diff_left_world, wing_left)
+	wing_right.position = _wing_right_base_pos + _world_offset(diff_right_world, wing_right)
 
 func _world_offset(world_vec: Vector3, wing: Node3D) -> Vector3:
 	if world_vec == Vector3.ZERO:
