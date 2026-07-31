@@ -27,17 +27,21 @@ Steering uses **yaw rotation** (Approach A below) — not lateral forces.
 This gives the "yank" feel (yaw rotation happens immediately on input) while the body's velocity catches up, creating the floaty drift EP1R is known for.
 
 ### Visual: Chassis Sway
-From EP1R observation — the chassis (chariot body) swings much further than the engines during turns. The engines stay centered in the view while the chariot moves left/right. This is handled by the spring-offset nodes on the visual groups.
+From EP1R observation — the chassis (chariot body) swings much further than the engines during turns. The engines stay centered in the view while the chariot moves left/right. Implemented on `PodController` by translating the `Blade` node laterally in the pod's local frame: the body shifts to the outside of the turn (opposite the steer direction), scaled by steer × speed fraction and lerped by `chassis_sway_speed`. Tunable via `chassis_sway_travel` (lateral distance in meters) and `chassis_sway_speed` (response rate).
 
-### Visual: Engine Counter-Tilt
-During turns, the engines tilt in opposite vertical directions:
-- **Right turn:** Right engine tilts down, left engine tilts up
-- **Left turn:** Left engine tilts down, right engine tilts up
+### Visual: Ship Tilt (90°)
+The Ship Tilt ability rolls the pod up to 90° about its forward axis using the right analog stick horizontal or Q / E. It stacks on top of the steering bank — tilting while steering rolls further. Tunable via `tilt_max_angle` (max roll degrees) and `tilt_speed` (roll response). Purely visual on the pod's roll axis; used to thread narrow gaps and hazards.
 
-This is separate from chassis sway — a per-engine rotation on the wing visual groups.
+### Visual: Engine Vertical Shift
+During turns the engines shift vertically **in world space** — the arc-rig beams connecting the wings to the blade transfer the turn into vertical motion. The behavior is **tilt-gated**:
+
+- **Upright (differential):** the wing on the inside of the turn drops and the opposite wing rises — Right turn: Right engine down, left engine up. Left turn: Left engine down, right engine up.
+- **Tilted (together):** both wings shift **together** along the pod's local up/down axis, toward the direction of the turn in world space — the pod-local up/down maps to absolute left/right at full roll, so the wings sweep sideways with the tilt.
+
+Magnitude scales with steer × speed fraction and is tunable via `wing_down_vert_travel` (how far the turn-side wing drops upright, or the down-local shift tilted) and `wing_up_vert_travel` (how far the opposite wing rises upright, or the up-local shift tilted) on `PodController` — both values apply to both wings. It is a translation — the wing models stay upright while they bob, they do not roll in place. This is separate from chassis sway.
 
 ### Visual: Mechanical Opening
-Fins, wings, vents, and other moving parts on each engine open as turn rate increases, stay open while the turn is held, and decay back to closed when the stick returns to neutral. Each part tracks its own openness — they can be at different levels simultaneously (e.g., partially open during a gentle turn). This is independent of the engine counter-tilt above.
+Fins, wings, vents, and other moving parts on each engine open as turn rate increases, stay open while the turn is held, and decay back to closed when the stick returns to neutral. Each part tracks its own openness — they can be at different levels simultaneously (e.g., partially open during a gentle turn). This is independent of the engine vertical shift above.
 
 ### Nose Tilt
 Engines tilt slightly up or down based on nose pitch input, matching the pod's pitch attitude. Purely visual on the engine visual groups.
@@ -49,8 +53,8 @@ Applying lateral force at wing positions was considered but produces a softer, m
 
 ## Boost System
 
-**Location:** `systems/boost/boost_component.gd`
-**Dependencies:** InputBuffer, EventBus
+**Location:** Currently implemented inline in `Systems/Pod/PodController.gd`; planned to move to a `BoostComponent` node.
+**Dependencies:** `InputCollector` (reads `boost_just_pressed`)
 
 ### BoostComponent
 
@@ -65,52 +69,62 @@ extends Node
 @export var heat_rate: float = 1.0        # heat units per second during boost
 @export var cool_rate: float = 1.0        # heat units per second after boost
 @export var boost_thrust: float = 200.0   # speed added during boost
-@export var boost_max_speed: float = 800.0
+@export var boost_speed_bonus: float = 50.0  # added on top of max_speed while boosting
+@export var min_charge_speed_fraction: float = 0.8  # min max-speed fraction to charge
+@export var boost_end_speed_fraction: float = 0.5   # speed drop below this fraction ends boost
 
 # ── State ──
-enum State { CHARGING, READY, BOOSTING, OVERHEAT, COOLING }
-var state: State = State.CHARGING
+enum State { NORMAL, CHARGING, READY, BOOSTING, OVERHEAT }
+var state: State = State.NORMAL
 var charge: float = 0.0        # 0.0 → 1.0 (full)
 var heat: float = 0.0          # 0.0 → 1.0 (max = overheat)
 var max_heat: float = 1.0
-var min_charge_speed: float = 0.8  # fraction of max speed required to charge
 ```
+
+`NORMAL` is the resting, uncharged state — charge sits at 0 and nothing happens. The pod only enters `CHARGING` when it is actually filling the gauge (holding forward AND fast enough); the moment either condition drops, it returns to `NORMAL` and charge resets to 0.
 
 ### Charge Phase
 
-Nose-down while at speed fills the gauge. The gauge does not charge when coasting or slow.
+Forward input while at speed fills the gauge. The gauge does not charge when coasting or slow, and **resets instantly when forward is released** — each hold starts from empty. The stick must be held **basically completely forward** (within `charge_pitch_deadzone_deg`, default 10°, of full deflection) — a light nose-down that would also allow steering does not count. Charging is a committed straight-line action: because steering pulls the stick off full-forward, the pod effectively has to be flying straight (wings on the ground, not turning) to charge.
 
 ```gdscript
+func _charging_input(input) -> bool:
+    if input.pitch >= 0.0:
+        return false
+    var full = cos(deg_to_rad(charge_pitch_deadzone_deg))
+    return -input.pitch >= full
+
 func _charge(delta: float, nose_pitch: float, speed_fraction: float):
-    if state != State.CHARGING:
-        return
-    if nose_pitch >= 0.0 or speed_fraction < min_charge_speed:
-        return
-    charge += charge_rate * abs(nose_pitch) * delta
-    charge = min(charge, 1.0)
-    if charge >= 1.0:
-        state = State.READY
-        EventBus.boost_ready.emit()
+    if state == State.CHARGING and (_charging_input(input) and speed_fraction >= min_charge_speed_fraction):
+        charge += charge_rate * abs(nose_pitch) * delta
+        charge = min(charge, 1.0)
+        if charge >= 1.0:
+            state = State.READY
+            EventBus.boost_ready.emit()
+    else:
+        state = State.NORMAL     # not charging → idle; resets gauge
+        charge = 0.0
 ```
 
 ### Boost Activation
 
-When the gauge is full (state = READY), the player releases the accelerator and presses it again. The hold-release-repress pattern is detected by the input buffer:
+When the gauge is full (state = READY), a single press of the Boost button activates boost — a divergence from EP1R's release-and-repress pattern (simplified for modern controls; see ADR 0004). Boost max speed is additive: while boosting, the pod accelerates toward `max_speed + boost_speed_bonus`.
 
 ```gdscript
-func try_activate(acceleration_held: bool, acceleration_just_pressed: bool):
+func try_activate(boost_just_pressed: bool):
     if state != State.READY:
         return
-    if acceleration_just_pressed:
+    if boost_just_pressed:
         _start_boost()
 
 func _start_boost():
     state = State.BOOSTING
     heat = 0.0
+    velocity += forward * boost_thrust   # flat speed added on activation
     EventBus.boost_started.emit()
 ```
 
-**Nose-down is only required to charge the gauge.** Once boost is active, the player returns to neutral pitch — boost continues regardless of nose position.
+**Forward input is only required to charge the gauge.** Once boost is active, the player returns to neutral pitch — boost continues regardless of nose position.
 
 ### Boost Phase
 
@@ -128,9 +142,11 @@ func _boost_process(delta: float):
     # Emit heat level for audio/visual feedback
     EventBus.boost_heat_updated.emit(heat_pct)
 
-    # Traction reduced during boost
-    EventBus.traction_modifier.emit(0.5)   # 50% traction
+    # Turn rate reduced during boost (see Steering / _steer in PodController)
+    # yaw_turn_rate = max_turn_rate * boost_turn_rate_penalty   # default 0.5 → half turn rate
 ```
+
+**Turn-rate penalty:** While boost is active, `_steer` in `PodController` multiplies both the yaw turn rate and the lateral traction alignment by `boost_turn_rate_penalty` (default 0.5 — half agility). This is the "handling loss" cost of boosting: you commit to a fast, straight-ish line and turn sluggishly.
 
 ### Boost End Conditions
 
@@ -138,17 +154,20 @@ Boost ends when any of:
 - Heat reaches max → overheat
 - Player releases accelerator
 - Player applies brakes
+- Speed drops far below max (below `boost_end_speed_fraction`, default 0.5 — a massive speed loss ends boost early)
 - Significant collision (above damage threshold)
 - Pod crashes
 
 ```gdscript
 func end_boost():
     if state == State.BOOSTING:
-        state = State.COOLING
-        heat = max(heat, 0.1)   # preserve current heat for cooldown
+        state = State.NORMAL   # back to idle; heat drains passively while not boosting
+        heat = max(heat, 0.1)    # preserve current heat for cooldown
         EventBus.traction_modifier.emit(1.0)   # restore traction
         EventBus.boost_ended.emit()
 ```
+
+**Brake during boost:** Braking is not analog. Pressing brake while boost is active ends it immediately — it does not drain heat. Heat only drains by not boosting.
 
 ### Overheat
 
@@ -163,33 +182,18 @@ func _overheat():
 
 ### Cooling
 
-After boost ends (voluntary or forced), heat depletes at the Cool Rate. During overheat, the gauge must fully drain before the fire goes out and the pod can boost again.
+Heat depletes whenever the pod is **not boosting** — boosting stops cooling and starts heating. After a voluntary end, heat drains while the pod re-charges. During overheat, the gauge must fully drain before the fire goes out and the pod can boost again.
 
 ```gdscript
 func _cool_process(delta: float):
-    if state != State.COOLING and state != State.OVERHEAT:
+    if state == State.BOOSTING:
         return
-
     heat -= cool_rate * delta
     heat = max(heat, 0.0)
-
-    if heat <= 0.0:
-        if state == State.OVERHEAT:
-            state = State.CHARGING
-            charge = 0.0
-            EventBus.overheat_ended.emit()   # extinguishes wing fire
-        else:
-            state = State.CHARGING
-```
-
-Braking while boosting also reduces heat (a skill move — trade speed for safety):
-
-```gdscript
-# Called from pod_controller when brake is held during boost
-func brake_cool(brake_strength: float, delta: float):
-    if state == State.BOOSTING:
-        heat -= brake_cool_rate * brake_strength * delta
-        heat = max(heat, 0.0)
+    if state == State.OVERHEAT and heat <= 0.0:
+        state = State.NORMAL
+        charge = 0.0
+        EventBus.overheat_ended.emit()   # extinguishes wing fire
 ```
 
 ---
@@ -229,7 +233,7 @@ On `overheat_started`, a particle system ignites on the overheated engine wing. 
 
 ## Air Control
 
-Nose pitch (left stick vertical) does NOT directly rotate the pod. It **modulates gravity**:
+Nose pitch (left stick vertical) does NOT directly rotate the pod. It **modulates gravity** — but only while **airborne**. When any hover ray is within hover range (grounded, wings near the ground), pitch does nothing: `gravity_mod_nose_up` / `gravity_mod_nose_down` are only applied when no hover ray is compressing. Nose-down charging still works grounded because the boost gauge reads `input.pitch` directly, independent of the gravity path.
 
 - **Nose up (pull back):** Reduces effective gravity → pod stays airborne longer, falls slower, reduces landing impact
 - **Nose down (push forward):** Increases effective gravity → pod drops faster, can take landing damage on hard impact
@@ -243,4 +247,4 @@ Nose pitch (left stick vertical) does NOT directly rotate the pod. It **modulate
 
 ## Braking
 
-The **Airbrake Inverse** stat controls braking power (lower = faster stops). Applied as a deceleration force when the brake button is held. Stronger with higher upgrade tiers. Braking also reduces heat during boost (one way to cool down without fully overheating).
+The **Airbrake Inverse** stat controls braking power (lower = faster stops). Applied as a deceleration force when the brake button is held. Stronger with higher upgrade tiers. Braking during boost instantly ends it — braking does **not** drain heat; heat only drains by not boosting.

@@ -45,7 +45,7 @@ The buffer stores the current state of every control the pod needs each physics 
 | steering | float | -1.0 to 1.0 | Left analog horizontal. Negative = left, positive = right |
 | acceleration | float | 0.0 to 1.0 | Accelerator pedal. 0 = released, 1 = full |
 | braking | float | 0.0 to 1.0 | Brake pedal |
-| nose_pitch | float | -1.0 to 1.0 | Vertical analog. Negative = nose down (boost charge), positive = nose up (air control) |
+| nose_pitch | float | -1.0 to 1.0 | Vertical analog. Negative = nose down (boost charge, needs full deflection within the charge deadzone), positive = nose up (air control) |
 | boost | bool | | Activate boost |
 | shield | bool | | Shield held (drains mana while true) |
 | ability | bool | | Fire ability |

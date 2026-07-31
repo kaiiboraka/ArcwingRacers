@@ -4,6 +4,7 @@ var steer: float = 0.0;
 var accelerate: float = 0.0;
 var brake: float = 0.0;
 var pitch: float = 0.0;
+var tilt: float = 0.0;
 var boost_just_pressed: bool = false;
 var boost_held: bool = false;
 var shield_just_pressed: bool = false;
@@ -18,6 +19,8 @@ var _steer_left: bool = false;
 var _steer_right: bool = false;
 var _pitch_up: bool = false;
 var _pitch_down: bool = false;
+var _tilt_left: bool = false;
+var _tilt_right: bool = false;
 
 func _input(event):
 	if event.is_action_pressed("Player_Steer_Left"):
@@ -58,6 +61,20 @@ func _input(event):
 		_pitch_down = false;
 		_update_pitch_from_keyboard();
 
+	if event.is_action_pressed("Player_Tilt_Left"):
+		_tilt_left = true;
+		_update_tilt_from_keyboard();
+	elif event.is_action_released("Player_Tilt_Left"):
+		_tilt_left = false;
+		_update_tilt_from_keyboard();
+
+	if event.is_action_pressed("Player_Tilt_Right"):
+		_tilt_right = true;
+		_update_tilt_from_keyboard();
+	elif event.is_action_released("Player_Tilt_Right"):
+		_tilt_right = false;
+		_update_tilt_from_keyboard();
+
 	if event.is_action_pressed("Player_Boost"):
 		boost_just_pressed = true;
 		boost_held = true;
@@ -93,8 +110,8 @@ func _input(event):
 				steer = event.axis_value;
 			JOY_AXIS_LEFT_Y:
 				pitch = event.axis_value;
-			JOY_AXIS_TRIGGER_RIGHT:
-				accelerate = event.axis_value;
+			JOY_AXIS_RIGHT_X:
+				tilt = event.axis_value;
 			JOY_AXIS_TRIGGER_LEFT:
 				shield_held = event.axis_value > 0.1;
 
@@ -123,3 +140,12 @@ func _update_pitch_from_keyboard():
 		pitch = -1.0;
 	else:
 		pitch = 0.0;
+
+
+func _update_tilt_from_keyboard():
+	if _tilt_left:
+		tilt = -1.0;
+	elif _tilt_right:
+		tilt = 1.0;
+	else:
+		tilt = 0.0;

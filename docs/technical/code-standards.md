@@ -144,6 +144,25 @@ Exceptions: only where dynamic typing is genuinely required (polymorphic `Varian
 
 ---
 
+### GDScript Doc Comments on `@export` Variables
+
+**Every exported variable gets a `##` doc comment block** describing (1) what the variable affects, (2) its intended purpose, and (3) example effects of higher / lower / different values (e.g. "higher = faster", "lower = more drift"). They render as inspector tooltips and show up in the class reference.
+
+**Formatting rules:**
+- Each section (description / purpose / examples) lives on its **own single line** in code — do not split a sentence across lines.
+- Separate sections with **`[br]` appended to the end of the line** (Godot's BBCode line break) — not a blank `##` line, not a trailing-space markdown break.
+- The final line has no `[br]`.
+- Same template and `[br]` rule applies to enum-member doc comments.
+
+```gdscript
+## Top forward speed in m/s reached when the accelerator is held at full input.[br]
+## Intended purpose: defines the pod's base performance ceiling; the boost charge threshold is derived from this value.[br]
+## Higher = faster pod at cruise; lower = slower pod, easier to charge boost.
+@export var max_speed: float = 30.0
+```
+
+---
+
 ### `@export` vs Custom Resource
 
 | Use | When |

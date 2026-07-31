@@ -1,10 +1,36 @@
 [gd_resource type="StandardMaterial3D" format=3 uid="uid://da2vnkdxlmtun"]
 
+[ext_resource type="Shader" uid="uid://blskc02bu0atp" path="res://Content/Materials/Shaders/scifi_shield.gdshader" id="1_8qij5"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_me8r6"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ws02n"]
+render_priority = 0
+shader = ExtResource("1_8qij5")
+shader_parameter/shield_color = Color(0.21568628, 0.78431374, 1, 1)
+shader_parameter/noise_texture = SubResource("NoiseTexture2D_me8r6")
+shader_parameter/wave_height = 0.050000002375
+shader_parameter/wave_speed = Vector2(0.1, 0.05)
+shader_parameter/fresnel_power = 10.0
+shader_parameter/center_visibility = 1.0
+shader_parameter/hit_position = Vector3(0, 0, 0)
+shader_parameter/hit_progress = 0.0
+shader_parameter/hit_color = Color(1, 1, 1, 1)
+shader_parameter/hit_radius = 1.5350000000000001
+shader_parameter/hit_ring_width = 0.40000000596048
+shader_parameter/hit_push_force = 0.67
+
 [resource]
 resource_name = "M_glowy_pink"
+next_pass = SubResource("ShaderMaterial_ws02n")
 transparency = 1
 cull_mode = 2
-albedo_color = Color(2.1568185e-05, 1.2592124, 1.6224712, 0.584)
+albedo_color = Color(1, 1, 1, 0.003921569)
+metallic_specular = 1.0
 emission_enabled = true
-emission = Color(0, 0.9875379, 2.454227, 0.58431375)
-emission_energy_multiplier = 1.1
+emission = Color(0, 14.156864, 17.814594, 1)
+emission_energy_multiplier = 0.15
+clearcoat_enabled = true
+clearcoat_roughness = 0.0
+subsurf_scatter_strength = 1.0
+grow_amount = -0.874

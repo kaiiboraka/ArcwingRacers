@@ -25,8 +25,8 @@ radius = 1.0
 height = 11.376404
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_oi37l"]
-radius = 1.1
-height = 4.6
+radius = 1.0
+height = 4.75
 
 [sub_resource type="Resource" id="Resource_futn5"]
 script = ExtResource("6_oi37l")
@@ -57,9 +57,23 @@ collision_mask = 451
 floor_max_angle = 0.87266463
 platform_floor_layers = 11
 script = ExtResource("1_u7qc7")
+hover_height = 4.0
 max_speed = 200.0
+wing_up_vert_travel = 2.0
+chassis_sway_travel = 4.0
+chassis_sway_speed = 2.0
+boost_thrust = 100.0
+boost_speed_bonus = 250.0
+heat_rate = 0.04
+cool_rate = 0.01
+min_charge_speed_fraction = 0.9
+boost_end_speed_fraction = 0.99
+boost_turn_rate_penalty = 0.1
+charge_rate = 0.8
+charge_pitch_deadzone_deg = 15.0
 gravity = 50.0
-hover_raycasts = [NodePath("HoverRaycasts/front_left"), NodePath("HoverRaycasts/front_right"), NodePath("HoverRaycasts/mid_left"), NodePath("HoverRaycasts/mid_right"), NodePath("HoverRaycasts/back_left"), NodePath("HoverRaycasts/back_right")]
+gravity_mod_nose_down = 5.0
+hover_raycasts = [NodePath("HoverRaycasts/front_left"), NodePath("HoverRaycasts/front_right"), NodePath("HoverRaycasts/back_left"), NodePath("HoverRaycasts/back_right")]
 camera_mount = NodePath("CameraMount")
 
 [node name="Visuals" type="Node3D" parent="." unique_id=1416543842]
@@ -122,7 +136,7 @@ transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 1
 shape = SubResource("CapsuleShape3D_n3i6r")
 
 [node name="Blade_Wing_Collider3D" type="CollisionShape3D" parent="." unique_id=73402569]
-transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, 0, 1.4182973, -0.8065549)
+transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, 0, 1.836, -0.807)
 shape = SubResource("CapsuleShape3D_oi37l")
 
 [node name="CameraMount" type="Node3D" parent="." unique_id=861221765]

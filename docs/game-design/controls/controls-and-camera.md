@@ -16,6 +16,7 @@
 | Ship Tilt (90° left/right) | Right Analog Stick (horizontal only) |
 | Shield (hold to block) | Left Trigger |
 | Ability | Right Trigger |
+| Boost (activate) | TBD — no gamepad binding yet |
 | Item | TBD — see preset variations below |
 | Repair (hold) | TBD — see preset variations below |
 | Look Behind | Left Bumper |
@@ -37,14 +38,15 @@ All other inputs shared across presets. Custom remapping available.
 
 | Action | Keyboard |
 |---|---|
-| Accelerate | W / Up Arrow |
-| Brake / Reverse | S / Down Arrow |
-| Steer Left / Right | A,D / Left,Right Arrow |
+| Accelerate | W |
+| Brake / Reverse | S |
+| Steer Left / Right | A / D |
 | Ship Tilt Left / Right | Q / E |
-| Nose Pitch Forward (boost charge) | Mouse Down |
-| Nose Pitch Back (air control) | Mouse Up |
-| Shield (hold to block) | Left Shift |
-| Ability | Space / Left Click |
+| Nose Pitch Back (air control) | Up Arrow |
+| Nose Pitch Forward (boost charge) | Down Arrow |
+| Boost (activate when gauge full) | Left Shift |
+| Shield (hold to block) | Space |
+| Ability | Left Click |
 | Item | F |
 | Repair (hold) | R |
 | Look Behind | C |
@@ -57,8 +59,8 @@ All other inputs shared across presets. Custom remapping available.
 - Time the shield just before impact to **parry**: successful parry restores mana instead of consuming it.
 - Shield direction TBD — previously right stick (now tilt), may use auto-facing or a simpler scheme.
 
-### Boost (EP1R-style)
-Pushing the nose down (pitch forward) while at or near maximum speed charges the boost gauge. When the gauge is full, the status indicator turns yellow. Releasing the accelerator and immediately pressing it again activates boost. No mana cost — the cost is handling loss, collision risk, and eventual overheating.
+### Boost
+Pushing the nose down (pitch forward) **fully** — within `charge_pitch_deadzone_deg` (default 10°) of full stick deflection — while at or near maximum speed charges the boost gauge. A partial nose-down (one you could also steer with) does not charge. When the gauge is full, the status indicator turns yellow. Pressing the Boost key/button activates boost — a single press, no release-repress trick. Boost continues while the accelerator is held; releasing the accelerator or pressing brake ends it immediately. No mana cost — the cost is handling loss (turn rate penalty while boosting), collision risk, and eventual overheating. The Right Trigger is the **Ability**, not accelerator — it does not affect boost.
 
 ### Repair (EP1R-style)
 Hold the repair button to repair the most-damaged engine segment first. The engine goes briefly offline (pod slows, handles poorly). Segments only restore to yellow condition — never full green. The pod's Repair Rate stat governs how fast this cycles.

@@ -87,9 +87,11 @@ If the spring-offset fake proves insufficient for gameplay feel, each wing clust
 
 Three independent visual systems on the wing/engine groups, all driven by steering input:
 
-1. **Chassis sway** — The chariot body swings left/right on spring-offset nodes while engines stay centered.
-2. **Engine counter-tilt** — Right engine tilts down / left engine tilts up on right turn (and vice versa on left turn). Per-engine rotation on the wing visual groups.
+1. **Chassis sway** — The chariot body (the `Blade` node) translates left/right in the pod's local frame while the engines stay centered: to the outside of the turn, scaled by steer × speed fraction. Driven by `PodController._chassis_sway()`, tunable via `chassis_sway_travel` / `chassis_sway_speed`.
+2. **Engine vertical shift** — Tilt-gated. Upright, the engines translate up/down **in world space** during turns (turn-side engine drops, opposite rises — left turn → left down / right up; right turn → right down / left up), driven by the beams (arc-rigs) connecting wings to the blade. Tilted, both engines shift **together** along the pod's local up/down toward the turn's world direction (left/right at full roll). Travel tunable on PodController (`wing_down_vert_travel` for the drop/down-local shift, `wing_up_vert_travel` for the rise/up-local shift — both apply to both wings).
 3. **Mechanical opening** — Fins, vents, wings open as turn rate increases, hold while turn is held, decay back to closed on neutral. Each part tracks its own openness independently.
+
+A fourth system, the **Ship Tilt** ability, rolls the entire pod up to 90° about its forward axis (right stick horizontal / Q / E) — see `docs/technical/pod-handling-and-boost.md#visual-ship-tilt-90`. It stacks on the steering bank (`PodController._tilt()`, `tilt_max_angle` / `tilt_speed`).
 
 See `docs/technical/pod-handling-and-boost.md#steering` for the physics model.
 

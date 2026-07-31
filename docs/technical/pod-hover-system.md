@@ -24,6 +24,8 @@ Each raycast:
 - Detects terrain, walls, and any solid-collision surface
 - Only applies spring force when a surface is within range
 
+The hover rays double as the **grounded detector**. If any ray is compressing (`hover_height - dist > 0`), the pod is grounded; in that state `_hover` applies gravity at its base rate and ignores nose-pitch gravity modulation entirely (`gravity_mod_nose_up`/`gravity_mod_nose_down` only apply while airborne — see Air Control in `pod-handling-and-boost.md`). No separate grounded collision area or ray is needed.
+
 ---
 
 ## Spring Model
@@ -59,7 +61,7 @@ No special logic needed — the spring physics handles it automatically.
 
 Banking behavior during turns is not yet settled. Reference observations from EP1R:
 
-- In normal play, turning causes the outer wing to dip and the inner wing to rise, creating a natural bank.
+- In normal play, turning shifts the engines vertically in world space — the turn-side engine drops and the opposite engine rises (left turn: left engine down, right engine up; right turn: right engine down, left engine up). See `docs/technical/pod-handling-and-boost.md#visual-engine-vertical-shift`.
 - The body (blade) responds to wing movement — wings drag the blade, not the other way around.
 - EP1R's dual-controller mode (secret N64 feature) maps each engine to its own joystick: both forward = accel + nose down, both back = brake + nose up, opposite directions = turn. This reveals engine-independent physics under the hood.
 
