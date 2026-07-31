@@ -52,6 +52,7 @@ floor_max_angle = 0.87266463
 platform_floor_layers = 11
 script = ExtResource("1_u7qc7")
 max_speed = 200.0
+gravity = 50.0
 hover_raycasts = [NodePath("HoverRaycasts/front_left"), NodePath("HoverRaycasts/front_right"), NodePath("HoverRaycasts/back_left"), NodePath("HoverRaycasts/back_right")]
 camera_mount = NodePath("CameraMount")
 
@@ -61,17 +62,17 @@ camera_mount = NodePath("CameraMount")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.057, 0)
 
 [node name="Wing_Left" parent="Visuals" unique_id=1985836831 instance=ExtResource("3_88bc5")]
-transform = Transform3D(0.99998814, 0, 0.004869938, 0, 1, 0, -0.004869938, 0, 0.99998814, -3.383, 4.17, 3.341)
+transform = Transform3D(0.99998814, 0, 0.004869938, 0, 1, 0, -0.004869938, 0, 0.99998814, -3.383, 4.17, -3.341)
 
 [node name="Wing_Right" parent="Visuals" unique_id=1921984725 instance=ExtResource("4_oi37l")]
-transform = Transform3D(0.9998157, 1.3357019e-08, 0.019197434, -1.2336771e-08, 1, -5.3263534e-08, -0.019197434, 5.3016883e-08, 0.9998157, 3.383, 4.17, 3.341)
+transform = Transform3D(0.9998157, 1.3357019e-08, 0.019197434, -1.2336771e-08, 1, -5.3263534e-08, -0.019197434, 5.3016883e-08, 0.9998157, 3.383, 4.17, -3.341)
 
 [node name="WingLeft_Collider3D" type="CollisionShape3D" parent="." unique_id=1686517842]
-transform = Transform3D(0.96316254, -0.26891983, 1.1754859e-08, 0, -4.371139e-08, -1, 0.26891983, 0.96316254, -4.210117e-08, -3.337, 3.07, 3.505)
+transform = Transform3D(0.96316254, -0.26891983, 1.1754859e-08, 0, -4.371139e-08, -1, 0.26891983, 0.96316254, -4.210117e-08, -3.337, 3.07, -3.505)
 shape = SubResource("CapsuleShape3D_wj5hs")
 
 [node name="WingRight_Collider3D" type="CollisionShape3D" parent="." unique_id=1912747007]
-transform = Transform3D(0.96316254, 0.26891983, -1.1754859e-08, 0, -4.371139e-08, -1, -0.26891983, 0.96316254, -4.210117e-08, 3.337, 3.07, 3.505)
+transform = Transform3D(0.96316254, 0.26891983, -1.1754859e-08, 0, -4.371139e-08, -1, -0.26891983, 0.96316254, -4.210117e-08, 3.337, 3.07, -3.505)
 shape = SubResource("CapsuleShape3D_wj5hs")
 
 [node name="Blade_Collider3D" type="CollisionShape3D" parent="." unique_id=1605502514]

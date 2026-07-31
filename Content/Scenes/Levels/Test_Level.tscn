@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://d7dnvvk3mjxr" path="res://Content/Models/Doodads/SM_rock_wall_02.glb" id="5_3r2hc"]
 [ext_resource type="PackedScene" uid="uid://ymjhu8j5b0ul" path="res://Content/Models/Doodads/SM_spire_01.glb" id="6_dy8ob"]
 [ext_resource type="PackedScene" uid="uid://bdnuklyimpace" path="res://Content/Models/Doodads/SM_rock_wall_03.glb" id="6_iyl2v"]
+[ext_resource type="PackedScene" uid="uid://xskqf03ju65p" path="res://addons/Custom_Nodes/ExtendableWall/ExtendableWall.tscn" id="7_dy8ob"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_xk3qy"]
 sky_top_color = Color(0, 0.65882355, 0.9254902, 1)
@@ -52,61 +53,69 @@ hover_height = 4.0
 [node name="StartingLine" parent="." unique_id=583602706 node_paths=PackedStringArray("racers_to_load") instance=ExtResource("2_wg3kv")]
 racers_to_load = [null]
 
-[node name="SM_rock_wall_01" parent="." unique_id=1856049593 instance=ExtResource("3_xk3qy")]
+[node name="Rocks" type="Node3D" parent="." unique_id=2066083512]
+
+[node name="SM_rock_wall_01" parent="Rocks" unique_id=1856049593 instance=ExtResource("3_xk3qy")]
 transform = Transform3D(-0.017090486, 0, -0.99985397, 0, 1, 0, 0.99985397, 0, -0.017090486, -128.585, -3.796, -39.263)
 
-[node name="SM_rock_wall_02" parent="." unique_id=1452402156 instance=ExtResource("5_3r2hc")]
+[node name="SM_rock_wall_02" parent="Rocks" unique_id=1452402156 instance=ExtResource("5_3r2hc")]
 transform = Transform3D(-0.06902268, -0.49575096, -0.86571753, -0.039400633, 0.8684647, -0.49418283, 0.99683666, 8.0574936e-10, -0.07947664, 74.287, -3.894, -34.788)
 
-[node name="bend" type="Node3D" parent="." unique_id=28082695]
+[node name="SM_rock_wall_03" parent="Rocks" unique_id=2118265676 instance=ExtResource("6_iyl2v")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -61.233807, 4.326, -135.538)
+
+[node name="bend" type="Node3D" parent="Rocks" unique_id=28082695]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -537.7787)
 
-[node name="SM_rock_wall_07" parent="bend" unique_id=14368079 instance=ExtResource("5_3r2hc")]
+[node name="SM_rock_wall_07" parent="Rocks/bend" unique_id=14368079 instance=ExtResource("5_3r2hc")]
 transform = Transform3D(2.11553, 0, 0, 0, 2.1155303, 0, 0, 0, 2.1155303, -262.8144, -0.45326614, -227.41364)
 
-[node name="SM_rock_wall_04" parent="bend" unique_id=1768728961 instance=ExtResource("6_iyl2v")]
+[node name="SM_rock_wall_04" parent="Rocks/bend" unique_id=1768728961 instance=ExtResource("6_iyl2v")]
 transform = Transform3D(1.3224053, 0, -1.9084648, 0, 3.0004299, 0, 3.3082056, 0, 0.76288, 176.14703, 16.528553, 76.590454)
 
-[node name="SM_rock_wall_06" parent="bend" unique_id=1338339801 instance=ExtResource("6_iyl2v")]
+[node name="SM_rock_wall_06" parent="Rocks/bend" unique_id=1338339801 instance=ExtResource("6_iyl2v")]
 transform = Transform3D(3.2015848, 0, -0.90165156, 0, 3.0004299, 0, 1.5629572, 0, 1.8469565, -111.84369, 16.528568, -218.90125)
 
-[node name="SM_rock_wall_05" parent="bend" unique_id=475729120 instance=ExtResource("6_iyl2v")]
+[node name="SM_rock_wall_05" parent="Rocks/bend" unique_id=475729120 instance=ExtResource("6_iyl2v")]
 transform = Transform3D(0.03892565, 4.9290357, -0.6424462, -0.99448603, 0.59461796, 0.04973358, 0.09737867, 4.1022673, 0.76471555, 53.46752, 28.674725, -86.54718)
 
-[node name="bend2" type="Node3D" parent="." unique_id=780885801]
+[node name="bend2" type="Node3D" parent="Rocks" unique_id=780885801]
 transform = Transform3D(0.35050353, 0, 0.9365615, 0, 1, 0, -0.9365615, 0, 0.35050353, -586.9483, 0, -628.84973)
 
-[node name="SM_rock_wall_07" parent="bend2" unique_id=432539342 instance=ExtResource("5_3r2hc")]
+[node name="SM_rock_wall_07" parent="Rocks/bend2" unique_id=432539342 instance=ExtResource("5_3r2hc")]
 transform = Transform3D(2.11553, 0, 0, 0, 2.1155303, 0, 0, 0, 2.1155303, -262.8144, -0.45326614, -227.41364)
 
-[node name="SM_rock_wall_04" parent="bend2" unique_id=1079070079 instance=ExtResource("6_iyl2v")]
+[node name="SM_rock_wall_04" parent="Rocks/bend2" unique_id=1079070079 instance=ExtResource("6_iyl2v")]
 transform = Transform3D(1.3224053, 0, -1.9084648, 0, 3.0004299, 0, 3.3082056, 0, 0.76288, 176.14703, 16.528553, 76.590454)
 
-[node name="SM_rock_wall_06" parent="bend2" unique_id=420397085 instance=ExtResource("6_iyl2v")]
+[node name="SM_rock_wall_06" parent="Rocks/bend2" unique_id=420397085 instance=ExtResource("6_iyl2v")]
 transform = Transform3D(3.2015848, 0, -0.90165156, 0, 3.0004299, 0, 1.5629572, 0, 1.8469565, -111.84369, 16.528568, -218.90125)
 
-[node name="SM_rock_wall_05" parent="bend2" unique_id=1984709545 instance=ExtResource("6_iyl2v")]
+[node name="SM_rock_wall_05" parent="Rocks/bend2" unique_id=1984709545 instance=ExtResource("6_iyl2v")]
 transform = Transform3D(0.03892565, 4.9290357, -0.6424462, -0.99448603, 0.59461796, 0.04973358, 0.09737867, 4.1022673, 0.76471555, 53.46752, 28.674725, -86.54718)
 
-[node name="SM_rock_wall_03" parent="." unique_id=2118265676 instance=ExtResource("6_iyl2v")]
-transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -71.341, 4.326, -135.538)
+[node name="Spires" type="Node3D" parent="." unique_id=979514155]
 
-[node name="SM_spire_01" parent="." unique_id=634929499 instance=ExtResource("6_dy8ob")]
+[node name="SM_spire_01" parent="Spires" unique_id=634929499 instance=ExtResource("6_dy8ob")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.084, -1.029, -28.346)
 
-[node name="SM_spire_02" parent="." unique_id=438218648 instance=ExtResource("6_dy8ob")]
+[node name="SM_spire_02" parent="Spires" unique_id=438218648 instance=ExtResource("6_dy8ob")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -71.185, -1.029, -28.346)
 
-[node name="SM_spire_03" parent="." unique_id=2122090247 instance=ExtResource("6_dy8ob")]
+[node name="SM_spire_03" parent="Spires" unique_id=2122090247 instance=ExtResource("6_dy8ob")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 3.6120317, -33.877, 0, -385.7556)
 
-[node name="SM_spire_04" parent="." unique_id=1452509985 instance=ExtResource("6_dy8ob")]
+[node name="SM_spire_04" parent="Spires" unique_id=1452509985 instance=ExtResource("6_dy8ob")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 3.6120317, 36.351234, 0, -385.7556)
 
-[node name="StaticBody3D" type="StaticBody3D" parent="." unique_id=1223787576]
+[node name="WorldFloor" type="StaticBody3D" parent="." unique_id=1223787576]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" unique_id=1157489449]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WorldFloor" unique_id=1157489449]
 shape = SubResource("WorldBoundaryShape3D_wj5hs")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D" unique_id=20115208]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="WorldFloor" unique_id=20115208]
 mesh = SubResource("PlaneMesh_wj5hs")
+
+[node name="ExtendableWall" parent="." unique_id=1149585584 instance=ExtResource("7_dy8ob")]
+transform = Transform3D(1, 0, 0, 0, 0.47549102, 0.87972057, 0, -0.87972057, 0.47549102, -0.56981564, -0.62518835, -51.513325)
+size = Vector3(20, 26, 10)
