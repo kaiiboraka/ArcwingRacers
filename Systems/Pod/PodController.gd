@@ -33,6 +33,24 @@ enum WallAngleCurve {
 ## Intended purpose: keep the grounded flag latched during normal hover bounce. Without a band, grounded drops the moment the pod passes hover_height, which flicks the pod into "airborne" arc pitch (nose-up while climbing) — that nose-up tilts the forward thrust vector upward, so the pod climbs and flies away in a runaway feedback loop.[br][br]
 ## Higher = pod stays grounded longer as it rises (more stable hover, arc pitch only on real launches); lower = grounded drops sooner past hover_height (more arc pitch during hover, livelier but risks the climb-away).
 @export var grounded_band: float = 1.5
+## Perpetual idle hover-bob amplitude in meters — the hover target height oscillates around hover_height by this amount, so the springs never fully settle to a dead stop.[br][br]
+## Intended purpose: EP1R pods always hover-bounce a little at idle (the springs are alive, not locked at rest). This drives the hover target sinusoidally with a per-corner phase so the pod keeps riding its springs instead of locking to a standstill.[br][br]
+## Higher = more visible idle bob (more suspension travel); 0 = springs settle to a dead rest.
+@export var idle_bob_amplitude: float = 0.15
+## Idle hover-bob frequency in Hz (cycles per second) for the perpetual idle bounce.[br][br]
+## Intended purpose: the pace of the idle bob — how fast the pod rides its springs while standing still.[br][br]
+## Higher = faster, tighter bob; lower = slower, more floaty lope.
+@export var idle_bob_frequency: float = 2.0
+## Visual idle-bob amplitude in meters applied to the chassis (Blade) and engines (wings) independently, on top of the physics bob — the parts ride their own sine, out of phase with each other.[br][br]
+## Intended purpose: EP1R's chassis and engines idle-bob independently (the engines drag the blade through the rigs, they are not one rigid block). With the chassis bobbed on one sine and both engines on an opposite-phase sine, the pod reads as separate suspended masses even at idle.[br][br]
+## Higher = more dramatic independent part bob; 0 = parts track the body rigidly.
+@export var idle_part_bob_amplitude: float = 0.04
+
+@export_category("Debug")
+## How much hover_height changes per press of the in-game debug hover-height keys (Debug_IncreaseHoverHeight = Ctrl+=, Debug_DecreaseHoverHeight = Ctrl+-), in meters.[br][br]
+## Intended purpose: tune hover feel live while driving. The new value is written to hover_height immediately, so the springs re-target on the next physics frame.[br][br]
+## Higher = bigger jumps per keypress (coarse tuning); lower = finer, smaller steps.
+@export var debug_hover_step: float = 0.5
 
 @export_category("Movement")
 ## Top forward speed in m/s reached when the accelerator is held at full input.[br][br]
@@ -47,6 +65,10 @@ enum WallAngleCurve {
 ## Intended purpose: controls how sharply the pod pivots on its vertical axis.[br][br]
 ## Higher = tighter, more aggressive corners; lower = wider turns, more understeer.
 @export var max_turn_rate: float = 2.0
+## How quickly the pod's actual yaw rate ramps up toward max_turn_rate after steering input, in radians/second of rate-ramp per unit of steer — the turn response stat.[br][br]
+## Intended purpose: separates "how steep the turn can be" (max_turn_rate) from "how fast the pod reaches that turn rate" (this). Without this, steering applies full max_turn_rate instantly, so even a standstill tap whips the nose around. Higher = snappier, more touchy steering (reaches max turn rate sooner); lower = sluggish, floatier turn-in.[br][br]
+## Implemented as a per-frame lerp rate on a persistent _yaw_rate state, so the yaw smoothly accelerates into the turn and smooths back to zero on release.
+@export var turn_response: float = 4.0
 ## Traction — how fast the pod's linear velocity realigns with its facing direction and how much lateral velocity is killed each frame.[br][br]
 ## Intended purpose: governs grip vs. drift. High traction = the pod turns where it points; low traction = the body slides sideways through turns (EP1R drift feel).[br][br]
 ## Higher = less drift, more planted corners; lower = more slide, floatier drift.
@@ -64,7 +86,7 @@ enum WallAngleCurve {
 ## Lower = weaker turning while nose down (dives sacrifice cornering); 1.0 = neutral; higher would make nose-down turns tighter.
 @export var nose_down_turn_multiplier: float = 0.5
 
-@export_category("Tilt")
+@export_category("Attitude")
 ## Maximum visual bank (roll) in degrees at full steering input and full speed.[br][br]
 ## Intended purpose: how far the pod leans into corners visually; scales with speed fraction so slow pods barely lean.[br][br]
 ## Higher = dramatic lean into turns; lower = more upright, subtle banking.
@@ -73,6 +95,22 @@ enum WallAngleCurve {
 ## Intended purpose: response speed of the visual banking into and out of turns.[br][br]
 ## Higher = quicker, more aggressive lean-in and recovery; lower = lazier, laggier banking.
 @export var bank_speed: float = 5.0
+## Maximum degrees the pod rolls about its forward axis from the Ship Tilt input (right stick horizontal / Q / E) at full deflection.[br][br]
+## Intended purpose: the 90-degree ship tilt used to thread narrow gaps; stacks on top of the steering bank so tilting while steering rolls further.[br][br]
+## Higher = ship can roll further over (set to 90 for full wing-vertical clearance); lower = shallower tilt. Set 0 to disable the tilt ability.
+@export var tilt_max_angle: float = 90.0
+## How fast the pod's roll responds to the Ship Tilt input each frame.[br][br]
+## Intended purpose: response speed of the deliberate 90-degree tilt, separate from the steering bank response (bank_speed).[br][br]
+## Higher = tilt snaps to full roll quickly; lower = tilt takes longer to reach full roll.
+@export var tilt_speed: float = 5.0
+## Maximum degrees of nose pitch from manual pitch input at full stick deflection.[br][br]
+## Intended purpose: the player-visible range of nose-up / nose-down attitude control.[br][br]
+## Higher = wider pitch travel, more dramatic climbs/dives; lower = shallower, subtler pitch.
+@export var manual_pitch_angle: float = 20.0
+## How fast pitch settles toward its target angle each frame.[br][br]
+## Intended purpose: response speed of the pod's pitch attitude to input.[br][br]
+## Higher = snappier pitch changes; lower = slower, floatier pitch.
+@export var pitch_rate: float = 3.0
 ## Degrees of nose-down pitch added while the accelerator is held.[br][br]
 ## Intended purpose: make the pod visibly nose down when throttling, selling forward thrust.[br][br]
 ## Higher = stronger throttle-dive attitude; lower = flatter nose while accelerating.
@@ -81,14 +119,26 @@ enum WallAngleCurve {
 ## Intended purpose: make the pod visibly nose up when braking, selling deceleration.[br][br]
 ## Higher = stronger brake-lift attitude; lower = flatter nose while braking.
 @export var pitch_brake_angle: float = 5.0
-## How fast pitch settles toward its target angle each frame.[br][br]
-## Intended purpose: response speed of the pod's pitch attitude to input.[br][br]
-## Higher = snappier pitch changes; lower = slower, floatier pitch.
-@export var pitch_rate: float = 3.0
-## Maximum degrees of nose pitch from manual pitch input at full stick deflection.[br][br]
-## Intended purpose: the player-visible range of nose-up / nose-down attitude control.[br][br]
-## Higher = wider pitch travel, more dramatic climbs/dives; lower = shallower, subtler pitch.
-@export var manual_pitch_angle: float = 20.0
+## Cap on the TOTAL body pitch (terrain/arc alignment + manual pitch input), in degrees.[br][br]
+## Intended purpose: guarantee the pod never tips past a sane attitude regardless of how slope and input stack.[br][br]
+## Higher = more extreme combined pitch allowed; lower = keeps the body closer to level.
+@export var max_pitch_angle: float = 50.0
+
+@export_category("Terrain & Arc Pitch")
+## Fraction (0–1) of the ground slope the pod's body pitches to follow while grounded (any hover ray compressing).[br][br]
+## Intended purpose: climbing a ramp tilts the pod's nose up to match the ground normal beneath it — the whole pod pitches, not just the wings.[br][br]
+## Higher = nose tracks the slope steeply; lower = shallower, calmer body pitch. Set 0 to disable terrain-following pitch.
+@export var terrain_pitch_align: float = 1.0
+## Degrees of body pitch added per m/s of vertical speed while airborne (climbing pitches the nose up, diving pitches it down, level at the apex of an arc).[br][br]
+## Intended purpose: make the pod visibly nose-down as it falls faster, nose-up while climbing, and level out at the peak of a jump before starting the dive.[br][br]
+## Higher = more dramatic arc pitch (nose dives sharply on fast falls); lower = subtler.
+@export var arc_pitch_gain: float = 1.5
+## Cap on the terrain/arc body-pitch contribution, in degrees.[br][br]
+## Intended purpose: keep the pod from pitching past a readable envelope on steep slopes or fast vertical falls.[br][br]
+## Higher = allows steeper body pitch; lower = flatter, more restrained.
+@export var arc_pitch_max_deg: float = 35.0
+
+@export_category("Wing Motion")
 ## Meters the turn-side (inside) wing drops DOWN in world space during an UNTILTED turn — applied to both wings. While tilted, both wings instead shift TOGETHER along the pod's local up/down (down-local = this value, up-local = wing_up_vert_travel).[br][br]
 ## Intended purpose: tunable wing-bob depth; upright, the wing on the inside of the turn drops this far while the opposite wing rises by wing_up_vert_travel — the differential mode.[br][br]
 ## Higher = deeper dive on the inside wing (upright) and a stronger down-local shift (tilted); lower = subtler. Set 0 to disable the downward motion entirely.
@@ -105,6 +155,8 @@ enum WallAngleCurve {
 ## Intended purpose: response speed of both the wing vertical shift and nose tilt.[br][br]
 ## Higher = wings snap into position; lower = wings lag and float toward position.
 @export var wing_tilt_speed: float = 6.0
+
+@export_category("Chassis Sway")
 ## Meters the chassis (Blade) body swings LATERALLY (left/right) in the pod's local frame during a turn — the chariot body swings further than the engines, which stay centered in view.[br][br]
 ## Intended purpose: sell the weight-shift of the body against the turn while the engines hold station; applied to the Blade visual node only.[br][br]
 ## Higher = more dramatic body whip to the outside of the turn; lower = subtler shift. Set 0 to disable chassis sway entirely.
@@ -117,30 +169,8 @@ enum WallAngleCurve {
 ## Intended purpose: add a roll component to the chassis sway — the body twists about its own axis as it swings out in a turn.[br][br]
 ## Higher = more dramatic barrel roll in hard turns; lower = subtler twist. Set 0 to disable the roll (sway stays a pure lateral slide).
 @export var chassis_sway_roll_deg: float = 12.0
-## Maximum degrees the pod rolls about its forward axis from the Ship Tilt input (right stick horizontal / Q / E) at full deflection.[br][br]
-## Intended purpose: the 90-degree ship tilt used to thread narrow gaps; stacks on top of the steering bank so tilting while steering rolls further.[br][br]
-## Higher = ship can roll further over (set to 90 for full wing-vertical clearance); lower = shallower tilt. Set 0 to disable the tilt ability.
-@export var tilt_max_angle: float = 90.0
-## How fast the pod's roll responds to the Ship Tilt input each frame.[br][br]
-## Intended purpose: response speed of the deliberate 90-degree tilt, separate from the steering bank response (bank_speed).[br][br]
-## Higher = tilt snaps to full roll quickly; lower = tilt takes longer to reach full roll.
-@export var tilt_speed: float = 5.0
-## Fraction (0–1) of the ground slope the pod's body pitches to follow while grounded (any hover ray compressing).[br][br]
-## Intended purpose: climbing a ramp tilts the pod's nose up to match the ground normal beneath it — the whole pod pitches, not just the wings.[br][br]
-## Higher = nose tracks the slope steeply; lower = shallower, calmer body pitch. Set 0 to disable terrain-following pitch.
-@export var terrain_pitch_align: float = 1.0
-## Degrees of body pitch added per m/s of vertical speed while airborne (climbing pitches the nose up, diving pitches it down, level at the apex of an arc).[br][br]
-## Intended purpose: make the pod visibly nose-down as it falls faster, nose-up while climbing, and level out at the peak of a jump before starting the dive.[br][br]
-## Higher = more dramatic arc pitch (nose dives sharply on fast falls); lower = subtler.
-@export var arc_pitch_gain: float = 1.5
-## Cap on the terrain/arc body-pitch contribution, in degrees.[br][br]
-## Intended purpose: keep the pod from pitching past a readable envelope on steep slopes or fast vertical falls.[br][br]
-## Higher = allows steeper body pitch; lower = flatter, more restrained.
-@export var arc_pitch_max_deg: float = 35.0
-## Cap on the TOTAL body pitch (terrain/arc alignment + manual pitch input), in degrees.[br][br]
-## Intended purpose: guarantee the pod never tips past a sane attitude regardless of how slope and input stack.[br][br]
-## Higher = more extreme combined pitch allowed; lower = keeps the body closer to level.
-@export var max_pitch_angle: float = 50.0
+
+@export_category("Camera")
 ## Fraction (0–1) of the pod's total roll (steering bank + ship tilt) that the camera mount counter-rotates.[br][br]
 ## Intended purpose: counter-roll keeps the chase camera upright and stops the world from "orbiting" around the pod during a 90° ship tilt — the pod visibly tilts in frame while the horizon stays level.[br][br]
 ## Higher = camera stays more level (1.0 = pod appears to roll fully against a level camera); lower = camera rolls more with the pod.
@@ -235,6 +265,7 @@ var _charge: float = 0.0
 var _heat: float = 0.0
 var _current_speed: float = 0.0
 var _yaw: float = 0.0
+var _yaw_rate: float = 0.0
 var _pitch: float = 0.0
 var _roll: float = 0.0
 var _tilt_roll: float = 0.0
@@ -252,6 +283,7 @@ var _grounded: bool = false
 var _ground_normal: Vector3 = Vector3.UP
 var _camera_mount_base_rot: Vector3
 var _camera_mount_base_pos: Vector3
+var _hover_time: float = 0.0
 
 func _ready():
 	if Engine.is_editor_hint():
@@ -295,6 +327,7 @@ func _physics_process(delta):
 	_tilt(delta, input)
 	_wing_tilt(delta, input)
 	_chassis_sway(delta, input)
+	_debug_hover_tuning()
 	rotation = Vector3(_pitch, _yaw, _roll + _tilt_roll)
 	_counter_rotate_camera(delta)
 	_boost_process(delta, input)
@@ -308,6 +341,7 @@ func _physics_process(delta):
 	DebugManager.update_property("Current Speed", String.num(_current_speed, 2));
 	DebugManager.update_property("Speed Fraction", String.num(_current_speed / max_speed, 2));
 	DebugManager.update_property("Vertical Speed", String.num(velocity.y, 2));
+	DebugManager.update_property("Hover Height", String.num(hover_height, 2));
 	DebugManager.update_property("Heading (deg)", String.num(rad_to_deg(_yaw), 2));
 	DebugManager.update_property("Bank (deg)", String.num(rad_to_deg(_roll), 2));
 	DebugManager.update_property("Pitch (deg)", String.num(rad_to_deg(_pitch), 2));
@@ -328,20 +362,31 @@ func _physics_process(delta):
 	
 
 
+func _debug_hover_tuning():
+	if Input.is_action_just_pressed(&"Debug_IncreaseHoverHeight"):
+		hover_height = clampf(hover_height + debug_hover_step, 0.1, 20.0)
+	elif Input.is_action_just_pressed(&"Debug_DecreaseHoverHeight"):
+		hover_height = clampf(hover_height - debug_hover_step, 0.1, 20.0)
+
 func _hover(delta, input):
+	_hover_time += delta
 	var grounded: bool = false
 	var near_ground: bool = false
 	var normal_sum: Vector3 = Vector3.ZERO
 	var normal_count: int = 0
 	var max_upward: float = -999.0
+	var ray_index: int = 0
 	for ray in hover_raycasts:
+		var phase: float = float(ray_index) / float(hover_raycasts.size())
+		ray_index += 1
 		if not ray.is_colliding():
 			continue
 		var point = ray.get_collision_point()
 		var dist = ray.global_position.distance_to(point)
 		if dist < hover_height + grounded_band:
 			near_ground = true
-		var compression = hover_height - dist
+		var bob: float = idle_bob_amplitude * sin(_hover_time * TAU * idle_bob_frequency + phase * TAU)
+		var compression = hover_height + bob - dist
 		if compression <= 0.0:
 			continue
 		grounded = true
@@ -407,14 +452,20 @@ func _steer(delta, input):
 	var boost_turn_mult: float = 1.0
 	if _boost_state == BoostState.BOOSTING:
 		boost_turn_mult = boost_turn_rate_penalty
-	var turn = -input.steer * max_turn_rate * turn_mult * boost_turn_mult * delta
-	_yaw += turn
+	var max_rate: float = max_turn_rate * turn_mult * boost_turn_mult
+	var target_rate: float = -input.steer * max_rate
+	_yaw_rate = lerp(_yaw_rate, target_rate, turn_response * delta)
+	_yaw += _yaw_rate * delta
+
+	var steer_frac: float = 0.0
+	if max_rate > 0.0:
+		steer_frac = clampf(_yaw_rate / max_rate, -1.0, 1.0)
 
 	var forward = _flat_forward()
 	var right = _flat_right()
 	var forward_speed = velocity.dot(forward)
 	var lat = velocity - forward * forward_speed
-	var lat_target = right * input.steer * traction * turn_mult * boost_turn_mult * delta
+	var lat_target = right * steer_frac * traction * turn_mult * boost_turn_mult * delta
 	velocity -= lat * min(1.0, traction * delta)
 	velocity += lat_target
 
@@ -454,14 +505,21 @@ func _counter_rotate_camera(delta):
 func _chassis_sway(delta, input):
 	if not blade:
 		return
-	var speed_frac = clampf(_current_speed / max_speed, 0.0, 1.0) if max_speed > 0.0 else 0.0
-	var sway_target = -input.steer * chassis_sway_travel * speed_frac
+	var turn_frac: float = 0.0
+	if max_turn_rate > 0.0:
+		turn_frac = clampf(_yaw_rate / max_turn_rate, -1.0, 1.0)
+	var sway_target: float = turn_frac * chassis_sway_travel
 	_chassis_sway_amount = lerp(_chassis_sway_amount, sway_target, chassis_sway_speed * delta)
-	blade.position = _blade_base_pos + Vector3(_chassis_sway_amount, 0.0, 0.0)
+	var part_bob: float = idle_part_bob_amplitude * sin(_hover_time * TAU * idle_bob_frequency * 1.3 + PI)
+	blade.position = _blade_base_pos + Vector3(_chassis_sway_amount, part_bob, 0.0)
 	var sway_frac: float = 0.0
 	if chassis_sway_travel > 0.0:
 		sway_frac = clampf(_chassis_sway_amount / chassis_sway_travel, -1.0, 1.0)
-	blade.rotation = _blade_base_rot + Vector3(0.0, 0.0, -sway_frac * deg_to_rad(chassis_sway_roll_deg))
+	var tilt_mix: float = clampf(abs(input.tilt), 0.0, 1.0)
+	var sway_mag: float = sway_frac * deg_to_rad(chassis_sway_roll_deg)
+	var sway_roll: float = -sway_mag * (1.0 - tilt_mix)
+	var sway_pitch: float = sway_mag * tilt_mix
+	blade.rotation = _blade_base_rot + Vector3(sway_pitch, 0.0, sway_roll)
 
 func _wing_tilt(delta, input):
 	if not wing_left or not wing_right:
@@ -495,6 +553,9 @@ func _wing_tilt(delta, input):
 
 	var diff_left_world: Vector3 = Vector3(0.0, _wing_left_lift, 0.0)
 	var diff_right_world: Vector3 = Vector3(0.0, _wing_right_lift, 0.0)
+	var engine_bob: float = idle_part_bob_amplitude * sin(_hover_time * TAU * idle_bob_frequency * 1.3)
+	diff_left_world.y += engine_bob
+	diff_right_world.y += engine_bob
 	wing_left.rotation = _wing_left_base_rot + Vector3(_wing_nose, 0.0, 0.0)
 	wing_right.rotation = _wing_right_base_rot + Vector3(_wing_nose, 0.0, 0.0)
 	wing_left.position = _wing_left_base_pos + _world_offset(diff_left_world.lerp(together_world, tilt_mix), wing_left)

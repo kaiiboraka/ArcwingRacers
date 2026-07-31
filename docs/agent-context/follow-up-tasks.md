@@ -24,7 +24,7 @@ Tasks explicitly deferred to a later session — not urgent, not forgotten. Remo
 
 - **Input buffer implementation.** Item 2 on `technical/next-technical-breakdowns.md`. Needed before full pod controller — decides whether to build it first or use raw input for MVP.
 
-- **Pod steering implementation detail.** `technical/pod-handling-and-boost.md` defines steering conceptually (yaw + traction) but has no implementation reference for the steering controller component.
+- **Pod steering implementation detail.** ✅ Done in `technical/pod-handling-and-boost.md` and `Systems/Pod/PodController.gd` — yaw + traction, plus the two turn stats (`max_turn_rate` sharpness, `turn_response` ramp) matching the EP1R model.
 
 - **Banking model (TBD).** `technical/pod-hover-system.md` has banking as TBD. Needs EP1R playtesting notes before settling.
 

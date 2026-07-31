@@ -45,6 +45,18 @@ if compression > 0:
 - **compression_velocity** — rate of change of compression from frame to frame (derivative of compression).
 - Forces are applied at the raycast's world-space contact point to produce natural torque (compression on one side lifts that corner).
 
+### Idle Hover-Bob
+
+The hover target height does not sit at a dead rest — it oscillates around `hover_height`:
+
+```
+target_height = hover_height + idle_bob_amplitude * sin(2π * idle_bob_frequency * t + corner_phase)
+```
+
+A pure spring-damper without a forcing term always decays to a fixed point; EP1R pods instead ride their springs perpetually at idle. Driving the target sinusoidally (per-corner phase offset, so the four corners rise/fall in sequence) keeps the suspension alive so the pod always hover-bounces a little. `idle_bob_amplitude` (meters) sets travel, `idle_bob_frequency` (Hz) sets pace; 0 amplitude disables it and the pod settles to a dead stop.
+
+Separately, the **chassis and engines bob independently** (`idle_part_bob_amplitude`): the Blade body rides one sine and both engines ride an opposite-phase sine at ~1.3× the frequency — EP1R reads as separate suspended masses dragging each other through the rigs, not one rigid block.
+
 ---
 
 ## Uneven Terrain

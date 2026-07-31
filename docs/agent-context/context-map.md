@@ -147,7 +147,7 @@ Built on **Godot 4** (GDScript). 3D. See `technical/code-standards.md` for the p
 | `technical/pod-physics-and-collision.md` | ✅ Written — capsule collision, layers, CCD strategy |
 | `technical/pod-scene-hierarchy.md` | ✅ Written — single CharacterBody3D, 7 capsules, spring-offset visuals |
 | `technical/pod-hover-system.md` | ✅ Written — 4 spring-raycast corners, damped Hooke's law, banking TBD |
-| `technical/pod-handling-and-boost.md` | ✅ Written — acceleration catch-up model, boost, air control (gravity modulation), steering TBD |
+| `technical/pod-handling-and-boost.md` | ✅ Written — acceleration catch-up model, boost, air control (gravity modulation), steering (yaw + traction + max_turn_rate/turn_response split) |
 | `technical/pod-collision-response.md` | ✅ Written — scrape vs crash, pod-on-pod damage, one-shot destruction, death spin |
 | `technical/next-technical-breakdowns.md` | 📋 Planned — 10 subjects queued for next session |
 | `decisions/adrs/` | ✅ 9 ADRs recorded (0001–0009) |

@@ -19,12 +19,16 @@ The Acceleration component (Injector) modifies the base factor — lower Acceler
 Steering uses **yaw rotation** (Approach A below) — not lateral forces.
 
 ### Physics: Yaw + Traction-Gated Drift
-1. Steering input applies yaw angular velocity to the pod
+1. Steering input is ramped by **Turn Response** — the actual yaw rate lerps toward `max_turn_rate` each frame (persistent `_yaw_rate` state), so the nose smoothly accelerates into the turn and eases back to zero on release instead of snapping at full rate instantly.
 2. Pod's linear velocity aligns toward the new forward direction, gated by **Traction** stat
 3. Higher Traction = velocity aligns faster = less drift (better grip)
 4. Lower Traction = more drift (pod slides through turns)
 
-This gives the "yank" feel (yaw rotation happens immediately on input) while the body's velocity catches up, creating the floaty drift EP1R is known for.
+**Two separate turn stats** (matches the EP1R stat model):
+- `max_turn_rate` — how steep the turn can be (fixed per-racer sharpness, in rad/s)
+- `turn_response` — how quickly the pod reaches `max_turn_rate` after steering input (upgradable; higher = snappier, lower = sluggish floaty turn-in)
+
+This gives the "yank" feel (yaw rotation starts immediately on input, ramping toward max) while the body's velocity catches up, creating the floaty drift EP1R is known for. The lateral drift kick scales with the *ramped* turn rate (`steer_frac`), so a fresh standstill tap does not instantly shove the pod sideways — it builds with the turn.
 
 ### Visual: Chassis Sway
 From EP1R observation — the chassis (chariot body) swings much further than the engines during turns. The engines stay centered in the view while the chariot moves left/right. Implemented on `PodController` by translating the `Blade` node laterally in the pod's local frame: the body shifts to the outside of the turn (opposite the steer direction), scaled by steer × speed fraction and lerped by `chassis_sway_speed`. Tunable via `chassis_sway_travel` (lateral distance in meters) and `chassis_sway_speed` (response rate).

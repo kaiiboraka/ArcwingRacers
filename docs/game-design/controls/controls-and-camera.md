@@ -55,6 +55,14 @@ All other inputs shared across presets. Custom remapping available.
 | Minimap Mode Cycle | Tab |
 | Pause | Escape |
 
+### Debug Tuning Keys
+| Action | Keyboard |
+|---|---|
+| Increase hover height (live) | Ctrl+= (holding repeats) |
+| Decrease hover height (live) | Ctrl+- (holding repeats) |
+
+These re-target the hover springs immediately (step = `PodController.debug_hover_step`, default 0.5 m) so you can tune ride height while driving. Wired in `PodController._debug_hover_tuning()`.
+
 ### Shield Mechanics
 - Hold shield button (Left Trigger / Left Shift) to raise shield.
 - Shield drains mana while held.
