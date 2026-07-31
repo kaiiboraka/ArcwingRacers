@@ -103,6 +103,14 @@ enum WallAngleCurve {
 ## Intended purpose: response speed of the deliberate 90-degree tilt, separate from the steering bank response (bank_speed).[br][br]
 ## Higher = tilt snaps to full roll quickly; lower = tilt takes longer to reach full roll.
 @export var tilt_speed: float = 5.0
+## Meters from the pod's center axis to the pivot point the Ship Tilt rolls around — the pod tips over its engine edge instead of rolling about its own centerline.[br][br]
+## Intended purpose: match the EP1R deadlift feel — tilting one way anchors the far engine edge at hover height while the near side lifts up and over it.[br][br]
+## Higher = wider lever arm, more pronounced "tipping up from the other side"; lower = pivot sits closer to center (0 = plain center-axis roll).
+@export var tilt_pivot_offset: float = 1.5
+## Fraction (0–1) of max speed the pod must be moving at before the Ship Tilt input is allowed.[br][br]
+## Intended purpose: the 90-degree tilt is a high-speed maneuver — below this speed the pod won't roll over, keeping low-speed handling stable.[br][br]
+## Higher = tilt locks until the pod is faster; lower = tilt unlocks at lower speeds (0 = always available).
+@export var tilt_min_speed_fraction: float = 0.5
 ## Maximum degrees of nose pitch from manual pitch input at full stick deflection.[br][br]
 ## Intended purpose: the player-visible range of nose-up / nose-down attitude control.[br][br]
 ## Higher = wider pitch travel, more dramatic climbs/dives; lower = shallower, subtler pitch.
@@ -175,6 +183,10 @@ enum WallAngleCurve {
 ## Intended purpose: counter-roll keeps the chase camera upright and stops the world from "orbiting" around the pod during a 90° ship tilt — the pod visibly tilts in frame while the horizon stays level.[br][br]
 ## Higher = camera stays more level (1.0 = pod appears to roll fully against a level camera); lower = camera rolls more with the pod.
 @export var camera_roll_counter: float = 1.0
+## Fraction (0–1) of the ship-tilt roll the camera turns WITH the pod, on top of camera_roll_counter's leveling.[br][br]
+## Intended purpose: the tilt turn should feel like a coordinated turn, not a level roll — the camera shares 30–50% of the tilt so the world tilts a little with you, selling the bank.[br][br]
+## Higher = camera rolls further with the tilt (world visibly tilts); 0 = camera stays fully level (pure counter-roll).
+@export var camera_tilt_follow: float = 0.4
 
 @export_category("Boost")
 ## Flat speed in m/s instantly added to velocity on boost activation.[br][br]
@@ -328,7 +340,7 @@ func _physics_process(delta):
 	_wing_tilt(delta, input)
 	_chassis_sway(delta, input)
 	_debug_hover_tuning()
-	rotation = Vector3(_pitch, _yaw, _roll + _tilt_roll)
+	_build_pod_basis()
 	_counter_rotate_camera(delta)
 	_boost_process(delta, input)
 	
@@ -379,6 +391,8 @@ func _hover(delta, input):
 	for ray in hover_raycasts:
 		var phase: float = float(ray_index) / float(hover_raycasts.size())
 		ray_index += 1
+		ray.global_rotation = Vector3.ZERO
+		ray.force_raycast_update()
 		if not ray.is_colliding():
 			continue
 		var point = ray.get_collision_point()
@@ -457,24 +471,31 @@ func _steer(delta, input):
 	_yaw_rate = lerp(_yaw_rate, target_rate, turn_response * delta)
 	_yaw += _yaw_rate * delta
 
-	var steer_frac: float = 0.0
-	if max_rate > 0.0:
-		steer_frac = clampf(_yaw_rate / max_rate, -1.0, 1.0)
-
 	var forward = _flat_forward()
-	var right = _flat_right()
 	var forward_speed = velocity.dot(forward)
 	var lat = velocity - forward * forward_speed
-	var lat_target = right * steer_frac * traction * turn_mult * boost_turn_mult * delta
-	velocity -= lat * min(1.0, traction * delta)
-	velocity += lat_target
+	velocity = forward * forward_speed + lat * (1.0 - min(1.0, traction * delta))
+
+func _build_pod_basis():
+	var pivot_local: Vector3 = Vector3.ZERO
+	if tilt_pivot_offset > 0.0 and absf(_tilt_roll) > 0.0001:
+		pivot_local.x = -signf(_tilt_roll) * tilt_pivot_offset
+	var pivot_world: Vector3 = global_transform * pivot_local
+
+	var basis: Basis = Basis(Vector3.UP, _yaw)
+	basis = basis.rotated(basis.z, _roll + _tilt_roll)
+	basis = basis.rotated(basis.x, _pitch)
+	global_transform.basis = basis
+	global_position = pivot_world - basis * pivot_local
 
 func _tilt(delta, input):
 	var speed_frac = clampf(_current_speed / max_speed, 0.0, 1.0) if max_speed > 0.0 else 0.0
 	var target_roll = -input.steer * deg_to_rad(max_bank_angle) * speed_frac
 	_roll = lerp(_roll, target_roll, bank_speed * delta)
 
-	var target_tilt_roll = -input.tilt * deg_to_rad(tilt_max_angle)
+	var target_tilt_roll = 0.0
+	if _current_speed >= tilt_min_speed_fraction * max_speed:
+		target_tilt_roll = -input.tilt * deg_to_rad(tilt_max_angle)
 	_tilt_roll = lerp(_tilt_roll, target_tilt_roll, tilt_speed * delta)
 
 	var base_pitch: float = _pitch_attitude_target()
@@ -498,7 +519,7 @@ func _pitch_attitude_target() -> float:
 func _counter_rotate_camera(delta):
 	if not camera_mount:
 		return
-	var counter: float = -(_roll + _tilt_roll) * camera_roll_counter
+	var counter: float = -(_roll + _tilt_roll * (1.0 - camera_tilt_follow)) * camera_roll_counter
 	camera_mount.rotation = _camera_mount_base_rot + Vector3(0.0, 0.0, counter)
 	camera_mount.position = _camera_mount_base_pos.rotated(Vector3(0.0, 0.0, 1.0), counter)
 
@@ -524,8 +545,10 @@ func _chassis_sway(delta, input):
 func _wing_tilt(delta, input):
 	if not wing_left or not wing_right:
 		return
-	var speed_frac: float = clampf(_current_speed / max_speed, 0.0, 1.0) if max_speed > 0.0 else 0.0
-	var turn_intensity: float = input.steer * speed_frac
+	var turn_frac: float = 0.0
+	if max_turn_rate > 0.0:
+		turn_frac = clampf(_yaw_rate / max_turn_rate, -1.0, 1.0)
+	var turn_intensity: float = -turn_frac
 
 	_wing_nose = lerp(_wing_nose, input.pitch * deg_to_rad(wing_nose_tilt_deg), wing_tilt_speed * delta)
 
