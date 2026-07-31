@@ -2,7 +2,7 @@ using System;
 using Godot;
 using static Godot.GD;
 
-[GlobalClass, Tool]
+[Tool]
 public partial class DebugLogger : RefCounted
 {
 	private static char[] DELIMITERS = { '[', ']' };

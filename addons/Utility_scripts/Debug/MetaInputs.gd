@@ -21,7 +21,7 @@ func _input(_event: InputEvent) -> void:
 			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
 	
 	if (Input.is_action_just_pressed(&"Debug_HUD")):
-		debugManager.ToggleVisibility();
+		debugManager.toggle_visibility();
 
 	if (Input.is_action_just_pressed("Debug_Refresh_Scene")):
 		get_tree().reload_current_scene();
@@ -36,15 +36,15 @@ func _input(_event: InputEvent) -> void:
 	if (Input.is_action_just_pressed(&"Debug_Camera_Visibility")):
 		pass
 	
-	if Input.is_action_just_pressed(&"Game_speed_up"): 
+	if Input.is_action_just_pressed(&"Debug_Game_speed_up"): 
 		time_scale_steps = clampi(time_scale_steps + 1, time_scale_steps_MIN, time_scale_steps_MAX);
 		_update_time_scale();
 	
-	if Input.is_action_just_pressed(&"Game_slow_down"): 
+	if Input.is_action_just_pressed(&"Debug_Game_slow_down"): 
 		time_scale_steps = clampi(time_scale_steps - 1, time_scale_steps_MIN, time_scale_steps_MAX);
 		_update_time_scale();
 	
-	#if Input.is_action_just_pressed(&"Game_switch_player"): 
+	#if Input.is_action_just_pressed(&"Debug_switch_player"): 
 		#GameWorldManager.SwitchPlayers();
 	
 	if Input.is_action_just_pressed(&"Debug_Mouse_Toggle"):

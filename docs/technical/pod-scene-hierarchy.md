@@ -49,7 +49,8 @@ Arcwing (CharacterBody3D)
 │   ├── RayCast3D (mid_right)
 │   ├── RayCast3D (back_left)
 │   └── RayCast3D (back_right)
-├── CameraMount (Node3D)
+├── CameraMount_SpringArm3D (SpringArm3D)   ← spring-loaded arm, collision-aware camera boom
+│   └── Camera3D (DopplerTracking=PhysicsStep)  ← audio doppler shift tracked per physics tick
 ├── ManaComponent (Node)
 └── AbilityComponent (Node)
 ```

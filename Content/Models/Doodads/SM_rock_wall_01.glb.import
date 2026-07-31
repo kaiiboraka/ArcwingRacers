@@ -3,7 +3,7 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://duw67o73kxnsu"
+uid="uid://dvywxboih5khm"
 path="res://.godot/imported/SM_rock_wall_01.glb-ce6386a31e5e1e32f08481e03f5cc9e4.scn"
 
 [deps]
@@ -36,9 +36,9 @@ animation/trimming=false
 animation/remove_immutable_tracks=true
 animation/import_rest_as_RESET=false
 import_script/path=""
-materials/extract=2
+materials/extract=0
 materials/extract_format=0
-materials/extract_path="res://Content/Materials"
+materials/extract_path=""
 _subresources={
 "materials": {
 "stone": {
@@ -48,9 +48,12 @@ _subresources={
 }
 },
 "nodes": {
-"PATH:rock_wall_01/cliff": {
+"PATH:rock_wall_01": {
+"decomposition/precision": 8,
 "generate/physics": true,
-"physics/shape_type": 2
+"physics/layer": 3,
+"physics/mask": 16,
+"physics/shape_type": 0
 }
 }
 }

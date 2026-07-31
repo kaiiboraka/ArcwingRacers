@@ -3,7 +3,7 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://b5b8qekgninyb"
+uid="uid://d7dnvvk3mjxr"
 path="res://.godot/imported/SM_rock_wall_02.glb-77103c783e2def1bf2dfc18cfed6b3e4.scn"
 
 [deps]
@@ -40,10 +40,11 @@ materials/extract=0
 materials/extract_format=0
 materials/extract_path=""
 _subresources={
-"nodes": {
-"PATH:rock_wall_02/cliff2": {
-"generate/physics": true,
-"physics/shape_type": 2
+"materials": {
+"stone": {
+"use_external/enabled": true,
+"use_external/fallback_path": "res://Content/Materials/stone.tres",
+"use_external/path": "uid://bk5ua8nwtyg7c"
 }
 }
 }

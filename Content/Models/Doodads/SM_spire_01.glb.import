@@ -60,8 +60,10 @@ _subresources={
 },
 "nodes": {
 "PATH:spire_01": {
+"decomposition/precision": 6,
 "generate/physics": true,
-"physics/shape_type": 2
+"physics/layer": 6,
+"physics/shape_type": 0
 }
 }
 }

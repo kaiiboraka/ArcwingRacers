@@ -34,6 +34,7 @@ Targeting **Godot 4.7 (C# / .NET 8.0)**. Use documentation specific to Godot 4.7
 | Signal Delegate | PascalCase + `EventHandler` suffix | `[Signal] public delegate void HitReceivedEventHandler(...)` |
 | Timer callback | Descriptive verb phrase | `FadeOutTimer()` |
 | Collection | Plural noun | `_captives`, `_enemies` |
+| Scene node name | PascalName_PascalType | `CameraMount_SpringArm3D`, `HoverRaycasts_Node3D` |
 
 **Never** use abbreviations (`mgr`, `ctrl`, `tmp`) — names should be self-explanatory at a glance.
 

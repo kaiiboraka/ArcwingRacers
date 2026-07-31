@@ -40,10 +40,11 @@ materials/extract=0
 materials/extract_format=0
 materials/extract_path=""
 _subresources={
-"nodes": {
-"PATH:rock_wall_03/boulder1": {
-"generate/physics": true,
-"physics/shape_type": 2
+"materials": {
+"stone": {
+"use_external/enabled": true,
+"use_external/fallback_path": "res://Content/Materials/stone.tres",
+"use_external/path": "uid://bk5ua8nwtyg7c"
 }
 }
 }

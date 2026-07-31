@@ -1,5 +1,6 @@
 [gd_scene format=3 uid="uid://dylywca7tvxrp"]
 
+[ext_resource type="Script" uid="uid://dle5po3ynm52x" path="res://Systems/Pod/PodController.gd" id="1_u7qc7"]
 [ext_resource type="PackedScene" uid="uid://bp3uugks55bqc" path="res://Content/Models/SM_blade_chassis.glb" id="2_n3i6r"]
 [ext_resource type="PackedScene" uid="uid://cb5f2o34h6kep" path="res://Content/Models/SM_Wing_Left.glb" id="3_88bc5"]
 [ext_resource type="PackedScene" uid="uid://0bkf4l28oghc" path="res://Content/Models/SM_Wing_Right.glb" id="4_oi37l"]
@@ -8,7 +9,14 @@
 radius = 1.0
 height = 6.0
 
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_n3i6r"]
+radius = 2.3330078
+height = 11.376404
+
 [node name="Arcwing" type="CharacterBody3D" unique_id=612795873]
+collision_layer = 16
+collision_mask = 451
+script = ExtResource("1_u7qc7")
 
 [node name="Visuals" type="Node3D" parent="." unique_id=1416543842]
 
@@ -28,3 +36,59 @@ shape = SubResource("CapsuleShape3D_wj5hs")
 [node name="WingRight_Collider3D" type="CollisionShape3D" parent="." unique_id=1912747007]
 transform = Transform3D(0.96316254, 0.26891983, -1.1754859e-08, 0, -4.371139e-08, -1, -0.26891983, 0.96316254, -4.210117e-08, -3.337, 3.07, 3.505)
 shape = SubResource("CapsuleShape3D_wj5hs")
+
+[node name="Blade_Collider3D" type="CollisionShape3D" parent="." unique_id=1605502514]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 1.835783, 2.6925116)
+shape = SubResource("CapsuleShape3D_n3i6r")
+
+[node name="CameraMount" type="Node3D" parent="." unique_id=861221765]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -1)
+
+[node name="SpringArm3D" type="SpringArm3D" parent="CameraMount" unique_id=1915317765]
+transform = Transform3D(-1, 1.5180806e-08, -8.609462e-08, 0, 0.9848077, 0.17364818, 8.742278e-08, 0.17364818, -0.9848077, 0, 0, 0)
+collision_mask = 7
+spring_length = 12.0
+
+[node name="Camera3D" type="Camera3D" parent="CameraMount/SpringArm3D" unique_id=1759480625]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 12)
+doppler_tracking = 2
+current = true
+fov = 90.0
+
+[node name="HoverRaycasts" type="Node3D" parent="." unique_id=944565146]
+
+[node name="front_left" type="RayCast3D" parent="HoverRaycasts" unique_id=2000857133]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.0967, 1, 5.8388)
+enabled = false
+target_position = Vector3(0, -4, 0)
+collision_mask = 7
+
+[node name="front_right" type="RayCast3D" parent="HoverRaycasts" unique_id=1532000685]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.097, 1, 5.839)
+enabled = false
+target_position = Vector3(0, -4, 0)
+collision_mask = 7
+
+[node name="mid_right" type="RayCast3D" parent="HoverRaycasts" unique_id=756928922]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.1286, 1, -0.013499999)
+enabled = false
+target_position = Vector3(0, -4, 0)
+collision_mask = 7
+
+[node name="mid_left" type="RayCast3D" parent="HoverRaycasts" unique_id=767161446]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.129, 1, -0.013)
+enabled = false
+target_position = Vector3(0, -4, 0)
+collision_mask = 7
+
+[node name="back_left" type="RayCast3D" parent="HoverRaycasts" unique_id=1784262134]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.271, 1, -2.755)
+enabled = false
+target_position = Vector3(0, -4, 0)
+collision_mask = 7
+
+[node name="back_right" type="RayCast3D" parent="HoverRaycasts" unique_id=566016364]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2707, 1, -2.7546)
+enabled = false
+target_position = Vector3(0, -4, 0)
+collision_mask = 7

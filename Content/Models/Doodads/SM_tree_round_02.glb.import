@@ -39,7 +39,37 @@ import_script/path="uid://d20dbntqagrlg"
 materials/extract=2
 materials/extract_format=0
 materials/extract_path="res://Content/Materials"
-_subresources={}
+_subresources={
+"materials": {
+"M_leaves": {
+"use_external/enabled": true,
+"use_external/fallback_path": "res://Content/Materials/M_leaves.tres",
+"use_external/path": "uid://drrbetrjsuufb"
+},
+"M_wood": {
+"use_external/enabled": true,
+"use_external/fallback_path": "res://Content/Materials/M_wood.tres",
+"use_external/path": "uid://cp0eof0tm5epu"
+}
+},
+"nodes": {
+"PATH:tree_round_02/leaves": {
+"generate/physics": true,
+"physics/layer": 4,
+"physics/mask": 16,
+"physics/shape_type": 4,
+"primitive/position": Vector3(0, 10.25, 0),
+"primitive/radius": 4.75
+},
+"PATH:tree_round_02/trunk": {
+"generate/physics": true,
+"physics/shape_type": 5,
+"primitive/height": 10.0,
+"primitive/position": Vector3(0, 5, 0),
+"primitive/radius": 1.1
+}
+}
+}
 gltf/naming_version=2
 gltf/embedded_image_handling=1
 gltf/texture_map_mode=1
