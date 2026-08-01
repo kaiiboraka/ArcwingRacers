@@ -54,7 +54,7 @@ project/assembly_name="ArcwingRacers"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/ColorPreview/plugin.cfg", "res://addons/Todo_Manager/plugin.cfg", "res://addons/explore-editor-theme/plugin.cfg", "res://addons/fancy_editor_sounds/plugin.cfg", "res://addons/fancy_folder_colors/plugin.cfg", "res://addons/godot_ai/plugin.cfg", "res://addons/layerNames/plugin.cfg", "res://addons/log/plugin.cfg", "res://addons/netfox.extras/plugin.cfg", "res://addons/netfox.internals/plugin.cfg", "res://addons/netfox.noray/plugin.cfg", "res://addons/netfox/plugin.cfg", "res://addons/phantom_camera/plugin.cfg", "res://addons/plugin_refresher/plugin.cfg", "res://addons/reload_current_scene/plugin.cfg", "res://addons/resource_namer/plugin.cfg", "res://addons/script-ide/plugin.cfg")
+enabled=PackedStringArray("res://addons/ColorPreview/plugin.cfg", "res://addons/Todo_Manager/plugin.cfg", "res://addons/arcwing_track_editor/plugin.cfg", "res://addons/explore-editor-theme/plugin.cfg", "res://addons/fancy_editor_sounds/plugin.cfg", "res://addons/fancy_folder_colors/plugin.cfg", "res://addons/godot_ai/plugin.cfg", "res://addons/layerNames/plugin.cfg", "res://addons/log/plugin.cfg", "res://addons/netfox.extras/plugin.cfg", "res://addons/netfox.internals/plugin.cfg", "res://addons/netfox.noray/plugin.cfg", "res://addons/netfox/plugin.cfg", "res://addons/phantom_camera/plugin.cfg", "res://addons/plugin_refresher/plugin.cfg", "res://addons/reload_current_scene/plugin.cfg", "res://addons/resource_namer/plugin.cfg", "res://addons/script-ide/plugin.cfg")
 
 [file_customization]
 
