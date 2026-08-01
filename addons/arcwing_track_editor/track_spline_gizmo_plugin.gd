@@ -50,7 +50,6 @@ var wire_source: Dictionary = {}
 func _init() -> void:
 	create_material("line_main", Color(1, 1, 1, 0.9))
 	create_material("control_lines", Color(0.6, 0.6, 0.6, 0.7))
-	create_material("branches", Color(0.3, 0.9, 1.0, 0.85))
 	create_material("wire_source", Color(1.0, 0.85, 0.0, 1.0))
 	create_handle_material("point_handles")
 	create_handle_material("control_handles")
@@ -110,7 +109,7 @@ func _draw_path(gizmo: EditorNode3DGizmo, path_index: int, spline: Spline) -> vo
 	if path_index > 0:
 		var name := "line_path_%d" % path_index
 		if not _path_line_materials_created.has(name):
-			create_material(name, ALTERNATE_COLORS[path_index % ALTERNATE_COLORS.size()])
+			create_material(name, _path_color(path_index))
 			_path_line_materials_created[name] = true
 		path_material = get_material(name, gizmo)
 
@@ -180,7 +179,7 @@ func _draw_path(gizmo: EditorNode3DGizmo, path_index: int, spline: Spline) -> vo
 # --- Branch / wire-source overlay -----------------------------------------------------------
 
 func _draw_branches(gizmo: EditorNode3DGizmo, track: TrackSpline) -> void:
-	var line_points := PackedVector3Array()
+	var materials_created: Dictionary = {}
 	for connection: BranchConnection in track.branches:
 		if connection == null:
 			continue
@@ -192,10 +191,27 @@ func _draw_branches(gizmo: EditorNode3DGizmo, track: TrackSpline) -> void:
 			continue
 		if connection.to_point_index < 0 or connection.to_point_index >= to_spline.point_count:
 			continue
-		line_points.append(from_spline.get_point_position(connection.from_point_index))
-		line_points.append(to_spline.get_point_position(connection.to_point_index))
-	if line_points.size() > 0:
-		gizmo.add_lines(line_points, get_material("branches", gizmo), false)
+		var a: Vector3 = from_spline.get_point_position(connection.from_point_index)
+		var b: Vector3 = to_spline.get_point_position(connection.to_point_index)
+
+		# Per-branch material keyed by the endpoint pair so removing/re-adding a branch
+		# reuses its color instead of leaking a fresh material per branch index.
+		var key := "%d:%d-%d:%d" % [connection.from_path_index, connection.from_point_index,
+				connection.to_path_index, connection.to_point_index]
+		if not materials_created.has(key):
+			var midpoint: Color = _path_color(connection.from_path_index).lerp(
+					_path_color(connection.to_path_index), 0.5)
+			create_material("branch_%s" % key, midpoint)
+			materials_created[key] = true
+		var mat := get_material("branch_%s" % key, gizmo)
+		gizmo.add_lines(PackedVector3Array([a, b]), mat, false)
+
+
+## The color a path draws in (white for main, ALTERNATE_COLORS for alternates).
+func _path_color(path_index: int) -> Color:
+	if path_index <= 0:
+		return Color(1, 1, 1, 0.9)
+	return ALTERNATE_COLORS[path_index % ALTERNATE_COLORS.size()]
 
 
 func _draw_wire_source(gizmo: EditorNode3DGizmo, track: TrackSpline) -> void:
@@ -442,21 +458,6 @@ func find_point_at_screen(track: TrackSpline, camera: Camera3D, screen_pos: Vect
 				best_dist = d
 				best = {"path_index": path_index, "point_index": idx}
 	return best
-
-
-## World-space cursor ray snapped to the first surface/collider under it, falling back to a
-## camera-facing plane through fallback_world_origin. Returns the point in the track's LOCAL
-## space (ready for Curve3D.add_point). Used by the plugin's Add Point tool.
-func resolve_point_position(track: TrackSpline, camera: Camera3D, screen_pos: Vector2, fallback_world_origin: Vector3) -> Vector3:
-	var ray_from: Vector3 = camera.project_ray_origin(screen_pos)
-	var ray_dir: Vector3 = camera.project_ray_normal(screen_pos)
-	var inters: Variant = _raycast_to_surface(track, camera, ray_from, ray_dir)
-	if inters == null:
-		var plane := Plane(camera.global_transform.basis.z, fallback_world_origin)
-		inters = plane.intersects_ray(ray_from, ray_dir)
-	if inters == null:
-		return Vector3.ZERO
-	return track.to_local(inters as Vector3)
 
 
 func _snap(v: Vector3) -> Vector3:

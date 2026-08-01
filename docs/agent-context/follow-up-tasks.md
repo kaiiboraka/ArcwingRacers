@@ -29,3 +29,6 @@ Tasks explicitly deferred to a later session — not urgent, not forgotten. Remo
 - **Banking model (TBD).** `technical/pod-hover-system.md` has banking as TBD. Needs EP1R playtesting notes before settling.
 
 - **Legacy doc review.** `game-design/world/locations/`, `game-design/gameplay/enemies/`, `game-design/art-direction/` still describe Fantasy X. Replace for racing game.
+
+- **Recipe-phase reference: `https://github.com/iiMidnightii/PathMesh3D`.** Found while building the track editor. Generates a road mesh along a Path3D (spline ribbon + walls) — directly relevant to the ROAD/TUNNEL mesh generation phase (ADR 0010 / `TrackMeshGenerator`). Do NOT adopt the plugin itself; study its approach when implementing our generator.
+

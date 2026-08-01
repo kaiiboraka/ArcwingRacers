@@ -7,25 +7,35 @@ extends Path3D
 ## and re-bakes geometry (future TrackMeshGenerator) when points or metadata change.
 
 ## Meters between baked samples. Drives sampling fidelity for banking and tunnels.[br]
-## Intended purpose: set once at authoring time; baked geometry and gameplay sampling use it.[br]
-## Lower = finer sampling (smoother curves, more points); higher = coarser.
-@export_range(0.05, 5.0, 0.05) var bake_interval: float = 0.25
+## Intended purpose: set once at authoring time; stored in the TrackSplineData asset,
+## not the scene (see `data`).
+var bake_interval: float = 0.25
 
 ## Alternate routes. Each is a standalone Spline (a single curve) with its own point_data.[br]
-## Intended purpose: EP1R-style alternate paths (shortcuts/chicanes). Path index 0 is always
-## the main curve; indices 1..N map to alternate_paths[i-1]. Branches (split/join) live in the
-## branches array below.
-@export var alternate_paths: Array[Spline] = []
+## Path index 0 is always the main curve (Path3D.curve); indices 1..N map to
+## alternate_paths[i-1]. Branches (split/join) live in the branches array below.[br]
+## Live authoring state — NOT scene-persisted. Persist via `data` (Save Track to Data).
+var alternate_paths: Array[Spline] = []
 
 ## Branch topology between paths. Each entry links a point on one path to a point on another:
 ## from_path_index/from_point_index -> to_path_index/to_point_index, flagged split or join.[br]
-## Intended purpose: the graph the AI/lap system uses to walk alternate routes. Path indices
-## follow the same convention as get_spline_at(): 0 = main, 1..N = alternate_paths[i-1].
-@export var branches: Array[BranchConnection] = []
+## Live authoring state — NOT scene-persisted. Persist via `data` (Save Track to Data).
+var branches: Array[BranchConnection] = []
 
 ## Emitted when alternate_paths or branches are mutated (add/remove) so editor tools
 ## (toolbar, gizmo) can refresh path lists and redraw. Fired by the add/remove methods below.
 signal paths_changed
+
+@export_group("Track Data")
+## Single serialized container for this track's full authoring state (main curve, alternate
+## paths, branches, bake interval). The scene stores only this one reference — no inline
+## Spline/BranchConnection sub-resources. Save Track to Data writes the current node state
+## into it; Load Track from Data (and scene load) copies it back onto the node.
+@export var data: TrackSplineData
+## Copy the node's current state (curve, alternates, branches, bake interval) into `data`.
+@export_tool_button("Save Track to Data") var save_to_data: Callable = _save_to_data
+## Replace the node's state from `data`. Runs automatically at _ready when data is set.
+@export_tool_button("Load Track from Data") var load_from_data: Callable = _load_from_data
 
 @export_group("Editor")
 ## Source curve to import points from (plain Curve3D or Spline) via the Import Points button.[br]
@@ -51,6 +61,50 @@ func _import_points() -> void:
 		push_warning("TrackSpline '%s': no Spline assigned as curve." % name)
 		return
 	spline.import_from(source_curve)
+
+# --- Track data persistence ----------------------------------------------------------------
+# The whole track definition lives in a TrackSplineData .tres so the scene only holds one
+# resource reference. These two buttons move state between the node and the asset.
+
+## Copy the node's current authoring state into `data` (deep copies, so later node edits
+## don't leak into the saved asset until you Save again). Saves the .tres when `data` has a
+## resource_path. Editor-only.
+func _save_to_data() -> void:
+	if data == null:
+		push_warning("TrackSpline '%s': assign a TrackSplineData to `data` before saving." % name)
+		return
+	data.main_curve = get_spline().duplicate(true) if get_spline() else null
+	data.bake_interval = bake_interval
+	data.alternate_paths.clear()
+	for spline in alternate_paths:
+		data.alternate_paths.append(spline.duplicate(true) if spline else null)
+	data.branches.clear()
+	for branch in branches:
+		data.branches.append(branch.duplicate(true) if branch else null)
+	if data.resource_path != "":
+		var err: int = ResourceSaver.save(data, data.resource_path)
+		if err != OK:
+			push_warning("TrackSpline '%s': failed to save TrackSplineData (%s)." % [name, error_string(err)])
+
+
+## Replace the node's state from `data`: main curve, bake interval, alternates, branches.
+## Emits paths_changed so editor tools refresh. Editor-only, but safe at runtime too.
+func _load_from_data() -> void:
+	if data == null:
+		return
+	if data.main_curve:
+		curve = data.main_curve.duplicate(true)
+	bake_interval = data.bake_interval
+	alternate_paths.clear()
+	for spline in data.alternate_paths:
+		alternate_paths.append(spline.duplicate(true) if spline else null)
+	branches.clear()
+	for branch in data.branches:
+		branches.append(branch.duplicate(true) if branch else null)
+	_apply_bake_settings()
+	notify_property_list_changed()
+	paths_changed.emit()
+
 
 # --- Path / branch authoring ----------------------------------------------------------------
 # Editor-only helpers for the track editor addon. Called through EditorUndoRedoManager so every
@@ -105,6 +159,9 @@ func _enter_tree() -> void:
 	_apply_bake_settings()
 
 func _ready() -> void:
+	# Restore the track definition from its data asset in BOTH editor and runtime, so a
+	# scene that references only `data` still shows/behaves fully.
+	_load_from_data()
 	if Engine.is_editor_hint():
 		return
 	if curve is Spline:

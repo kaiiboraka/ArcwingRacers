@@ -1,0 +1,14 @@
+﻿[gd_resource type="Resource" script_class="TrackSplineData" load_steps=70 format=3 uid="uid://c1t0a5ta0001"]
+
+[ext_resource type="Script" uid="uid://3l243a44cncc" path="res://Systems/Track/spline_point_data.gd" id="8_10ci5"]
+[ext_resource type="Script" uid="uid://dkyobseeo0c7n" path="res://Systems/Track/spline.gd" id="9_f4ioe"]
+[ext_resource type="Script" uid="uid://bkumr6eeea6fl" path="res://Systems/Track/branch_connection.gd" id="11_ufwmt"]
+[ext_resource type="Script" uid="uid://cguaiwyhsvuir" path="res://Systems/Track/track_spline_data.gd" id="12_data"]
+
+[resource]
+script = ExtResource("12_data")
+main_curve = SubResource("Curve3D_f4ioe")
+bake_interval = 0.25
+alternate_paths = Array[ExtResource("9_f4ioe")]([SubResource("Curve3D_4iv2b"), SubResource("Curve3D_dmr00")])
+branches = Array[ExtResource("11_ufwmt")]([SubResource("Resource_sp0hc"), SubResource("Resource_j68s2"), SubResource("Resource_eeopb"), SubResource("Resource_geoxa")])
+
