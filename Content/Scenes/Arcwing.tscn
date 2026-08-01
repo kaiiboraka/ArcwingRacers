@@ -293,9 +293,6 @@ collision_mask = 7
 look_at_damping = true
 look_at_damping_value = 0.1
 noise_emitter_layer = 1
-align_transform_with_view = Callable()
-align_position_with_view = Callable()
-align_rotation_with_view = Callable()
 draw_follow_line = true
 metadata/_custom_type_script = "uid://csjccrhj5wnx7"
 
