@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://frqcijppkdrp"]
 
 [ext_resource type="Texture2D" uid="uid://bjacaeixivj2n" path="res://Content/Textures/HDRI/stylized/sky_81_2k.png" id="1_hvtcu"]
-[ext_resource type="Script" uid="uid://dickvutqohcwc" path="res://Content/Scenes/Skyboxes/SkyPreview.gd" id="2_wlmsm"]
+[ext_resource type="Script" uid="uid://dickvutqohcwc" path="res://Systems/Skybox/sky_preview.gd" id="2_wlmsm"]
 [ext_resource type="Texture2D" uid="uid://ljritidsfxqy" path="res://Content/Textures/HDRI/stylized/realistic_ocean_HDRI_4k.png" id="3_prq4y"]
 [ext_resource type="Texture2D" uid="uid://cppnaidk42jwe" path="res://Content/Textures/HDRI/stylized/sky_09_2k.png" id="4_y5q5n"]
 [ext_resource type="Texture2D" uid="uid://c5srgclfbusf1" path="res://Content/Textures/HDRI/stylized/sky_10_2k.png" id="5_r00kl"]

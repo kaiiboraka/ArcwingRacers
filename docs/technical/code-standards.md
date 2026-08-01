@@ -556,6 +556,33 @@ public partial class HealthBar : Node
 public Callable Generate = Callable.From(Generate);
 ```
 
+**Reacting to transform changes in `@tool` scripts:** To make an editor tool script respond to gizmo drags (node rotation/move in the 3D or 2D viewport), use `set_notify_transform(true)` in `_ready()` **guarded by `Engine.is_editor_hint()`**, then handle `NOTIFICATION_TRANSFORM_CHANGED` in `_notification()`. Do **not** poll the transform in `_process()` — it misses gizmo edits in the editor viewport. Use `is_equal_approx` (not `==`) when guarding against redundant re-writes to avoid float-drift false matches.
+
+```gdscript
+@tool
+class_name Skybox extends Node3D
+
+func _ready() -> void:
+	if Engine.is_editor_hint():
+		set_notify_transform(true)
+	_update_sky_rotation()
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_TRANSFORM_CHANGED:
+		_update_sky_rotation()
+
+func _update_sky_rotation() -> void:
+	# ... reads global_rotation, writes dependent properties
+	if env.environment.sky_rotation.is_equal_approx(sky_rotation):
+		return
+	env.environment.sky_rotation = sky_rotation
+```
+
+Notes:
+- `set_notify_transform(true)` must be editor-guarded so runtime does not pay for transform-change notifications.
+- `_process()` polling is the wrong tool here: it works at runtime but does not reliably pick up editor gizmo transform edits, so an in-editor visual will appear stale.
+- Setting exported values or dependent resources from a tool script does not repaint the viewport or refresh the Inspector on its own; the notification-driven write path above is what keeps the editor visuals in sync.
+
 ---
 
 ## Editor Handoff — User Action Items (MANDATORY)

@@ -32,7 +32,7 @@ The spline carries **parallel per-point metadata arrays** that `Curve3D` does no
 @export var point_flags: Array[int]            # bitfield: START_FINISH, WAYPOINT, RESPAWN, ...
 ```
 
-These are kept aligned with `point_count` — editor point edits (add/remove/move) trigger `NOTIFICATION_RESET` / `_notification`-based re-sync, and any desync is repaired lazily on access by clamping index and padding on append.
+These are kept aligned with `point_count`. Native `Curve3D` methods cannot be overridden in GDScript (the engine calls its C++ implementation, ignoring script overrides), so alignment is driven by the resource's `changed` signal — `Curve3D` emits it on every point mutation — plus lazy repair on access (clamp index, pad on append).
 
 ### 2. Per-segment mesh recipes
 

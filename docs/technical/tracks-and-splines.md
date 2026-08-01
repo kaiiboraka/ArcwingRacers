@@ -12,10 +12,10 @@ The spline is only the **racing structure**, not the whole level. Recipes genera
 
 ## Spline Resource Structure
 
-The spline lives in `systems/track/spline.gd` as a class extending `Curve3D`, saved as `.tres` in `Content/Tracks/<name>/`.
+The spline lives in `Systems/Track/spline.gd` as a class extending `Curve3D`, saved as `.tres` in `Content/Tracks/<name>/`.
 
 ```gdscript
-# systems/track/spline.gd
+# Systems/Track/spline.gd
 class_name Spline extends Curve3D
 
 ## Per-point half-width (left + right from center line), meters.
@@ -30,7 +30,7 @@ class_name Spline extends Curve3D
 @export var cyclic: bool = true
 ```
 
-All metadata arrays are indexed 1:1 with `Curve3D.point_count`. Editor point edits (add/remove/move via `Path3D` gizmos) trigger a re-sync through `_notification(NOTIFICATION_RESET)` and the `point_count` setter override; any residual desync is repaired lazily on access (clamp index, pad on append). See the `spline.gd` implementation for the exact sync contract.
+All metadata arrays are indexed 1:1 with `Curve3D.point_count`. Native `Curve3D` methods (`add_point`, `remove_point`, `set_point_count`, `clear_points`) **cannot be overridden in GDScript** — the engine calls its internal C++ implementation directly, so script overrides are never invoked. Instead the `Spline` resource subscribes to `Curve3D.changed`, which the engine emits on every mutation (add/remove/move point, bake, tilt, closed), and reconciles the metadata arrays to `point_count` in the handler. This covers every edit path, including Path3D gizmo editing. Accessors also reconcile lazily as a safety net. See the `spline.gd` implementation for the sync contract.
 
 ### BranchConnection
 
@@ -122,13 +122,23 @@ Because `Spline extends Curve3D`, traversal uses Godot's baked sampling rather t
 
 ### Sampling at Offset
 
+**Curve3D baked sampling is local-space** — positions come back relative to the curve's owning `Path3D` origin, and query points must be converted into that local space first. Use the world-space wrappers on `TrackSpline` (`sample_world`, `sample_forward_world`, `sample_normal_world`, `project_world`) for gameplay queries.
+
 ```gdscript
-# Get world position at a distance along the spline
-var pos: Vector3 = spline.sample_baked(offset, cubic)
-# Get tangent (forward direction) at a distance
-var fwd: Vector3 = spline.sample_baked_up_vector(offset, cubic)  # or derive from consecutive samples
-# Get up vector (normal) at a distance
-var up: Vector3 = spline.sample_baked_up_vector(offset, cubic)
+# World-space position at a distance along the spline (via the TrackSpline node)
+var pos: Vector3 = track_spline.sample_world(offset)
+# World-space forward direction at a distance
+var fwd: Vector3 = track_spline.sample_forward_world(offset)
+# World-space up vector (normal) at a distance
+var up: Vector3 = track_spline.sample_normal_world(offset)
+```
+
+Raw local-space access (mesh generation, which runs in the spline's own frame) uses the `Spline`/`Curve3D` methods directly:
+
+```gdscript
+var spline: Spline = track_spline.get_spline()
+var local_pos: Vector3 = spline.sample_baked(offset, true)   # cubic
+var local_fwd: Vector3 = spline.sample_forward(offset)        # tangent, local
 ```
 
 Forward direction can be derived from two close samples:
@@ -142,11 +152,15 @@ func sample_forward(spline: Spline, offset: float, delta: float = 0.01) -> Vecto
 
 ### Projecting World Position onto Spline
 
-`Curve3D` provides this natively with `get_closest_point()` / `get_closest_offset()`:
+`Curve3D` provides this natively with `get_closest_point()` / `get_closest_offset()`, both **local-space**:
 
 ```gdscript
-func project(spline: Spline, point: Vector3) -> float:
-    return spline.get_closest_offset(point)   # returns distance along spline
+# World point → nearest offset on the spline (via the TrackSpline node)
+var offset: float = track_spline.project_world(world_point)
+
+# Raw local-space equivalent (world_to_local first)
+var local_point: Vector3 = track_spline.to_local(world_point)
+var local_offset: float = spline.get_closest_offset(local_point)
 ```
 
 For cyclic tracks, wrap the returned offset into `[0, total_length)` when comparing lap progress.
@@ -173,7 +187,7 @@ func offset_to_t(spline: Spline, offset: float) -> float:
 
 ## Mesh Generation
 
-The generator (`systems/track/track_mesh_generator.gd`, `@tool`) bakes spline spans into `ArrayMesh`:
+The generator (`Systems/Track/track_mesh_generator.gd`, `@tool`) bakes spline spans into `ArrayMesh`:
 
 1. Sample the spline densely (bake interval), producing position + forward + normal + width + recipe per sample.
 2. For each span, build a triangle strip: left/right edges offset by `width` along the (banked) lateral axis.
@@ -358,7 +372,7 @@ func get_respawn_position(spline: Spline, racer) -> Transform3D:
 
 Spline data is authored in two ways:
 
-1. **Editor-first (`Path3D` gizmos)** — a `Path3D` node in the level scene gets a `Spline` assigned to its `curve` property. The built-in `Path3D` editor gizmos place and move points in the 3D viewport. Per-point metadata (width, recipe, flags) is edited via the Inspector arrays; the `TrackSpline` node script (see `systems/track/track_spline.gd`) keeps the arrays synced on point edits and triggers re-generation of road geometry.
+1. **Editor-first (`Path3D` gizmos)** — a `Path3D` node in the level scene gets a `Spline` assigned to its `curve` property. The built-in `Path3D` editor gizmos place and move points in the 3D viewport. Per-point metadata (width, recipe, flags) is edited via the Inspector arrays; the `TrackSpline` node script (see `Systems/Track/track_spline.gd`) keeps the arrays synced on point edits and triggers re-generation of road geometry.
 
 2. **Runtime assembly** (modular tracks) — a track definition references a sequence of segment `.tscn` files plus connection metadata. At load time, the segment meshes are stitched and a new `Spline` resource is assembled from the segment endpoints. This is how the modular chunk system works. (ADR 0010 defers branch/multi-path support; single-path assembly works today.)
 

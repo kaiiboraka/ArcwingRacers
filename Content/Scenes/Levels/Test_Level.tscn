@@ -1,6 +1,5 @@
 [gd_scene format=3 uid="uid://ta4rkqlgf5a0"]
 
-[ext_resource type="PackedScene" uid="uid://bnl37xwq7n50n" path="res://Content/Scenes/Skyboxes/skybox_cloudy_sunset.tscn" id="1_5nm6p"]
 [ext_resource type="PackedScene" uid="uid://dylywca7tvxrp" path="res://Content/Scenes/Arcwing.tscn" id="1_26u2p"]
 [ext_resource type="PackedScene" uid="uid://v7n3qlho6kr3" path="res://Content/Scenes/starting_line.tscn" id="2_wg3kv"]
 [ext_resource type="PackedScene" uid="uid://dvywxboih5khm" path="res://Content/Models/Doodads/SM_rock_wall_01.glb" id="3_xk3qy"]
@@ -8,14 +7,10 @@
 [ext_resource type="PackedScene" uid="uid://ymjhu8j5b0ul" path="res://Content/Models/Doodads/SM_spire_01.glb" id="6_dy8ob"]
 [ext_resource type="PackedScene" uid="uid://bdnuklyimpace" path="res://Content/Models/Doodads/SM_rock_wall_03.glb" id="6_iyl2v"]
 [ext_resource type="PackedScene" uid="uid://xskqf03ju65p" path="res://addons/Custom_Nodes/ExtendableWall/ExtendableWall.tscn" id="7_dy8ob"]
-
-[sub_resource type="Curve3D" id="Curve3D_5nm6p"]
-closed = true
-_data = {
-"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -51.121124, 7.6293945e-06, -49.414665, 0, 0, 0, 0, 0, 0, -96.284744, 0, -171.36035, 0, 0, 0, 0, 0, 0, -160.22333, 0, -208.01428, 0, 0, 0, 0, 0, 0, -229.36752, 0, -90.83032, 0, 0, 0, 0, 0, 0, -316.9747, 0, 30.127731, 0, 0, 0, 0, 0, 0, -423.62262, 0, 81.311745, 0, 0, 0, 0, 0, 0, -576.78076, 0, 211.56111, 0, 0, 0, 0, 0, 0, -666.88306, 0, 264.70398, 0, 0, 0, 0, 0, 0, -717.04535, 3.0517578e-05, 387.498, 0, 0, 0, 0, 0, 0, -687.98596, 0, 457.68057, 0, 0, 0, 0, 0, 0, -627.39465, 0, 565.7223, 0, 0, 0, 0, 0, 0, -484.4727, 0, 632.88074, 0, 0, 0, 0, 0, 0, -390.0428, 0, 692.49884, 0, 0, 0, 0, 0, 0, -366.37735, 0, 821.3484, 0, 0, 0, 0, 0, 0, -407.8685, 0, 938.6877, 0, 0, 0, 0, 0, 0, -476.58063, 0, 1079.432, 0, 0, 0, 0, 0, 0, -472.7571, 0, 1207.4006, 0, 0, 0, 0, 0, 0, -410.9278, 0, 1287.0302, 0, 0, 0, 0, 0, 0, -296.68353, 0, 1356.368, 0, 0, 0, 0, 0, 0, -191.07878, 1.5258789e-05, 1346.8253, 0, 0, 0, 0, 0, 0, -90.40575, 0, 1309.1604, 0, 0, 0, 0, 0, 0, -0.5631504, 0, 1233.7555, 0, 0, 0, 0, 0, 0, 61.57742, 0, 1128.3641, 0, 0, 0, 0, 0, 0, 75.07982, 0, 976.1542, 0, 0, 0, 0, 0, 0, 69.08367, 0, 834.6866, 0, 0, 0, 0, 0, 0, 83.82831, 0, 673.4871, 0, 0, 0, 0, 0, 0, 126.78542, 0, 533.7963, 0, 0, 0, 0, 0, 0, 104.114044, 0, 348.15543, 0, 0, 0, 0, 0, 0, 78.25349, 0, 228.25484, 0, 0, 0, 0, 0, 0, 40.037956, 0, 163.49242, 0, 0, 0, 0, 0, 0, 26.069992, 0, 89.78571),
-"tilts": PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-}
-point_count = 32
+[ext_resource type="Script" uid="uid://dkyobseeo0c7n" path="res://Systems/Track/spline.gd" id="9_f4ioe"]
+[ext_resource type="Script" uid="uid://ch5pjmp7ic5lh" path="res://Systems/Track/track_spline.gd" id="10_mgmc7"]
+[ext_resource type="PackedScene" uid="uid://52mr8is85mi3" path="res://Content/Scenes/Skyboxes/skybox_afternoon_sky_hills.tscn" id="11_10ci5"]
+[ext_resource type="Curve3D" uid="uid://bj1wim501vbdo" path="res://new_curve_3d.tres" id="11_mgmc7"]
 
 [sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_wj5hs"]
 
@@ -29,9 +24,22 @@ emission_energy_multiplier = 16.0
 material = SubResource("StandardMaterial3D_iyl2v")
 size = Vector2(20000, 20000)
 
-[node name="Test_Level" type="Node3D" unique_id=421134206]
+[sub_resource type="Curve3D" id="Curve3D_wj5hs"]
+closed = true
+bake_interval = 0.25
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -51.121124, 7.6293945e-06, -49.414665, 0, 0, 0, 0, 0, 0, -96.284744, 0, -171.36035, 0, 0, 0, 0, 0, 0, -160.22333, 0, -208.01428, 0, 0, 0, 0, 0, 0, -229.36752, 0, -90.83032, 0, 0, 0, 0, 0, 0, -316.9747, 0, 30.127731, 0, 0, 0, 0, 0, 0, -423.62262, 0, 81.311745, 0, 0, 0, 0, 0, 0, -576.78076, 0, 211.56111, 0, 0, 0, 0, 0, 0, -666.88306, 0, 264.70398, 0, 0, 0, 0, 0, 0, -717.04535, 3.0517578e-05, 387.498, 0, 0, 0, 0, 0, 0, -687.98596, 0, 457.68057, 0, 0, 0, 0, 0, 0, -627.39465, 0, 565.7223, 0, 0, 0, 0, 0, 0, -484.4727, 0, 632.88074, 0, 0, 0, 0, 0, 0, -390.0428, 0, 692.49884, 0, 0, 0, 0, 0, 0, -366.37735, 0, 821.3484, 0, 0, 0, 0, 0, 0, -407.8685, 0, 938.6877, 0, 0, 0, 0, 0, 0, -476.58063, 0, 1079.432, 0, 0, 0, 0, 0, 0, -472.7571, 0, 1207.4006, 0, 0, 0, 0, 0, 0, -410.9278, 0, 1287.0302, 0, 0, 0, 0, 0, 0, -296.68353, 0, 1356.368, 0, 0, 0, 0, 0, 0, -191.07878, 1.5258789e-05, 1346.8253, 0, 0, 0, 0, 0, 0, -90.40575, 0, 1309.1604, 0, 0, 0, 0, 0, 0, -0.5631504, 0, 1233.7555, 0, 0, 0, 0, 0, 0, 61.57742, 0, 1128.3641, 0, 0, 0, 0, 0, 0, 75.07982, 0, 976.1542, 0, 0, 0, 0, 0, 0, 69.08367, 0, 834.6866, 0, 0, 0, 0, 0, 0, 83.82831, 0, 673.4871, 0, 0, 0, 0, 0, 0, 126.78542, 0, 533.7963, 0, 0, 0, 0, 0, 0, 104.114044, 0, 348.15543, 0, 0, 0, 0, 0, 0, 78.25349, 0, 228.25484, 0, 0, 0, 0, 0, 0, 40.037956, 0, 163.49242, 0, 0, 0, 0, 0, 0, 26.069992, 0, 89.78571),
+"tilts": PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+}
+point_count = 32
+script = ExtResource("9_f4ioe")
+point_widths = PackedFloat32Array(5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5)
+point_recipes = Array[int]([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+point_recipe_params = PackedFloat32Array(6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6)
+point_flags = Array[int]([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+metadata/_custom_type_script = "uid://dkyobseeo0c7n"
 
-[node name="Skybox_CloudySunset" parent="." unique_id=21218273 instance=ExtResource("1_5nm6p")]
+[node name="Test_Level" type="Node3D" unique_id=421134206]
 
 [node name="StartingLine" parent="." unique_id=583602706 node_paths=PackedStringArray("racers_to_load") instance=ExtResource("2_wg3kv")]
 racers_to_load = [NodePath("../Arcwing")]
@@ -448,9 +456,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 3.6120317, 15.286816, -1.5258788
 transform = Transform3D(1, 0, 0, 0, 0.47549102, 0.87972057, 0, -0.87972057, 0.47549102, -0.56981564, 0.632293, -57.126553)
 size = Vector3(20, 26, 11.599998)
 
-[node name="Path3D" type="Path3D" parent="." unique_id=1745400274]
-curve = SubResource("Curve3D_5nm6p")
-
 [node name="WorldFloor" type="StaticBody3D" parent="." unique_id=1223787576]
 axis_lock_linear_x = true
 axis_lock_linear_y = true
@@ -468,3 +473,12 @@ metadata/_edit_lock_ = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1275444, -0.034843445, 0.035362244)
 mesh = SubResource("PlaneMesh_wj5hs")
 metadata/_edit_lock_ = true
+
+[node name="TrackSpline" type="Path3D" parent="." unique_id=888770020]
+curve = SubResource("Curve3D_wj5hs")
+script = ExtResource("10_mgmc7")
+source_curve = ExtResource("11_mgmc7")
+metadata/_custom_type_script = "uid://ch5pjmp7ic5lh"
+
+[node name="Skybox_AfternoonSky" parent="." unique_id=886949906 instance=ExtResource("11_10ci5")]
+transform = Transform3D(0.4679298, 0, -0.8837656, 0, 1, 0, 0.8837656, 0, 0.4679298, 0, 0, 0)
