@@ -17,6 +17,8 @@ We need a track system that:
 Adopt the spline-based track model from EP1R:
 
 1. **Spline asset:** Each track has a spline resource containing a main path and zero or more alternate paths. The spline is a serializable Godot Resource (`.tres`) storing a list of 3D control points per path.
+
+   > **Terminology (EP1R → Godot):** EP1R's *spline* maps to Godot `TrackSpline` (`Systems/Track/track_spline.gd`, the track container holding the main path, `alternate_paths`, `branches`, and gameplay helpers); EP1R's *path* maps to Godot `Spline` (`Systems/Track/spline.gd`, a single `Curve3D` oblivious to branches). "Spline containing paths" above is consistent under EP1R vocabulary: `TrackSpline` contains `Spline`s, linked by the `BranchConnection` graph.
 2. **Main spline:** The primary circuit loop. Point 0 is the start/finish line. Racer spawns are placed near point 0 in a grid behind the line.
 3. **Branching paths:** Alternate paths that diverge from and rejoin the main spline. Subject to:
    - Max 2 splits at any point

@@ -4,7 +4,7 @@ extends Resource
 ## Path index the connection originates on: 0 = main (Path3D.curve); 1..N = alternate_paths[i-1].[br]
 ## Intended purpose: identify which path carries this branch endpoint without holding node
 ## references (paths live on TrackSpline as Spline resources).[br]
-## 0..N — index into TrackSpline.get_path().
+## 0..N — index into TrackSpline.get_spline_at().
 @export var from_path_index: int = 0
 
 ## Point index on from_path_index where the branch starts (split) or ends (join).[br]

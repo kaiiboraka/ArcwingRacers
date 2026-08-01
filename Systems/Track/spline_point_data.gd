@@ -21,8 +21,17 @@ extends Resource
 
 ## Flags bitfield (Spline.SplinePointFlags).[br]
 ## Intended purpose: mark lap line, waypoints, respawns, and branch hints on this point.[br]
-## Bitwise OR of SplinePointFlags values; 0 = none.
-@export var flags: int = Spline.SplinePointFlags.NONE
+## One checkbox per flag (0 = none).
+@export_flags(
+	"Start Finish",
+	"Waypoint",
+	"Respawn",
+	"Branch Split",
+	"Branch Join",
+	"Pit Entry",
+	"Pit Exit",
+)
+var flags: int = Spline.SplinePointFlags.NONE
 
 ## Point tilt in radians (roll about the tangent).[br]
 ## Intended purpose: bank the track at this point; written back to Curve3D via set_point_tilt.[br]

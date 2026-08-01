@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://v7n3qlho6kr3"]
 
 [ext_resource type="Script" uid="uid://b4mhqqfyb5qbw" path="res://Content/Scripts/starting_line.gd" id="1_23ucf"]
-[ext_resource type="Texture2D" uid="uid://cr1dp714f64qq" path="res://Content/Textures/starting_position.png" id="2_dno7x"]
+[ext_resource type="Texture2D" uid="uid://bahqbi23rxjjs" path="res://Content/Textures/starting_position.png" id="2_dno7x"]
 
 [node name="StartingLine" type="Node3D" unique_id=583602706]
 script = ExtResource("1_23ucf")

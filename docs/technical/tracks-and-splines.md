@@ -34,16 +34,32 @@ All metadata arrays are indexed 1:1 with `Curve3D.point_count`. Native `Curve3D`
 
 ### BranchConnection
 
-Branches (multiple paths per track) are **deferred** — ADR 0010 keeps the first pass to a single main path. When branches land, they follow the model from ADR 0005:
+Branches are **implemented** as a container + graph on `TrackSpline` (`Systems/Track/track_spline.gd`), following the model from ADR 0005:
+
+- `TrackSpline.alternate_paths: Array[Spline]` — each entry is a standalone `Spline` (single curve, its own `point_data`). Path index 0 is the main `Path3D.curve`; indices 1..N map to `alternate_paths[i-1]`.
+- `TrackSpline.branches: Array[BranchConnection]` — the connection graph between paths.
 
 ```gdscript
-class BranchConnection:
-    var from_path_index: int   # this path
-    var from_point_index: int  # point on this path where branch starts
-    var to_path_index: int     # target path
-    var to_point_index: int    # point on target path where branch ends
-    var is_split: bool         # true = branch diverges, false = branch rejoins
+# Systems/Track/branch_connection.gd
+class_name BranchConnection extends Resource
+
+@export var from_path_index: int   # path this connection starts on (0 = main, 1..N = alternate)
+@export var from_point_index: int  # point on from_path where the branch starts (split) / ends (join)
+@export var to_path_index: int     # path this connection targets
+@export var to_point_index: int    # point on to_path where the branch ends (split) / starts (join)
+@export var is_split: bool         # true = diverges from from_path, false = rejoins
 ```
+
+**Authoring flow:** build the main path and each alternate as its own `Spline`, assign the main to `TrackSpline.curve` and the rest to `alternate_paths`; add one `BranchConnection` per split (main→alt, `is_split=true`) and per join (alt→main, `is_split=false`); flag the corresponding points `BRANCH_SPLIT`/`BRANCH_JOIN` on each path.
+
+The `BRANCH_SPLIT`/`BRANCH_JOIN` point flags are AI hints only, not topology — connectivity lives in the `branches` graph. Lap progress is waypoint-gated (not offset-gated), so shortcuts across branches are legal.
+
+Multi-path sampling on `TrackSpline`:
+- `get_path_count()`, `get_spline_at(index)`, `has_path(index)` — path container access
+- `sample_world_path(i, offset)`, `sample_forward_world_path(i, offset)`, `sample_normal_world_path(i, offset)`, `project_world_path(i, point)` — path-indexed world wrappers
+- `project_world_any(point) -> {path_index, offset, distance}` — nearest route to a world point across all paths
+
+The mesh generator pass (ADR 0010) and AI branch traversal (`select_branch`) still land later, but the container + graph are present and parse-verified.
 
 ---
 
@@ -122,7 +138,7 @@ Because `Spline extends Curve3D`, traversal uses Godot's baked sampling rather t
 
 ### Sampling at Offset
 
-**Curve3D baked sampling is local-space** — positions come back relative to the curve's owning `Path3D` origin, and query points must be converted into that local space first. Use the world-space wrappers on `TrackSpline` (`sample_world`, `sample_forward_world`, `sample_normal_world`, `project_world`) for gameplay queries.
+**Curve3D baked sampling is local-space** — positions come back relative to the curve's owning `Path3D` origin, and query points must be converted into that local space first. Use the world-space wrappers on `TrackSpline` (`sample_world`, `sample_forward_world`, `sample_normal_world`, `project_world`) for gameplay queries. On multi-path tracks, path-indexed variants exist (`sample_world_path(i, offset)`, `sample_forward_world_path(i, offset)`, `sample_normal_world_path(i, offset)`, `project_world_path(i, point)`), and `project_world_any(point)` returns the nearest route across all paths as `{path_index, offset, distance}`.
 
 ```gdscript
 # World-space position at a distance along the spline (via the TrackSpline node)
@@ -266,7 +282,7 @@ func get_steering_input(racer_position: Vector3, target: Vector3, forward: Vecto
 
 ### Branch Path Selection
 
-When approaching a `BRANCH_SPLIT` point, the AI evaluates all downstream paths (deferred until branches exist):
+When approaching a `BRANCH_SPLIT` point, the AI evaluates all downstream paths via the `branches` graph on `TrackSpline` (the `select_branch` traversal itself is still deferred — the graph it walks is in place):
 
 ```gdscript
 func select_branch(racer_offset: float, ai_difficulty: float) -> int:
@@ -374,7 +390,7 @@ Spline data is authored in two ways:
 
 1. **Editor-first (`Path3D` gizmos)** — a `Path3D` node in the level scene gets a `Spline` assigned to its `curve` property. The built-in `Path3D` editor gizmos place and move points in the 3D viewport. Per-point metadata (width, recipe, flags) is edited via the Inspector arrays; the `TrackSpline` node script (see `Systems/Track/track_spline.gd`) keeps the arrays synced on point edits and triggers re-generation of road geometry.
 
-2. **Runtime assembly** (modular tracks) — a track definition references a sequence of segment `.tscn` files plus connection metadata. At load time, the segment meshes are stitched and a new `Spline` resource is assembled from the segment endpoints. This is how the modular chunk system works. (ADR 0010 defers branch/multi-path support; single-path assembly works today.)
+2. **Runtime assembly** (modular tracks) — a track definition references a sequence of segment `.tscn` files plus connection metadata. At load time, the segment meshes are stitched and a new `Spline` resource is assembled from the segment endpoints. This is how the modular chunk system works. (ADR 0010 defers the branch/multi-path mesh pass; the `TrackSpline` container + `branches` graph exist, but multi-path modular stitching is not wired in yet.)
 
 The `Spline` resource is a standalone `.tres` file, not embedded in the scene. This allows the same spline to be shared between gameplay logic and editor tooling, and enables runtime spline assembly. **Recipes tagged `NONE` leave geometry to modeled `.glb` terrain (ADR 0009); recipes tagged `ROAD`/`TUNNEL` generate geometry from the spline.**
 
@@ -392,4 +408,4 @@ The `Spline` resource is a standalone `.tres` file, not embedded in the scene. T
 - AI uses lookahead distance (squared internally per EP1R) for difficulty scaling
 - Minimap flattens X/Z, drops Y, always orients up
 - Respawns snap to nearest cleared waypoint, center of track
-- Branches (multiple paths) deferred — see ADR 0010
+- Branches: `TrackSpline` container + `BranchConnection` graph implemented; mesh pass and AI traversal deferred — see ADR 0010

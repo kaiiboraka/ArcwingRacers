@@ -2,7 +2,7 @@
 class_name TrackSpline
 extends Path3D
 
-## Authoring node for a track spline. The inherited Path3D.curve holds a Spline resource;
+## Authoring node for a track. The inherited Path3D.curve holds the MAIN path's Spline resource;
 ## this node ensures it is a Spline (not a bare Curve3D) so per-point metadata arrays exist,
 ## and re-bakes geometry (future TrackMeshGenerator) when points or metadata change.
 
@@ -10,6 +10,18 @@ extends Path3D
 ## Intended purpose: set once at authoring time; baked geometry and gameplay sampling use it.[br]
 ## Lower = finer sampling (smoother curves, more points); higher = coarser.
 @export_range(0.05, 5.0, 0.05) var bake_interval: float = 0.25
+
+## Alternate routes. Each is a standalone Spline (a single curve) with its own point_data.[br]
+## Intended purpose: EP1R-style alternate paths (shortcuts/chicanes). Path index 0 is always
+## the main curve; indices 1..N map to alternate_paths[i-1]. Branches (split/join) live in the
+## branches array below.
+@export var alternate_paths: Array[Spline] = []
+
+## Branch topology between paths. Each entry links a point on one path to a point on another:
+## from_path_index/from_point_index -> to_path_index/to_point_index, flagged split or join.[br]
+## Intended purpose: the graph the AI/lap system uses to walk alternate routes. Path indices
+## follow the same convention as get_spline_at(): 0 = main, 1..N = alternate_paths[i-1].
+@export var branches: Array[BranchConnection] = []
 
 @export_group("Editor")
 ## Source curve to import points from (plain Curve3D or Spline) via the Import Points button.[br]
@@ -53,27 +65,66 @@ func _ready() -> void:
 func get_spline() -> Spline:
 	return curve as Spline
 
+## Number of paths: 1 main + alternate_paths.size().
+func get_path_count() -> int:
+	return alternate_paths.size() + 1
+
+## Returns the Spline for a path index. Index 0 = main path (Path3D.curve); indices 1..N map
+## to alternate_paths[i-1]. Returns null for out-of-range or when the main curve is not a Spline.
+## Named get_spline_at (not get_path) to avoid shadowing Node.get_path() -> NodePath.
+func get_spline_at(index: int) -> Spline:
+	if index <= 0:
+		return get_spline()
+	var alternate_index: int = index - 1
+	if alternate_index < 0 or alternate_index >= alternate_paths.size():
+		return null
+	return alternate_paths[alternate_index]
+
+## Returns true when path `index` exists and its curve is usable.
+func has_path(index: int) -> bool:
+	return get_spline_at(index) != null
+
+## Apply bake_interval to every path's Spline. Runs at enter-tree and on geometry generation.
+func _apply_bake_settings() -> void:
+	for i in get_path_count():
+		var spline: Spline = get_spline_at(i)
+		if spline:
+			spline.bake_interval = bake_interval
+
 # --- World-space wrappers ---------------------------------------------------------------
 # Curve3D's baked sampling and closest-point queries are local to the curve (relative to this
-# Path3D origin). Gameplay uses world positions, so translate here.
+# Path3D origin). Gameplay uses world positions, so translate here. Single-path variants
+# operate on the main path; *_path variants take a path index.
 
-## World-space position at a baked offset.
+## World-space position at a baked offset on the main path.
 func sample_world(offset: float, cubic: bool = true) -> Vector3:
 	var spline: Spline = get_spline()
 	if spline == null:
 		return Vector3.ZERO
 	return to_global(spline.sample_baked(offset, cubic))
 
+## World-space position at a baked offset on a specific path.
+func sample_world_path(path_index: int, offset: float, cubic: bool = true) -> Vector3:
+	var spline: Spline = get_spline_at(path_index)
+	if spline == null:
+		return Vector3.ZERO
+	return to_global(spline.sample_baked(offset, cubic))
 
-## World-space forward (tangent) direction at a baked offset.
+## World-space forward (tangent) direction at a baked offset on the main path.
 func sample_forward_world(offset: float, delta: float = 0.01) -> Vector3:
 	var spline: Spline = get_spline()
 	if spline == null:
 		return Vector3.ZERO
 	return global_transform.basis * spline.sample_forward(offset, delta)
 
+## World-space forward (tangent) direction at a baked offset on a specific path.
+func sample_forward_world_path(path_index: int, offset: float, delta: float = 0.01) -> Vector3:
+	var spline: Spline = get_spline_at(path_index)
+	if spline == null:
+		return Vector3.ZERO
+	return global_transform.basis * spline.sample_forward(offset, delta)
 
-## World-space surface normal at a baked offset.
+## World-space surface normal at a baked offset on the main path.
 func sample_normal_world(offset: float) -> Vector3:
 	var spline: Spline = get_spline()
 	if spline == null:
@@ -81,19 +132,48 @@ func sample_normal_world(offset: float) -> Vector3:
 	var local_normal: Vector3 = spline.sample_normal(offset)
 	return global_transform.basis * local_normal
 
+## World-space surface normal at a baked offset on a specific path.
+func sample_normal_world_path(path_index: int, offset: float) -> Vector3:
+	var spline: Spline = get_spline_at(path_index)
+	if spline == null:
+		return Vector3.UP
+	var local_normal: Vector3 = spline.sample_normal(offset)
+	return global_transform.basis * local_normal
 
-## Nearest offset in meters along the spline to a world-space point.
+## Nearest offset in meters along the main path to a world-space point.
 func project_world(point: Vector3) -> float:
 	var spline: Spline = get_spline()
 	if spline == null:
 		return 0.0
 	return spline.get_closest_offset(to_local(point))
 
-func _apply_bake_settings() -> void:
-	var spline: Spline = get_spline()
+## Nearest offset in meters along a specific path to a world-space point.
+func project_world_path(path_index: int, point: Vector3) -> float:
+	var spline: Spline = get_spline_at(path_index)
 	if spline == null:
-		return
-	spline.bake_interval = bake_interval
+		return 0.0
+	return spline.get_closest_offset(to_local(point))
+
+## Nearest offset across ALL paths to a world point. Returns {path_index, offset, distance}
+## for the closest path, or an empty dict when no path is usable.
+func project_world_any(point: Vector3) -> Dictionary:
+	var local_point: Vector3 = to_local(point)
+	var best_index: int = -1
+	var best_offset: float = 0.0
+	var best_distance: float = INF
+	for i in get_path_count():
+		var spline: Spline = get_spline_at(i)
+		if spline == null:
+			continue
+		var offset: float = spline.get_closest_offset(local_point)
+		var distance: float = local_point.distance_to(spline.sample_baked(offset))
+		if distance < best_distance:
+			best_distance = distance
+			best_index = i
+			best_offset = offset
+	if best_index == -1:
+		return {}
+	return {"path_index": best_index, "offset": best_offset, "distance": best_distance}
 
 func _generate_track_geometry() -> void:
 	# Placeholder: mesh generator lands in the next pass (ADR 0010). For now, emit the bake
