@@ -23,6 +23,10 @@ extends Path3D
 ## follow the same convention as get_spline_at(): 0 = main, 1..N = alternate_paths[i-1].
 @export var branches: Array[BranchConnection] = []
 
+## Emitted when alternate_paths or branches are mutated (add/remove) so editor tools
+## (toolbar, gizmo) can refresh path lists and redraw. Fired by the add/remove methods below.
+signal paths_changed
+
 @export_group("Editor")
 ## Source curve to import points from (plain Curve3D or Spline) via the Import Points button.[br]
 ## Intended purpose: copy an authored dummy path/curve's points into this spline when the
@@ -47,6 +51,50 @@ func _import_points() -> void:
 		push_warning("TrackSpline '%s': no Spline assigned as curve." % name)
 		return
 	spline.import_from(source_curve)
+
+# --- Path / branch authoring ----------------------------------------------------------------
+# Editor-only helpers for the track editor addon. Called through EditorUndoRedoManager so every
+# action is undoable; mutations emit paths_changed so the toolbar and gizmo stay in sync.
+
+## Append a new alternate Spline (or a given one) and emit paths_changed. Returns the appended
+## spline. Path index 1..N maps to alternate_paths[i-1], so this grows get_path_count() by one.
+func add_alternate_path(spline: Spline = null) -> Spline:
+	if spline == null:
+		spline = Spline.new()
+	spline.bake_interval = bake_interval
+	alternate_paths.append(spline)
+	notify_property_list_changed()
+	paths_changed.emit()
+	return spline
+
+
+## Remove the alternate path at `index` (0-based into alternate_paths). Editor-only.
+func remove_alternate_path(index: int) -> void:
+	if index < 0 or index >= alternate_paths.size():
+		return
+	alternate_paths.remove_at(index)
+	notify_property_list_changed()
+	paths_changed.emit()
+
+
+## Append a BranchConnection and emit paths_changed. Editor-only. Returns the connection.
+func add_branch(connection: BranchConnection) -> BranchConnection:
+	if connection == null:
+		connection = BranchConnection.new()
+	branches.append(connection)
+	notify_property_list_changed()
+	paths_changed.emit()
+	return connection
+
+
+## Remove the branch at `index` (0-based into branches). Editor-only.
+func remove_branch(index: int) -> void:
+	if index < 0 or index >= branches.size():
+		return
+	branches.remove_at(index)
+	notify_property_list_changed()
+	paths_changed.emit()
+
 
 func _enter_tree() -> void:
 	if curve == null:

@@ -35,10 +35,16 @@ const ALTERNATE_COLORS := [
 
 var _path_line_materials_created: Dictionary = {}
 
+## Pending Wire Branch source point ({path_index, point_index}) drawn as a yellow cross while
+## the plugin waits for the second click. Empty dict = nothing pending.
+var wire_source: Dictionary = {}
+
 
 func _init() -> void:
 	create_material("line_main", Color(1, 1, 1, 0.9))
 	create_material("control_lines", Color(0.6, 0.6, 0.6, 0.7))
+	create_material("branches", Color(0.3, 0.9, 1.0, 0.85))
+	create_material("wire_source", Color(1.0, 0.85, 0.0, 1.0))
 	create_handle_material("point_handles")
 	create_handle_material("control_handles")
 
@@ -82,6 +88,9 @@ func _redraw(gizmo: EditorNode3DGizmo) -> void:
 		if spline == null:
 			continue
 		_draw_path(gizmo, path_index, spline)
+
+	_draw_branches(gizmo, track)
+	_draw_wire_source(gizmo, track)
 
 
 func _draw_path(gizmo: EditorNode3DGizmo, path_index: int, spline: Spline) -> void:
@@ -147,6 +156,45 @@ func _draw_path(gizmo: EditorNode3DGizmo, path_index: int, spline: Spline) -> vo
 		gizmo.add_handles(point_handles, get_material("point_handles", gizmo), point_ids, false, false)
 	if control_handles.size() > 0:
 		gizmo.add_handles(control_handles, get_material("control_handles", gizmo), control_ids, false, true)
+
+
+# --- Branch / wire-source overlay -----------------------------------------------------------
+
+func _draw_branches(gizmo: EditorNode3DGizmo, track: TrackSpline) -> void:
+	var line_points := PackedVector3Array()
+	for connection: BranchConnection in track.branches:
+		if connection == null:
+			continue
+		var from_spline: Spline = track.get_spline_at(connection.from_path_index)
+		var to_spline: Spline = track.get_spline_at(connection.to_path_index)
+		if from_spline == null or to_spline == null:
+			continue
+		if connection.from_point_index < 0 or connection.from_point_index >= from_spline.point_count:
+			continue
+		if connection.to_point_index < 0 or connection.to_point_index >= to_spline.point_count:
+			continue
+		line_points.append(from_spline.get_point_position(connection.from_point_index))
+		line_points.append(to_spline.get_point_position(connection.to_point_index))
+	if line_points.size() > 0:
+		gizmo.add_lines(line_points, get_material("branches", gizmo), false)
+
+
+func _draw_wire_source(gizmo: EditorNode3DGizmo, track: TrackSpline) -> void:
+	if wire_source.is_empty():
+		return
+	var path_index: int = wire_source.get("path_index", -1)
+	var point_index: int = wire_source.get("point_index", -1)
+	var spline: Spline = track.get_spline_at(path_index)
+	if spline == null or point_index < 0 or point_index >= spline.point_count:
+		return
+	var pos: Vector3 = spline.get_point_position(point_index)
+	var s := 0.6
+	var cross := PackedVector3Array([
+		pos + Vector3(-s, 0, 0), pos + Vector3(s, 0, 0),
+		pos + Vector3(0, -s, 0), pos + Vector3(0, s, 0),
+		pos + Vector3(0, 0, -s), pos + Vector3(0, 0, s),
+	])
+	gizmo.add_lines(cross, get_material("wire_source", gizmo), false)
 
 
 # --- Handle interaction ---------------------------------------------------------------------
@@ -336,6 +384,39 @@ func _spline_for_handle(track: TrackSpline, handle_id: int) -> Spline:
 	if track == null:
 		return null
 	return track.get_spline_at(_decode(handle_id).path_index)
+
+
+## Nearest point under the cursor across every path, or {} when nothing is within max_dist
+## screen pixels. Used by the plugin's Wire Branch tool (and point-add collision guard).
+func find_point_at_screen(track: TrackSpline, camera: Camera3D, screen_pos: Vector2, max_dist: float = 12.0) -> Dictionary:
+	var best := {}
+	var best_dist := max_dist
+	for path_index in track.get_path_count():
+		var spline: Spline = track.get_spline_at(path_index)
+		if spline == null:
+			continue
+		for idx in spline.point_count:
+			var world_pos: Vector3 = track.to_global(spline.get_point_position(idx))
+			var d: float = camera.unproject_position(world_pos).distance_to(screen_pos)
+			if d <= best_dist:
+				best_dist = d
+				best = {"path_index": path_index, "point_index": idx}
+	return best
+
+
+## World-space cursor ray snapped to the first surface/collider under it, falling back to a
+## camera-facing plane through fallback_world_origin. Returns the point in the track's LOCAL
+## space (ready for Curve3D.add_point). Used by the plugin's Add Point tool.
+func resolve_point_position(track: TrackSpline, camera: Camera3D, screen_pos: Vector2, fallback_world_origin: Vector3) -> Vector3:
+	var ray_from: Vector3 = camera.project_ray_origin(screen_pos)
+	var ray_dir: Vector3 = camera.project_ray_normal(screen_pos)
+	var inters: Variant = _raycast_to_surface(track, camera, ray_from, ray_dir)
+	if inters == null:
+		var plane := Plane(camera.global_transform.basis.z, fallback_world_origin)
+		inters = plane.intersects_ray(ray_from, ray_dir)
+	if inters == null:
+		return Vector3.ZERO
+	return track.to_local(inters as Vector3)
 
 
 func _snap(v: Vector3) -> Vector3:

@@ -12,6 +12,7 @@
 [ext_resource type="Script" uid="uid://ch5pjmp7ic5lh" path="res://Systems/Track/track_spline.gd" id="10_mgmc7"]
 [ext_resource type="PackedScene" uid="uid://52mr8is85mi3" path="res://Content/Scenes/Skyboxes/skybox_afternoon_sky_hills.tscn" id="11_10ci5"]
 [ext_resource type="Curve3D" uid="uid://bj1wim501vbdo" path="res://new_curve_3d.tres" id="11_mgmc7"]
+[ext_resource type="Script" uid="uid://bkumr6eeea6fl" path="res://Systems/Track/branch_connection.gd" id="11_ufwmt"]
 
 [sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_wj5hs"]
 
@@ -158,17 +159,84 @@ script = ExtResource("8_10ci5")
 resource_local_to_scene = true
 script = ExtResource("8_10ci5")
 
+[sub_resource type="Resource" id="Resource_nst2s"]
+resource_local_to_scene = true
+script = ExtResource("8_10ci5")
+
 [sub_resource type="Curve3D" id="Curve3D_f4ioe"]
 closed = true
 bake_interval = 0.25
 _data = {
-"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -28.37041, 0, -80.90988, 0, 0, 0, 0, 0, 0, -88.793045, 0.52809715, -133.15001, 0, 0, 0, 0, 0, 0, -133.23328, 3.7823029, -132.7869, 0, 0, 0, 0, 0, 0, -195.06543, 3.1533432, -73.12854, 0, 0, 0, 0, 0, 0, -292.54993, 8.59816, 51.535034, 0, 0, 0, 0, 0, 0, -405.7845, 12.259888, 105.23297, 0, 0, 0, 0, 0, 0, -576.78076, 0, 211.56111, 0, 0, 0, 0, 0, 0, -666.88306, 0, 264.70398, 0, 0, 0, 0, 0, 0, -717.04535, 3.0517578e-05, 387.498, 0, 0, 0, 0, 0, 0, -687.98596, 0, 457.68057, 0, 0, 0, 0, 0, 0, -627.39465, 0, 565.7223, 0, 0, 0, 0, 0, 0, -484.4727, 0, 632.88074, 0, 0, 0, 0, 0, 0, -390.0428, 0, 692.49884, 0, 0, 0, 0, 0, 0, -366.37735, 0, 821.3484, 0, 0, 0, 0, 0, 0, -407.8685, 0, 938.6877, 0, 0, 0, 0, 0, 0, -476.58063, 0, 1079.432, 0, 0, 0, 0, 0, 0, -472.7571, 0, 1207.4006, 0, 0, 0, 0, 0, 0, -410.9278, 0, 1287.0302, 0, 0, 0, 0, 0, 0, -296.68353, 0, 1356.368, 0, 0, 0, 0, 0, 0, -191.07878, 1.5258789e-05, 1346.8253, 0, 0, 0, 0, 0, 0, -90.40575, 0, 1309.1604, 0, 0, 0, 0, 0, 0, -0.5631504, 0, 1233.7555, 0, 0, 0, 0, 0, 0, 61.57742, 0, 1128.3641, 0, 0, 0, 0, 0, 0, 75.07982, 0, 976.1542, 0, 0, 0, 0, 0, 0, 69.08367, 0, 834.6866, 0, 0, 0, 0, 0, 0, 83.82831, 0, 673.4871, 0, 0, 0, 0, 0, 0, 126.78542, 0, 533.7963, 0, 0, 0, 0, 0, 0, 104.114044, 0, 348.15543, 0, 0, 0, 0, 0, 0, 78.25349, 0, 228.25484, 0, 0, 0, 0, 0, 0, 40.037956, 0, 163.49242, 0, 0, 0, 0, 0, 0, 26.069992, 0, 89.78571, 0, 0, 0, 0, 0, 0, 16.649338, 0, 54.80797),
-"tilts": PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -28.37041, 0, -80.90988, 0, 0, 0, 0, 0, 0, -65.778496, 0, -123.00637, 0, 0, 0, 0, 0, 0, -133.23328, 3.7823029, -132.7869, 0, 0, 0, 0, 0, 0, -209.73405, 0, -68.3641, 0, 0, 0, 0, 0, 0, -248.09964, 0, -13.565903, 0, 0, 0, 0, 0, 0, -292.54993, 8.59816, 51.535034, 0, 0, 0, 0, 0, 0, -489.52814, -1.5258789e-05, 134.86964, 0, 0, 0, 0, 0, 0, -576.78076, 0, 211.56111, 0, 0, 0, 0, 0, 0, -666.88306, 0, 264.70398, 0, 0, 0, 0, 0, 0, -717.04535, 3.0517578e-05, 387.498, 0, 0, 0, 0, 0, 0, -687.98596, 0, 457.68057, 0, 0, 0, 0, 0, 0, -627.39465, 0, 565.7223, 0, 0, 0, 0, 0, 0, -484.4727, 0, 632.88074, 0, 0, 0, 0, 0, 0, -390.0428, 0, 692.49884, 0, 0, 0, 0, 0, 0, -366.37735, 0, 821.3484, 0, 0, 0, 0, 0, 0, -407.8685, 0, 938.6877, 0, 0, 0, 0, 0, 0, -476.58063, 0, 1079.432, 0, 0, 0, 0, 0, 0, -472.7571, 0, 1207.4006, 0, 0, 0, 0, 0, 0, -410.9278, 0, 1287.0302, 0, 0, 0, 0, 0, 0, -296.68353, 0, 1356.368, 0, 0, 0, 0, 0, 0, -191.07878, 1.5258789e-05, 1346.8253, 0, 0, 0, 0, 0, 0, -90.40575, 0, 1309.1604, 0, 0, 0, 0, 0, 0, -0.5631504, 0, 1233.7555, 0, 0, 0, 0, 0, 0, 61.57742, 0, 1128.3641, 0, 0, 0, 0, 0, 0, 75.07982, 0, 976.1542, 0, 0, 0, 0, 0, 0, 69.08367, 0, 834.6866, 0, 0, 0, 0, 0, 0, 83.82831, 0, 673.4871, 0, 0, 0, 0, 0, 0, 126.78542, 0, 533.7963, 0, 0, 0, 0, 0, 0, 104.114044, 0, 348.15543, 0, 0, 0, 0, 0, 0, 78.25349, 0, 228.25484, 0, 0, 0, 0, 0, 0, 40.037956, 0, 163.49242, 0, 0, 0, 0, 0, 0, 26.069992, 0, 89.78571, 0, 0, 0, 0, 0, 0, 16.649338, 0, 54.80797),
+"tilts": PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 }
-point_count = 33
+point_count = 34
 script = ExtResource("9_f4ioe")
-point_data = Array[ExtResource("8_10ci5")]([SubResource("Resource_ufwmt"), SubResource("Resource_b4edc"), SubResource("Resource_f1f0g"), SubResource("Resource_ydmu4"), SubResource("Resource_tks8d"), SubResource("Resource_0vxxn"), SubResource("Resource_n70bg"), SubResource("Resource_7wscn"), SubResource("Resource_o72uh"), SubResource("Resource_j84e5"), SubResource("Resource_0lxio"), SubResource("Resource_nvica"), SubResource("Resource_hmtux"), SubResource("Resource_f8qj4"), SubResource("Resource_qeawq"), SubResource("Resource_ndfhm"), SubResource("Resource_4005e"), SubResource("Resource_wo3q2"), SubResource("Resource_1w3gd"), SubResource("Resource_fe5xm"), SubResource("Resource_4kx2u"), SubResource("Resource_awjn4"), SubResource("Resource_tw28w"), SubResource("Resource_7mxe8"), SubResource("Resource_8mrgg"), SubResource("Resource_knjn7"), SubResource("Resource_nx86o"), SubResource("Resource_862fn"), SubResource("Resource_f8hg3"), SubResource("Resource_htu76"), SubResource("Resource_pkgtq"), SubResource("Resource_fmqs3"), SubResource("Resource_10ci5")])
+point_data = Array[ExtResource("8_10ci5")]([SubResource("Resource_ufwmt"), SubResource("Resource_b4edc"), SubResource("Resource_f1f0g"), SubResource("Resource_ydmu4"), SubResource("Resource_tks8d"), SubResource("Resource_0vxxn"), SubResource("Resource_n70bg"), SubResource("Resource_7wscn"), SubResource("Resource_o72uh"), SubResource("Resource_j84e5"), SubResource("Resource_0lxio"), SubResource("Resource_nvica"), SubResource("Resource_hmtux"), SubResource("Resource_f8qj4"), SubResource("Resource_qeawq"), SubResource("Resource_ndfhm"), SubResource("Resource_4005e"), SubResource("Resource_wo3q2"), SubResource("Resource_1w3gd"), SubResource("Resource_fe5xm"), SubResource("Resource_4kx2u"), SubResource("Resource_awjn4"), SubResource("Resource_tw28w"), SubResource("Resource_7mxe8"), SubResource("Resource_8mrgg"), SubResource("Resource_knjn7"), SubResource("Resource_nx86o"), SubResource("Resource_862fn"), SubResource("Resource_f8hg3"), SubResource("Resource_htu76"), SubResource("Resource_pkgtq"), SubResource("Resource_fmqs3"), SubResource("Resource_10ci5"), SubResource("Resource_nst2s")])
 metadata/_custom_type_script = "uid://dkyobseeo0c7n"
+
+[sub_resource type="Resource" id="Resource_0ys6a"]
+resource_local_to_scene = true
+script = ExtResource("8_10ci5")
+
+[sub_resource type="Resource" id="Resource_plkha"]
+resource_local_to_scene = true
+script = ExtResource("8_10ci5")
+
+[sub_resource type="Resource" id="Resource_lagfg"]
+resource_local_to_scene = true
+script = ExtResource("8_10ci5")
+
+[sub_resource type="Resource" id="Resource_88tit"]
+resource_local_to_scene = true
+script = ExtResource("8_10ci5")
+
+[sub_resource type="Resource" id="Resource_t4xor"]
+resource_local_to_scene = true
+script = ExtResource("8_10ci5")
+
+[sub_resource type="Resource" id="Resource_duirk"]
+resource_local_to_scene = true
+script = ExtResource("8_10ci5")
+
+[sub_resource type="Resource" id="Resource_1pk4f"]
+resource_local_to_scene = true
+script = ExtResource("8_10ci5")
+
+[sub_resource type="Resource" id="Resource_4iv2b"]
+resource_local_to_scene = true
+script = ExtResource("8_10ci5")
+
+[sub_resource type="Resource" id="Resource_dmr00"]
+resource_local_to_scene = true
+script = ExtResource("8_10ci5")
+
+[sub_resource type="Curve3D" id="Curve3D_4iv2b"]
+bake_interval = 0.25
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, -21.821121, 0, -120.18396, 0, 0, 0, 0, 0, 0, -25.651176, 0, -175.7775, 0, 0, 0, 0, 0, 0, -98.47849, 0, -264.6983, 0, 0, 0, 0, 0, 0, -179.75952, 0, -249.92915, 0, 0, 0, 0, 0, 0, -262.69354, -1.5258789e-05, -226.07419, 0, 0, 0, 0, 0, 0, -296.51364, 0, -167.28171, 0, 0, 0, 0, 0, 0, -338.91827, 3.0517578e-05, -75.122635, 0, 0, 0, 0, 0, 0, -422.02945, 0, -11.757629, 0, 0, 0, 0, 0, 0, -457.53766, 0, 48.67366),
+"tilts": PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0)
+}
+point_count = 9
+script = ExtResource("9_f4ioe")
+point_data = Array[ExtResource("8_10ci5")]([SubResource("Resource_0ys6a"), SubResource("Resource_plkha"), SubResource("Resource_lagfg"), SubResource("Resource_88tit"), SubResource("Resource_t4xor"), SubResource("Resource_duirk"), SubResource("Resource_1pk4f"), SubResource("Resource_4iv2b"), SubResource("Resource_dmr00")])
+cyclic = false
+
+[sub_resource type="Curve3D" id="Curve3D_dmr00"]
+bake_interval = 0.25
+script = ExtResource("9_f4ioe")
+cyclic = false
+
+[sub_resource type="Resource" id="Resource_sp0hc"]
+script = ExtResource("11_ufwmt")
+from_path_index = 1
+from_point_index = 8
+to_point_index = 7
+
+[sub_resource type="Resource" id="Resource_j68s2"]
+script = ExtResource("11_ufwmt")
+from_path_index = 1
+to_point_index = 1
 
 [node name="Test_Level" type="Node3D" unique_id=421134206]
 
@@ -625,6 +693,8 @@ metadata/_edit_lock_ = true
 [node name="TrackSpline" type="Path3D" parent="." unique_id=888770020]
 curve = SubResource("Curve3D_f4ioe")
 script = ExtResource("10_mgmc7")
+alternate_paths = Array[ExtResource("9_f4ioe")]([SubResource("Curve3D_4iv2b"), SubResource("Curve3D_dmr00")])
+branches = Array[ExtResource("11_ufwmt")]([SubResource("Resource_sp0hc"), SubResource("Resource_j68s2")])
 source_curve = ExtResource("11_mgmc7")
 metadata/_custom_type_script = "uid://ch5pjmp7ic5lh"
 
