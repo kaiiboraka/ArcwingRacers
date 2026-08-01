@@ -18,6 +18,13 @@ const ID_POINT := 0
 const ID_IN := 1
 const ID_OUT := 2
 
+## Base added to every encoded handle/subgizmo id. The built-in Path3D gizmo (also on
+## TrackSpline, since it extends Path3D) uses plain 0..point_count ids, and the viewport
+## keeps ONE subgizmo map per selected node shared across gizmos. Offsetting our ids
+## keeps the two namespaces disjoint so a mixed selection (main point via built-in +
+## alt point via us) can't move the wrong point. Must stay above any real point count.
+const ID_BASE := 0x100000
+
 ## Cast the cursor ray against scene colliders when dragging points (mirrors the
 ## built-in Path3D "Snap to Colliders" option, which defaults to on). Falls back
 ## to the camera-facing plane when nothing is under the cursor.
@@ -64,14 +71,19 @@ func _has_gizmo(for_node_3d: Node3D) -> bool:
 # --- Handle id encode / decode --------------------------------------------------------------
 
 func _encode(path_index: int, point_index: int, kind: int) -> int:
-	return path_index * 0x800000 + point_index * 8 + kind
+	return ID_BASE + path_index * 0x800000 + point_index * 8 + kind
 
 
 func _decode(id: int) -> Dictionary:
+	var shifted: int = id - ID_BASE
+	if shifted < 0:
+		# Foreign id (e.g. a built-in Path3D subgizmo id from a mixed selection).
+		return {"kind": 0, "point_index": -1, "path_index": -1, "valid": false}
 	return {
-		"kind": id & 0x7,
-		"point_index": (id >> 3) & 0xFFFFF,
-		"path_index": id >> 23,
+		"kind": shifted & 0x7,
+		"point_index": (shifted >> 3) & 0xFFFFF,
+		"path_index": shifted >> 23,
+		"valid": true,
 	}
 
 
@@ -105,21 +117,28 @@ func _draw_path(gizmo: EditorNode3DGizmo, path_index: int, spline: Spline) -> vo
 	# Sampled curve as a line LIST (pairs of vertices — add_lines requires an even
 	# vertex count). Each consecutive pair draws one segment; a closed spline also
 	# wraps the last sample back to the first. (Reload bump 1.)
-	var line_points := PackedVector3Array()
+	var samples := PackedVector3Array()
 	var total_length: float = spline.get_baked_length()
 	if total_length > 0.001:
 		var step := 0.25
 		var count := int(total_length / step) + 2
-		var samples := PackedVector3Array()
 		for i in count:
 			samples.append(spline.sample_baked(minf(i * step, total_length)))
-		for i in samples.size() - 1:
-			line_points.append(samples[i])
-			line_points.append(samples[i + 1])
-		if spline.closed and samples.size() > 1:
-			line_points.append(samples[samples.size() - 1])
-			line_points.append(samples[0])
+
+	var line_points := PackedVector3Array()
+	for i in samples.size() - 1:
+		line_points.append(samples[i])
+		line_points.append(samples[i + 1])
+	if spline.closed and samples.size() > 1:
+		line_points.append(samples[samples.size() - 1])
+		line_points.append(samples[0])
+	if line_points.size() > 0:
 		gizmo.add_lines(line_points, path_material, false)
+
+	# Pickable collision segments (local space, like the built-in Path3D gizmo) so a
+	# click anywhere on ANY path's curve selects the TrackSpline node in the viewport.
+	if line_points.size() > 0:
+		gizmo.add_collision_segments(line_points)
 
 	# Point handles + control handles.
 	var point_handles := PackedVector3Array()
@@ -201,6 +220,8 @@ func _draw_wire_source(gizmo: EditorNode3DGizmo, track: TrackSpline) -> void:
 
 func _get_handle_name(gizmo: EditorNode3DGizmo, handle_id: int, secondary: bool) -> String:
 	var d := _decode(handle_id)
+	if not d.valid:
+		return "Track"
 	var suffix := "Path %d Point #%d" % [d.path_index, d.point_index]
 	if d.kind == ID_IN:
 		return "In Control #%d (%s)" % [d.point_index, suffix]
@@ -342,6 +363,8 @@ func _get_subgizmo_transform(gizmo: EditorNode3DGizmo, subgizmo_id: int) -> Tran
 	if spline == null:
 		return Transform3D()
 	var d := _decode(subgizmo_id)
+	if not _valid_point(d, spline):
+		return Transform3D()
 	return Transform3D(Basis(), spline.get_point_position(d.point_index))
 
 
@@ -351,6 +374,8 @@ func _set_subgizmo_transform(gizmo: EditorNode3DGizmo, subgizmo_id: int, transfo
 	if spline == null:
 		return
 	var d := _decode(subgizmo_id)
+	if not _valid_point(d, spline):
+		return
 	spline.set_point_position(d.point_index, transform.origin)
 
 
@@ -362,15 +387,19 @@ func _commit_subgizmos(gizmo: EditorNode3DGizmo, ids: PackedInt32Array, restores
 	if cancel:
 		for i in ids.size():
 			var d := _decode(ids[i])
+			if not d.valid:
+				continue
 			var spline: Spline = track.get_spline_at(d.path_index)
-			if spline:
+			if spline and _valid_point(d, spline):
 				spline.set_point_position(d.point_index, (restores[i] as Transform3D).origin)
 		return
 	ur.create_action("Move Track Points")
 	for i in ids.size():
 		var d := _decode(ids[i])
+		if not d.valid:
+			continue
 		var spline: Spline = track.get_spline_at(d.path_index)
-		if spline == null:
+		if spline == null or not _valid_point(d, spline):
 			continue
 		var idx: int = d.point_index
 		ur.add_do_method(spline, "set_point_position", idx, spline.get_point_position(idx))
@@ -383,7 +412,18 @@ func _commit_subgizmos(gizmo: EditorNode3DGizmo, ids: PackedInt32Array, restores
 func _spline_for_handle(track: TrackSpline, handle_id: int) -> Spline:
 	if track == null:
 		return null
-	return track.get_spline_at(_decode(handle_id).path_index)
+	var d := _decode(handle_id)
+	if not d.valid:
+		return null
+	return track.get_spline_at(d.path_index)
+
+
+## True when a decoded id addresses a real point on `spline` (kind POINT, index in
+## bounds). Foreign ids and empty-path decodes fail here so mixed selections degrade
+## gracefully instead of moving the wrong point.
+func _valid_point(d: Dictionary, spline: Spline) -> bool:
+	return d.valid and d.kind == ID_POINT and spline != null \
+			and d.point_index >= 0 and d.point_index < spline.point_count
 
 
 ## Nearest point under the cursor across every path, or {} when nothing is within max_dist
