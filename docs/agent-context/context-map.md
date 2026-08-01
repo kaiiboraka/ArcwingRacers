@@ -142,7 +142,7 @@ Built on **Godot 4** (GDScript). 3D. See `technical/code-standards.md` for the p
 | `game-design/multiplayer.md` | ✅ Written — splitscreen, LAN, P2P architecture |
 | `game-design/pod-racer-notes/` | 🟡 Reference — EP1R stat data, junkyard strategy, best parts guide, pit droid mechanics |
 | `game-design/tracks/track-layout.md` | ✅ Written — design intent: cyclic/non-cyclic, branching, waypoint gating, AI pathing, modular chunks |
-| `technical/tracks-and-splines.md` | ✅ Written — implementation reference: data format, traversal, AI sampling math, minimap rendering |
+| `technical/tracks-and-splines.md` | ✅ Written — implementation reference: `Spline extends Curve3D` + per-point metadata, recipe-driven mesh generation, traversal, AI sampling math, minimap rendering (see ADR 0010) |
 | `technical/architecture-plan.md` | ✅ Written — full system map, 23 modules across 5 phases, implementation order |
 | `technical/pod-physics-and-collision.md` | ✅ Written — capsule collision, layers, CCD strategy |
 | `technical/pod-scene-hierarchy.md` | ✅ Written — single CharacterBody3D, 7 capsules, spring-offset visuals |
@@ -150,7 +150,7 @@ Built on **Godot 4** (GDScript). 3D. See `technical/code-standards.md` for the p
 | `technical/pod-handling-and-boost.md` | ✅ Written — acceleration catch-up model, boost, air control (gravity modulation), steering (yaw + traction + max_turn_rate/turn_response split) |
 | `technical/pod-collision-response.md` | ✅ Written — scrape vs crash, pod-on-pod damage, one-shot destruction, death spin |
 | `technical/next-technical-breakdowns.md` | 📋 Planned — 10 subjects queued for next session |
-| `decisions/adrs/` | ✅ 9 ADRs recorded (0001–0009) |
+| `decisions/adrs/` | ✅ 10 ADRs recorded (0001–0010) |
 | `agent-context/` | ✅ All files updated for ArcwingRacers |
 | Legacy Fantasy X docs | 🗑️ Legacy — keep for reference until replaced |
 
