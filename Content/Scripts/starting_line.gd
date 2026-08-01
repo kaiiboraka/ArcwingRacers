@@ -4,7 +4,7 @@ class_name StartingLine extends Node3D
 
 const MAX_RACER_SLOTS: int = 16;
 const GRID_COLS: int = 4;
-const STARTING_POSITION : Texture = preload("uid://cr1dp714f64qq");
+const STARTING_POSITION : Texture = preload("uid://bahqbi23rxjjs");
 
 @export_range(0, 100) var RACER_POSITION_WIDTH: float = 15.0:
 	set(v):

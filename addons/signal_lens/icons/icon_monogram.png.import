@@ -2,29 +2,28 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dgayeoxpknqkv"
-path.bptc="res://.godot/imported/icon_monogram.png-7d0e77813dbd8089a5f529fe0e619493.bptc.ctex"
+uid="uid://bdgvk6c73gbws"
+path="res://.godot/imported/icon_monogram.png-7d0e77813dbd8089a5f529fe0e619493.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
-"vram_texture": true
+"vram_texture": false
 }
 
 [deps]
 
 source_file="res://addons/signal_lens/icons/icon_monogram.png"
-dest_files=["res://.godot/imported/icon_monogram.png-7d0e77813dbd8089a5f529fe0e619493.bptc.ctex"]
+dest_files=["res://.godot/imported/icon_monogram.png-7d0e77813dbd8089a5f529fe0e619493.ctex"]
 
 [params]
 
-compress/mode=2
-compress/high_quality=true
+compress/mode=0
+compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0
 compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=true
+mipmaps/generate=false
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""

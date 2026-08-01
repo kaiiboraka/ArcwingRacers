@@ -167,8 +167,7 @@ metadata/_custom_type_script = "uid://dkyobseeo0c7n"
 
 [node name="Test_Level" type="Node3D" unique_id=421134206]
 
-[node name="StartingLine" parent="." unique_id=583602706 node_paths=PackedStringArray("racers_to_load") instance=ExtResource("2_wg3kv")]
-racers_to_load = [NodePath("../Arcwing")]
+[node name="StartingLine" parent="." unique_id=583602706 instance=ExtResource("2_wg3kv")]
 
 [node name="Arcwing" parent="." unique_id=612795873 instance=ExtResource("1_26u2p")]
 

@@ -6,7 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://0bkf4l28oghc" path="res://Content/Models/SM_Wing_Right.glb" id="4_oi37l"]
 [ext_resource type="Shader" uid="uid://blskc02bu0atp" path="res://Content/Materials/Shaders/scifi_shield.gdshader" id="4_yluh8"]
 [ext_resource type="Script" uid="uid://csjccrhj5wnx7" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="5_88bc5"]
-[ext_resource type="Texture2D" uid="uid://cxv0sm1ow86fq" path="res://Content/Textures/sparkle-64.png" id="5_s6lsw"]
+[ext_resource type="Texture2D" uid="uid://bqjcfy3r4wu7n" path="res://Content/Textures/sparkle-64.png" id="5_s6lsw"]
 [ext_resource type="Material" uid="uid://duxq3pnf3teob" path="res://Content/Materials/M_energy_beam.tres" id="6_kfdho"]
 [ext_resource type="Script" uid="uid://8umksf8e80fw" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="6_oi37l"]
 [ext_resource type="Script" uid="uid://b8hhnqsugykly" path="res://addons/phantom_camera/scripts/resources/camera_3d_resource.gd" id="7_oi37l"]
