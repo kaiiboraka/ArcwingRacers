@@ -6,6 +6,12 @@ Tracks are defined by **splines** — 3D curves that encode the racing line, lap
 
 A spline asset exists as a single container object containing one or more path segments. The **main spline** is the primary path where the start/finish line and player spawn (point 0) are located. All other paths are **alternate paths** that branch from and rejoin the main spline.
 
+### The spline is the racing structure, not the whole level
+
+Levels are more than the spline: players can leave the road, cut over hills, and explore open space. The spline only describes the **racing structure** — the road ribbon, tunnels, the AI racing line, lap/respawn data. Everything beside the road is **modeled terrain** (`.glb` per ADR 0009) with its own collision; the AI never intentionally drives off the spline except on explicitly identified alternate paths.
+
+This is a **hybrid authoring model**: each spline segment carries a recipe that decides whether the level builder generates geometry from the spline (a road segment with a width parameter, a tunnel with a height parameter) or leaves the span blank so a hand-modeled section stands as-is. See `technical/tracks-and-splines.md` and ADR 0010 for the implementation.
+
 ---
 
 ## Cyclic Tracks (Circuits)
@@ -78,6 +84,8 @@ Each biome defines a library of **reusable track segments** — pre-authored chu
 - Hazard zones (geysers, lava flows, ice patches)
 
 A **track definition** is a sequence of segment references plus the spline connecting them. Multiple tracks in the same biome share geometry chunks but arrange them differently.
+
+Chunk geometry may be **modeled** (a `.glb` segment, per ADR 0009) or **generated** from the spline (a recipe-flagged span, per ADR 0010) — the two coexist in the same track definition.
 
 ---
 

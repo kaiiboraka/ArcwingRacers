@@ -1,40 +1,40 @@
 # Spline System — Technical Reference
 
 > **Design intent:** See `docs/game-design/tracks/track-layout.md` for the what and why — cyclic/non-cyclic rules, branching path constraints, waypoint gating concept, AI pathing strategy, and modular chunk stitching.
+>
+> **Architecture decision:** See ADR 0010 (`docs/decisions/adrs/0010-spline-curve3d-and-segment-recipes.md`). The spline extends Godot's `Curve3D` and carries parallel per-point metadata arrays; per-segment mesh recipes decide where geometry is generated vs. where modeled terrain stands.
 
-Tracks are defined by **splines** — 3D curves encoding the racing line, lap progression, AI pathing, minimap display, and respawn points. A spline is a `Resource` with one main path and zero or more alternate paths. Point 0 is the start/finish line. Cyclic tracks wrap last→first; non-cyclic (rally) tracks run point 0→last, always 1 lap. Branching paths connect at split/join points with max 2 splits and 4 joins per point.
+Tracks are defined by **splines** — 3D curves encoding the racing line, lap progression, AI pathing, minimap display, and respawn points. A spline is a `Curve3D`-derived `Resource` with one main path and zero or more alternate paths. Point 0 is the start/finish line. Cyclic tracks wrap last→first; non-cyclic (rally) tracks run point 0→last, always 1 lap. Branching paths connect at split/join points with max 2 splits and 4 joins per point.
+
+The spline is only the **racing structure**, not the whole level. Recipes generate road/tunnel geometry where flagged; open shortcut terrain and bespoke set-pieces are modeled `.glb` assets that coexist as separate physics bodies (see ADR 0009). The AI never drives off-spline space.
 
 ---
 
 ## Spline Resource Structure
 
-The spline lives in a `systems/track/spline.gd` class that extends `Resource`, saved as `.tres` in `Content/Tracks/<name>/`.
+The spline lives in `systems/track/spline.gd` as a class extending `Curve3D`, saved as `.tres` in `Content/Tracks/<name>/`.
 
 ```gdscript
 # systems/track/spline.gd
-class_name Spline extends Resource
+class_name Spline extends Curve3D
 
-@export var paths: Array[SplinePath]
-@export var main_path_index: int = 0
+## Per-point half-width (left + right from center line), meters.
+@export var point_widths: PackedFloat32Array
+## Per-point mesh recipe (ROAD / TUNNEL / NONE).
+@export var point_recipes: Array[int]
+## Per-point recipe scalar (e.g. tunnel height in meters). Ignored for ROAD/NONE.
+@export var point_recipe_params: Array[float]
+## Per-point flags bitfield (START_FINISH, WAYPOINT, RESPAWN, BRANCH_*).
+@export var point_flags: Array[int]
+
 @export var cyclic: bool = true
-
-func get_main() -> SplinePath:
-    return paths[main_path_index]
-
-func get_path(index: int) -> SplinePath:
-    return paths[index]
 ```
 
-Each `SplinePath` holds an array of control points and metadata about branch connections:
-
-```gdscript
-class_name SplinePath extends Resource
-
-@export var points: Array[SplinePoint]
-@export var branches: Array[BranchConnection]  # points where other paths connect
-```
+All metadata arrays are indexed 1:1 with `Curve3D.point_count`. Editor point edits (add/remove/move via `Path3D` gizmos) trigger a re-sync through `_notification(NOTIFICATION_RESET)` and the `point_count` setter override; any residual desync is repaired lazily on access (clamp index, pad on append). See the `spline.gd` implementation for the exact sync contract.
 
 ### BranchConnection
+
+Branches (multiple paths per track) are **deferred** — ADR 0010 keeps the first pass to a single main path. When branches land, they follow the model from ADR 0005:
 
 ```gdscript
 class BranchConnection:
@@ -49,16 +49,39 @@ class BranchConnection:
 
 ## Per-Point Data Format
 
-Each `SplinePoint` stores the following fields:
+`Curve3D` provides per-point **position**, **in/out handles** (Catmull-Rom/Cubic smoothing), and **tilt** (rotation about the forward axis). Our metadata adds the rest:
+
+| Field | Source | Meaning |
+|---|---|---|
+| `position` | `Curve3D` | World-space location of the point |
+| `in` / `out` | `Curve3D` | Curve smoothing handles (leave zero for raw spline) |
+| `tilt` | `Curve3D` | Banking — roll angle in radians, positive = right-side down |
+| `width` | `point_widths[i]` | Track half-width in meters (left + right from center) |
+| `recipe` | `point_recipes[i]` | Mesh to generate on the span AFTER this point |
+| `recipe_param` | `point_recipe_params[i]` | Per-recipe scalar (e.g. tunnel height) |
+| `flags` | `point_flags[i]` | Bitfield for point type |
+| `normal` | derived | Surface up direction, from tangent × tilt (see below) |
+
+### Width Encoding
+
+`width` is a single float representing half-width (radius from center line). The actual playable surface extends `width` units to the left and right of the center line. Interpolated between points so tracks can narrow (tunnel entrances) and widen (straights, pit areas).
+
+### Banking
+
+`banking` is stored as `Curve3D` tilt — the roll angle around the forward direction, in radians. Positive = right side tilts down (like a banked NASCAR turn). Interpolated between points. Banking rotates the surface normal as well.
+
+### Surface Normal
+
+The surface up vector at a sample is derived from the forward tangent and the banked lateral:
 
 ```gdscript
-class SplinePoint:
-    var position: Vector3       # world-space location
-    var normal: Vector3         # surface up direction at this point
-    var width: float            # track width in meters (left + right from center)
-    var banking: float          # roll angle in radians (positive = right-side down)
-    var flags: int              # bitfield for point type
+func sample_normal(sample_pos: Vector3, forward: Vector3, bank: float) -> Vector3:
+    var lateral = forward.cross(Vector3.UP).normalized()
+    var rot = Basis(forward, bank)
+    return rot * lateral.cross(forward).normalized()
 ```
+
+On flat ground this is `(0, 1, 0)`. On walls or loop sections it rotates to match the surface. The hover system's raycasts use this to determine which direction is "down" when the pod is over this section. **Note:** the current hover raycasts in `PodController.gd` align to world up — reading spline banking into the hover system is the pending banking-model work in `technical/pod-hover-system.md`.
 
 ### Flags Bitfield
 
@@ -74,158 +97,102 @@ enum SplinePointFlags:
     PIT_EXIT      = 1 << 6  # pit lane exit
 ```
 
-### Width Encoding
+### Segment Recipes
 
-`width` is a single float representing half-width (radius from center line). The actual playable surface extends `width` units to the left and right of the center line. This is interpolated between points so tracks can narrow (tunnel entrances) and widen (straights, pit areas).
+`point_recipes[i]` names the mesh the generator builds on the span from point `i` to point `i+1`:
 
-### Banking
+| Recipe | Generated geometry | Extra param |
+|---|---|---|
+| `NONE` | Nothing — modeled terrain stands as-is. Spline still drives racing line / AI / lap / respawn here. | — |
+| `ROAD` | Ribbon surface + side walls, width from `point_widths`, following spline (banking via tilt). | — |
+| `TUNNEL` | Ribbon + side walls + roof (tube), width from `point_widths`. | `recipe_param[i]` = tunnel height in meters |
 
-`banking` is the roll angle around the forward direction, in radians. Positive = right side tilts down (like a banked NASCAR turn). Interpolated between points. Banking rotates the surface normal as well.
-
-### Surface Normal
-
-`normal` is the world-space up vector at this point. On flat ground this is `(0, 1, 0)`. On walls or loop sections it rotates to match the surface. The hover system's raycasts use this to determine which direction is "down" when the pod is over this section.
+Spans between two flagged points infer their recipe from the trailing point. Recipe metadata is read by the generator (see **Mesh Generation** below) and by gameplay only through flags.
 
 ---
 
 ## Spline Traversal
 
-### Sampling at Parameter t
-
-The primary operation: given a float `t` in `[0, 1]`, return the interpolated point data.
+Because `Spline extends Curve3D`, traversal uses Godot's baked sampling rather than hand-rolled math. Configure baking explicitly — the system's fidelity (banking/tunnel interpolation) depends on it:
 
 ```gdscript
-func sample(t: float) -> SplineSample:
-    var path = get_main()
-    var count = path.points.size()
-    # Convert t to point index + fractional blend
-    var total_segments = cyclic ? count : count - 1
-    var raw_index = t * total_segments
-    var i = floori(raw_index) % count
-    var frac = raw_index - floor(raw_index)
-    return interpolate(path, i, (i + 1) % count, frac)
-
-func interpolate(path: SplinePath, a: int, b: int, frac: float) -> SplineSample:
-    var p0 = path.points[a]
-    var p1 = path.points[b]
-    return SplineSample.new(
-        p0.position.lerp(p1.position, frac),          # position
-        p0.normal.slerp(p1.normal, frac).normalized(),# normal
-        lerpf(p0.width, p1.width, frac),              # width
-        lerpf(p0.banking, p1.banking, frac),          # banking
-        a                                              # segment_index
-    )
+@export var bake_interval: float = 0.25   # meters between baked samples
+@export var baking_cubic: bool = true      # cubic (Catmull-Rom) vs linear
 ```
 
-For **Catmull-Rom** (smoother curves), interpolate between 4 consecutive points:
+### Sampling at Offset
 
 ```gdscript
-func sample_catmull(t: float) -> SplineSample:
-    var path = get_main()
-    var count = path.points.size()
-    var total_segments = cyclic ? count : count - 1
-    var raw_index = t * total_segments
-    var i = floori(raw_index)
-    var frac = raw_index - i
-    var p0 = path.points[(i - 1 + count) % count]
-    var p1 = path.points[i % count]
-    var p2 = path.points[(i + 1) % count]
-    var p3 = path.points[(i + 2) % count]
-    var pos = catmull_rom(p0.position, p1.position, p2.position, p3.position, frac)
-    var nrm = catmull_rom(p0.normal, p1.normal, p2.normal, p3.normal, frac).normalized()
-    var w = catmull_rom_float(p0.width, p1.width, p2.width, p3.width, frac)
-    var bank = catmull_rom_float(p0.banking, p1.banking, p2.banking, p3.banking, frac)
-    return SplineSample.new(pos, nrm, w, bank, i % count)
+# Get world position at a distance along the spline
+var pos: Vector3 = spline.sample_baked(offset, cubic)
+# Get tangent (forward direction) at a distance
+var fwd: Vector3 = spline.sample_baked_up_vector(offset, cubic)  # or derive from consecutive samples
+# Get up vector (normal) at a distance
+var up: Vector3 = spline.sample_baked_up_vector(offset, cubic)
 ```
 
-### SplineSample
+Forward direction can be derived from two close samples:
 
 ```gdscript
-class SplineSample:
-    var position: Vector3
-    var normal: Vector3
-    var width: float
-    var banking: float
-    var segment_index: int
-
-    # Derived
-    func forward() -> Vector3:   # forward direction (tangent)
-        pass  # computed externally from consecutive samples
-    func right() -> Vector3:     # right lateral = forward × normal
-        return forward().cross(normal).normalized()
-    func left() -> Vector3:
-        return -right()
-```
-
-Forward direction is derived by sampling two close t-values and subtracting:
-
-```gdscript
-func sample_forward(t: float, delta: float = 0.001) -> Vector3:
-    var a = sample(t - delta).position
-    var b = sample(t + delta).position
+func sample_forward(spline: Spline, offset: float, delta: float = 0.01) -> Vector3:
+    var a = spline.sample_baked(offset - delta)
+    var b = spline.sample_baked(offset + delta)
     return (b - a).normalized()
 ```
 
 ### Projecting World Position onto Spline
 
-Given a racer's world position, find the nearest t on the spline. Needed for lap tracking and AI.
+`Curve3D` provides this natively with `get_closest_point()` / `get_closest_offset()`:
 
 ```gdscript
-func project(point: Vector3, start_t: float = 0.0, search_range: float = 0.25) -> float:
-    # Brute-force search: sample at N intervals, find closest, refine with binary search
-    var best_t = start_t
-    var best_dist = INF
-    var samples = 64
-    for i in samples:
-        var t = start_t - search_range + (2.0 * search_range * i / samples)
-        t = wrapf(t, 0.0, 1.0) if cyclic else clampf(t, 0.0, 1.0)
-        var s = sample(t)
-        var d = point.distance_squared_to(s.position)
-        if d < best_dist:
-            best_dist = d
-            best_t = t
-    # Binary refinement (4 iterations)
-    var step = search_range / samples
-    for _ in 4:
-        step *= 0.5
-        for offset in [-step, step]:
-            var t = wrapf(best_t + offset, 0.0, 1.0) if cyclic else clampf(best_t + offset, 0.0, 1.0)
-            var d = point.distance_squared_to(sample(t).position)
-            if d < best_dist:
-                best_dist = d
-                best_t = t
-    return best_t
+func project(spline: Spline, point: Vector3) -> float:
+    return spline.get_closest_offset(point)   # returns distance along spline
 ```
 
-The `start_t` parameter seeds the search with the racer's last-known t (from the previous frame). This makes projection fast and stable — a racer can't teleport to the other side of the track in one frame, so the search window stays tight.
+For cyclic tracks, wrap the returned offset into `[0, total_length)` when comparing lap progress.
 
 ### Total Length
 
 ```gdscript
-func total_length(samples_per_segment: int = 4) -> float:
-    var total = 0.0
-    var path = get_main()
-    var steps = path.points.size() * samples_per_segment
-    var prev = sample(0.0).position
-    for i in steps:
-        var t = float(i + 1) / steps
-        var pos = sample(t).position
-        total += prev.distance_to(pos)
-        prev = pos
-    return total
+var total_len: float = spline.get_baked_length()
 ```
+
+### Parameter t vs. Offset
+
+Older drafts of this doc used a normalized `t ∈ [0,1]`. With `Curve3D`, prefer **absolute offset in meters** (`get_closest_offset`, `sample_baked`) — it is what the engine bakes and what `get_closest_offset` returns. Convert to/from normalized `t` only where a formula calls for it:
+
+```gdscript
+func t_to_offset(spline: Spline, t: float) -> float:
+    return t * spline.get_baked_length()
+
+func offset_to_t(spline: Spline, offset: float) -> float:
+    return offset / spline.get_baked_length() if spline.get_baked_length() > 0.0 else 0.0
+```
+
+---
+
+## Mesh Generation
+
+The generator (`systems/track/track_mesh_generator.gd`, `@tool`) bakes spline spans into `ArrayMesh`:
+
+1. Sample the spline densely (bake interval), producing position + forward + normal + width + recipe per sample.
+2. For each span, build a triangle strip: left/right edges offset by `width` along the (banked) lateral axis.
+3. Extrude walls upward from the edges (ROAD), and a roof connecting the walls (TUNNEL, using `recipe_param` height).
+4. Emit a `StaticBody3D` + `CollisionShape3D` (trimesh) mirroring the visual mesh — this is the physical ground the pod hovers over on generated sections.
+
+Generated geometry is exported to `.glb` via `GLTFDocument` when a section should be polished in a DCC; otherwise it regenerates from the spline on edit.
 
 ---
 
 ## Waypoint Gating
 
-Waypoints are defined at strategic t-values (before splits, after merges, at start/finish). Each stores its t-position, sequence index, and activation radius:
+Waypoints are defined at strategic offsets (before splits, after merges, at start/finish). Each stores its spline offset, sequence index, and activation radius:
 
 ```gdscript
 class WaypointData:
-    var spline_t: float          # position on main spline
-    var index: int               # sequence order (0, 1, 2, ...)
-    var activation_radius: float # how close the racer must pass to count
+    var spline_offset: float       # distance along spline
+    var index: int                 # sequence order (0, 1, 2, ...)
+    var activation_radius: float   # how close the racer must pass to count
 ```
 
 A racer's lap progress is tracked as:
@@ -233,30 +200,23 @@ A racer's lap progress is tracked as:
 ```gdscript
 var last_cleared_waypoint: int = -1   # index of most recent waypoint passed
 var lap_count: int = 0
-var spline_t: float = 0.0             # current projected position on main spline
+var spline_offset: float = 0.0        # current projected offset on spline
 ```
 
 Each frame:
 
 ```gdscript
-func update_lap_progress(racer_t: float):
-    # Find the next waypoint the racer should clear
+func update_lap_progress(racer_offset: float):
     var next_wp = waypoints[last_cleared_waypoint + 1]
-
-    # Check if racer has passed it (moving forward)
-    if racer_t > next_wp.spline_t - next_wp.activation_radius:
+    if racer_offset > next_wp.spline_offset - next_wp.activation_radius:
         last_cleared_waypoint += 1
-
-        # If we cleared the last waypoint AND crossed start/finish, lap complete
         if last_cleared_waypoint == waypoints.size() - 1:
-            if crossed_start_finish(racer_t):
+            if crossed_start_finish(racer_offset):
                 lap_count += 1
-                last_cleared_waypoint = -1  # reset for next lap
+                last_cleared_waypoint = -1
 ```
 
-Key rule: **only forward progression counts**. If `racer_t` drops below the last-cleared waypoint (e.g. going backward), nothing happens — the waypoint is NOT de-cleared. This prevents lap fraud via reverse driving.
-
-Branching paths are naturally handled: a racer who takes a shortcut that exits past the next waypoint's t-value will clear that waypoint when they pass its t-threshold on the main spline. No special branch logic needed.
+Key rule: **only forward progression counts**. If `racer_offset` drops below the last-cleared waypoint (e.g. going backward), nothing happens — the waypoint is NOT de-cleared. This prevents lap fraud via reverse driving. Branching paths are naturally handled: a racer who takes a shortcut that exits past the next waypoint's offset clears that waypoint when they cross its threshold on the main spline.
 
 ---
 
@@ -265,23 +225,20 @@ Branching paths are naturally handled: a racer who takes a shortcut that exits p
 ### Lookahead Target
 
 ```gdscript
-func get_ai_target(racer_t: float, lookahead_distance: float) -> Vector3:
-    # Convert linear lookahead distance to a t delta
-    var total_len = total_length()
-    var t_delta = lookahead_distance / total_len
-    var target_t = racer_t + t_delta
+func get_ai_target(racer_offset: float, lookahead_distance: float) -> Vector3:
+    var target_offset = racer_offset + lookahead_distance
     if cyclic:
-        target_t = fmod(target_t, 1.0)
+        target_offset = fmod(target_offset, get_baked_length())
     else:
-        target_t = min(target_t, 1.0)
-    return sample(target_t).position
+        target_offset = min(target_offset, get_baked_length())
+    return sample_baked(target_offset)
 ```
 
 `lookahead_distance` is the key difficulty parameter:
 - **Easy AI:** long lookahead (smoother, slower reaction to curves → wider turns, slower cornering)
 - **Hard AI:** short lookahead (tighter line, brakes earlier, accelerates sooner out of turns)
 
-The AI's `AiLookAhead` stat (from EP1R data at struct offset 264) is stored as a **squared distance** — the debug menu applies `sqrt()` at display time. Internally this means `lookahead_distance = sqrt(ai_lookahead_squared)`.
+The AI's `AiLookAhead` stat (from EP1R data at struct offset 264) is stored as a **squared distance** — the debug menu applies `sqrt()` at display time. Internally `lookahead_distance = sqrt(ai_lookahead_squared)`.
 
 ### Steering Toward Target
 
@@ -295,34 +252,28 @@ func get_steering_input(racer_position: Vector3, target: Vector3, forward: Vecto
 
 ### Branch Path Selection
 
-When approaching a `BRANCH_SPLIT` point, the AI evaluates all downstream paths:
+When approaching a `BRANCH_SPLIT` point, the AI evaluates all downstream paths (deferred until branches exist):
 
 ```gdscript
-func select_branch(racer_t: float, ai_difficulty: float) -> int:
-    var branch_point = find_nearest_branch(racer_t)
+func select_branch(racer_offset: float, ai_difficulty: float) -> int:
+    var branch_point = find_nearest_branch(racer_offset)
     if branch_point == null:
         return -1
-
     var best_path = -1
     var best_score = -INF
-
     for conn in branch_point.connections:
         var target_path = paths[conn.to_path_index]
         var remaining_distance = estimate_path_distance(target_path, conn.to_point_index)
         var shortcut_bonus = 0.0
         if remaining_distance < estimate_main_distance(branch_point.from_point_index):
-            shortcut_bonus = 20.0  # reward shortcuts
-
+            shortcut_bonus = 20.0
         var risk = 0.0
         if conn.is_split:
             risk = evaluate_path_risk(target_path, conn.to_point_index)
-
-        # Higher difficulty AI weighs shortcut bonus more, risk less
         var score = shortcut_bonus * ai_difficulty - risk * (1.0 - ai_difficulty)
         if score > best_score:
             best_score = score
             best_path = conn.to_path_index
-
     return best_path
 ```
 
@@ -349,21 +300,19 @@ The minimap is a 2D projection of the 3D spline. It shows the track layout from 
 ### Flattening 3D to 2D
 
 ```gdscript
-func flatten_to_2d(step_count: int = 200) -> PackedVector2Array:
+func flatten_to_2d(spline: Spline, step_count: int = 200) -> PackedVector2Array:
     var points_2d: PackedVector2Array = []
-    var bounds = compute_bounds()
+    var length = spline.get_baked_length()
+    var bounds = compute_bounds(spline)
     var size = max(bounds.size.x, bounds.size.z)
-
     for i in step_count:
-        var t = float(i) / step_count
-        var s = sample(t)
+        var offset = length * float(i) / step_count
+        var pos = spline.sample_baked(offset)
         # Drop Y (height), keep X and Z
-        var flat = Vector2(s.position.x, s.position.z)
-        # Normalize to [0, 1] relative to track bounds
+        var flat = Vector2(pos.x, pos.z)
         flat.x = (flat.x - bounds.position.x) / size
         flat.y = (flat.y - bounds.position.z) / size
         points_2d.append(flat)
-
     return points_2d
 ```
 
@@ -372,12 +321,9 @@ The 2D points are rendered procedurally each frame via `_draw()` — no pre-bake
 ### Four Minimap Modes
 
 1. **Spline zoomed out:** Full spline visible in the minimap frame. Player is at center, map rotates so forward is "up."
-
 2. **Spline zoomed in:** Same display, tighter zoom (~30% of total spline centered on player). Shows upcoming turns and nearby racers more precisely.
-
 3. **Vertical position comparison:** A vertical bar chart on the right side of the screen. Player is fixed at center. Nearby racers appear as horizontal bars whose offset from center shows how far ahead/behind they are on the spline.
-
-4. **Screen-circling progress map:** The entire spline is mapped to the screen perimeter. Each racer's icon orbits along the edge at their spline t position. Further-ahead positions have higher Z-index.
+4. **Screen-circling progress map:** The entire spline is mapped to the screen perimeter. Each racer's icon orbits along the edge at their spline offset. Further-ahead positions have higher Z-index.
 
 ### Minimap Orientation
 
@@ -391,18 +337,19 @@ When the player looks behind, the minimap still rotates so the player's forward 
 
 ## Respawn Points
 
-Respawn points are `SplinePoint` entries flagged `RESPAWN`. On crash or out-of-bounds:
+Respawn points are points flagged `RESPAWN`. On crash or out-of-bounds:
 
 ```gdscript
-func get_respawn_position(racer) -> Transform3D:
+func get_respawn_position(spline: Spline, racer) -> Transform3D:
     var wp_index = racer.last_cleared_waypoint
-    var t = waypoints[wp_index].spline_t
-    var s = sample(t)
-    var fwd = sample_forward(t)
+    var offset = waypoints[wp_index].spline_offset
+    var pos = spline.sample_baked(offset)
+    var fwd = sample_forward(spline, offset)
+    var up = Vector3.UP
     # Place pod at center of track, at the spline position, facing forward
-    var pos = s.position + s.normal * hover_height
-    var basis = Basis.looking_at(fwd, s.normal)
-    return Transform3D(basis, pos)
+    var spawn_pos = pos + up * hover_height
+    var basis = Basis.looking_at(fwd, up)
+    return Transform3D(basis, spawn_pos)
 ```
 
 ---
@@ -411,21 +358,24 @@ func get_respawn_position(racer) -> Transform3D:
 
 Spline data is authored in two ways:
 
-1. **Godot editor plugin** — a custom `@tool` script in `addons/spline_editor/` that lets designers place and edit spline points in the 3D viewport. The plugin serializes to the `Spline` resource format.
+1. **Editor-first (`Path3D` gizmos)** — a `Path3D` node in the level scene gets a `Spline` assigned to its `curve` property. The built-in `Path3D` editor gizmos place and move points in the 3D viewport. Per-point metadata (width, recipe, flags) is edited via the Inspector arrays; the `TrackSpline` node script (see `systems/track/track_spline.gd`) keeps the arrays synced on point edits and triggers re-generation of road geometry.
 
-2. **Runtime assembly** (modular tracks) — a track definition references a sequence of segment `.tscn` files plus connection metadata. At load time, the segment meshes are stitched and a new `Spline` resource is assembled from the segment endpoints. This is how the modular chunk system works.
+2. **Runtime assembly** (modular tracks) — a track definition references a sequence of segment `.tscn` files plus connection metadata. At load time, the segment meshes are stitched and a new `Spline` resource is assembled from the segment endpoints. This is how the modular chunk system works. (ADR 0010 defers branch/multi-path support; single-path assembly works today.)
 
-The `Spline` resource is a standalone `.tres` file, not embedded in the scene. This allows the same spline to be shared between gameplay logic and editor tooling, and enables runtime spline assembly.
+The `Spline` resource is a standalone `.tres` file, not embedded in the scene. This allows the same spline to be shared between gameplay logic and editor tooling, and enables runtime spline assembly. **Recipes tagged `NONE` leave geometry to modeled `.glb` terrain (ADR 0009); recipes tagged `ROAD`/`TUNNEL` generate geometry from the spline.**
 
 ---
 
 ## Summary
 
-- `SplinePoint` stores position, normal, width, banking, and flags
-- Interpolation is straight lerp or Catmull-Rom for smooth curves
-- `project()` uses last-known-t seeding for fast nearest-point lookups
-- Waypoint gating at strategic t-values enables branching paths and shortcuts
+- `Spline extends Curve3D` — geometry math and Path3D authoring come free from the engine
+- Per-point metadata arrays (width, recipe, recipe param, flags) run parallel to `point_count`
+- `tilt` = banking; `normal` derived from tangent × banked lateral
+- Recipes (`NONE` / `ROAD` / `TUNNEL`) decide where geometry is generated vs. modeled terrain
+- Generated road + modeled terrain coexist as separate physics bodies; pod hovers on whichever is present
+- Traversal via `sample_baked`, `get_closest_offset`, `get_baked_length`; offsets in meters, not normalized `t`
+- Waypoint gating at strategic offsets enables branching paths and shortcuts
 - AI uses lookahead distance (squared internally per EP1R) for difficulty scaling
 - Minimap flattens X/Z, drops Y, always orients up
-- 4 minimap modes: zoomed out, zoomed in, vertical comparison, screen-circling
 - Respawns snap to nearest cleared waypoint, center of track
+- Branches (multiple paths) deferred — see ADR 0010
