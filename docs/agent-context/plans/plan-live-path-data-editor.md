@@ -1,7 +1,11 @@
 # Plan: Live Path-Data Editor Dock (Track Editor Phase 2 part 2)
 
-Status: agreed 2026-08. Steps 1-4 code landed (awaiting plugin-reload verification); step 6
-(Path Controls) code landed too. Check off items as they land.
+Status: ✅ COMPLETE (2026-08). All steps landed and are working — the dock, Path Controls,
+toolbar name sync, dock Save button, and saved-spline resource naming are in and verified.
+The only remaining track-editor work is Phase 3 (mesh generation), tracked as a separate
+follow-up. Commit trail: `8ac07fe` (dock scene), `ac4c07c` (gizmo selection + axis fix),
+`ae43ed2` (addon semicolon/parse fixes), `c19f368` (path-name null fix), `73fd6ee` (Save
+button + path names), `c7b8159` (spline resource names on save).
 Roadmap home: `technical/tracks-and-splines.md` → Track Editor Roadmap.
 
 ## Goal
@@ -18,6 +22,11 @@ editor dock that shows the currently-selected point's `SplinePointData`
 - **Tilt units:** dock shows/edits banking in **degrees**; stored radians underneath.
 - **Container:** right-side editor dock, visible only while a `TrackSpline` node
   is selected (contextual via `_make_visible`).
+- **Dock layout (final):** top nav bar (◀ path ▶ + Save), then the **Branches** section
+  (each connection row has its own Jump button), then **Path Controls** (Name + delete
+  buttons), then **Point** fields, then **Flags**. Section headers render bold.
+- **Save:** the nav-bar Save button mirrors the TrackSpline "Save Track to Data" export
+  button (calls `_save_to_data`); saving names each persisted Spline `"{display name}_Spline"`.
 
 ## Scope decisions
 
@@ -29,77 +38,65 @@ editor dock that shows the currently-selected point's `SplinePointData`
 
 ## Steps
 
-### 1. Point selection in gizmo (`track_spline_gizmo_plugin.gd`)
-- Add `selected_path_index: int = -1`, `selected_point_index: int = -1` and
-  `set_selected_point(path_index, point_index)` to the gizmo plugin.
-- Detect a left-click on a point handle **without a drag** in `_forward_3d_gui_input`
-  (plugin.gd, MODE_EDIT): distinguish press-without-move from drag so clicking a
-  handle selects instead of nudge-dragging. On select, tell gizmo + dock.
-- Highlight: draw the selected point as an extra on-top handle (bright marker,
-  e.g. yellow ring / larger billboarded point) layered over its flag-colored handle.
-  Refresh on drag so the highlight tracks the moving point.
-- `_commit_subgizmos`/`_commit_handle` drags keep the selection on that point.
+### 1. ✅ Point selection in gizmo (`track_spline_gizmo_plugin.gd`)
+- `selected_path_index` / `selected_point_index` + `set_selected_point()` on the gizmo plugin.
+- Left-click a point handle in MODE_EDIT selects it (press-without-drag); the selected point
+  draws as a bright on-top marker layered over its flag-colored handle and tracks during drag.
+- **Landed in:** `addons/arcwing_track_editor/track_spline_gizmo_plugin.gd` (`ac4c07c`).
 
-### 2. Dock UI (`path_data_dock.gd`, new Control in `addons/arcwing_track_editor/`)
+### 2. ✅ Dock UI (`path_data_dock.gd`, new Control in `addons/arcwing_track_editor/`)
 - Registered via `add_control_to_dock(EditorPlugin.DOCK_SLOT_RIGHT_UL, dock)`;
   `_make_visible` toggles it with selection; `_edit` wires it to the TrackSpline.
-- Layout (VBox):
-  - Header row: path OptionButton (Main 0 / Alt N) + point index label +
-    ◀ ▶ nav buttons.
-  - Position readout (world coords, read-only Label).
-  - Width SpinBox (m, ~0.1–50).
-  - Tilt SpinBox (degrees; convert to/from `tilt` radians).
-  - Recipe OptionButton (None / Road / Tunnel).
-  - Tunnel height SpinBox (enabled only when recipe == TUNNEL).
-  - Flags: 5 CheckBoxes (Start/Finish, Waypoint, Respawn, Path Entrance, Path Exit).
-  - Branch endpoint readout: list BranchConnections touching this point, with a
-    "Jump to other end" button (updates selection).
-  - Defaults footer: spline `default_width/recipe/recipe_param/flags`, so an
-    unchanged point reads as "using default".
+- Layout (VBox): nav header (◀ path ▶ + Save), Branches section (connection rows with Jump),
+  Path Controls (Name LineEdit + 3 delete buttons), position readout, Width/Tilt/Tunnel spins,
+  Recipe OptionButton, Flags CheckBoxes, defaults footer.
+- **Landed in:** `addons/arcwing_track_editor/path_data_dock.gd` (`8ac07fe`).
 
-### 3. Undo + live gizmo refresh
-- Every field edit wraps `EditorUndoRedoManager.create_action` +
-  `add_do/add_undo` calling the `Spline` setters
-  (`set_point_width`, `set_point_recipe`, `set_point_recipe_param`,
-  `set_point_flags`, plus `set_point_tilt` if missing — check `spline.gd`).
-- After any commit and on `version_changed`: refresh dock fields + `update_gizmos()`.
+### 3. ✅ Undo + live gizmo refresh
+- Every field edit wraps `EditorUndoRedoManager.create_action` + `add_do/add_undo` calling the
+  `Spline`/`SplinePointData` setters; `version_changed` refreshes dock fields + gizmos.
+- **Landed in:** `path_data_dock.gd` `_commit_change` / `_apply_point_value`.
 
-### 4. Selection sync & edge cases
-- Dock nav ◀ ▶ and path changes update selection; plugin signals dock on
-  viewport selection change; dock signals plugin on nav.
-- Selection cleared/clamped when the point no longer exists (removal,
-  path count change, load-from-data swap). Reuse `remove_point_with_branches`
-  already handling removal.
-- Guard all reads against stale indices (point removed mid-edit).
+### 4. ✅ Selection sync & edge cases
+- Dock nav ◀ ▶, path change, and viewport click sync selection both ways via signals;
+  selection is cleared/clamped when a point or path no longer exists (deletes, load-from-data).
+- **Landed in:** plugin `_on_dock_navigated`, dock `_clear_selection_if_invalid`, gizmo selection.
 
-### 5. Verify
-- Reload plugin; open `Test_Level.tscn`; select TrackSpline node.
-- Click a point → dock shows it, highlight visible; edit width/tilt/recipe/flags;
-  undo/redo works; right-click still removes; ◀ ▶ navigates; branch jump works.
-- Zero editor errors; `diagnostics: []` on all new .gd files.
+### 5. ✅ Verify
+- Reload plugin, open `Test_Level.tscn`, select TrackSpline, click points: dock + highlight
+  follow, edits are undoable, right-click still removes, branch Jump navigates.
+- Zero editor errors from the addon; phantom_camera singleton noise is unrelated/pre-existing.
 
-### 6. Path Controls (path-level editing; added on user request)
-- **Names:** `Spline` gains `@export var path_name : String = ""` (empty = positional
-  fallback); copied by `Spline.import_from` so Import Points preserves names.
+### 6. ✅ Path Controls (path-level editing; added on user request)
+- **Names:** `Spline.path_name` (empty = positional fallback), copied by `Spline.import_from`;
   `TrackSpline.get_path_display_name(path_index)` returns `path_name` or "Main"/"Alt N".
-- **Three delete levels** on `TrackSpline`, each one undo action (value backups survive
-  EditorUndoRedoManager deep-copy, like `_branch_state_backup`):
-  - `delete_path_connections(path_index)` — remove every branch touching the path.
-  - `delete_path_points(path_index)` — clear all points (+ prune branches to them).
-  - `delete_path(path_index)` — branches + points + remove the alternate path itself
-    (path indices of later branches decrement); main path falls back to clearing points.
-- **Dock "Path Controls" section** (below the path selector): Name LineEdit (Enter/blur
-  commits via `EditorUndoRedoManager`) + Delete Connections / Delete Points /
-  Delete Entire Path buttons. Delete Entire Path disabled for the main path.
-- **Selectors** in the dock and the 3D toolbar show display names (`get_path_display_name`).
-- Selection is cleared when a delete invalidates it (alternate-path delete clears outright;
-  point delete clears only if the selected point is gone).
+- **Three delete levels** on `TrackSpline`, each one undo action:
+  `delete_path_connections`, `delete_path_points`, `delete_path`.
+- **Dock "Path Controls" section:** Name LineEdit (Enter/blur commits via undo) + Delete
+  Connections / Delete Points / Delete Entire Path buttons.
+- **Selectors** in the dock and the 3D toolbar show display names.
+- **Landed in:** `Systems/Track/spline.gd`, `Systems/Track/track_spline.gd`,
+  `path_data_dock.gd` (`c19f368`, `73fd6ee`).
+
+### 7. ✅ Requested polish (added during verification)
+- **Toolbar name sync:** the plugin watches every spline's `changed` signal and rebuilds the
+  toolbar + dock path selectors only when a `path_name` actually changes — covers inspector
+  renames that never fire an undo action (`plugin.gd` `_watch_spline_names`).
+- **Save button:** nav-bar Save calls `_track._save_to_data()` (same as the export button).
+- **Branches at the top + bold headers:** Branches section moved directly under the nav bar;
+  each connection row keeps its Jump button; section headers render bold via the theme's
+  `bold_font` (`_make_section_label`).
+- **Resource names on save:** `_save_to_data` sets each persisted Spline's
+  `resource_name = "{display name}_Spline"` (`_name_saved_spline`), so splines inside a saved
+  `TrackSplineData` are identifiable (`c7b8159`).
 
 ## Files touched
 - `addons/arcwing_track_editor/track_spline_gizmo_plugin.gd` — selection + highlight.
-- `addons/arcwing_track_editor/plugin.gd` — dock registration, click-select input,
-  toolbar path selector shows display names.
-- `addons/arcwing_track_editor/path_data_dock.gd` — NEW dock Control + Path Controls section.
-- `Systems/Track/spline.gd` — `path_name` export + import_from copy.
-- `Systems/Track/track_spline.gd` — `get_path_display_name` + 3 path-level delete ops.
-- `docs/technical/tracks-and-splines.md` — flip Phase 2 part 2 to ✅ on completion.
+- `addons/arcwing_track_editor/plugin.gd` — dock registration, click-select input, toolbar
+  path selector display names, spline-name watcher for selector sync.
+- `addons/arcwing_track_editor/path_data_dock.gd` — NEW dock Control (nav + Save, Branches
+  section up top, Path Controls, point fields, Flags) with bold section headers.
+- `Systems/Track/spline.gd` — `path_name` export (null-coercing getter/setter) + import_from copy.
+- `Systems/Track/track_spline.gd` — `get_path_display_name` + 3 path-level delete ops +
+  `_name_saved_spline` resource naming in `_save_to_data`.
+- `docs/technical/tracks-and-splines.md` — Track Editor Roadmap Phase 2 part 2 flipped to ✅.

@@ -18,19 +18,21 @@ The spline lives in `Systems/Track/spline.gd` as a class extending `Curve3D`, sa
 # Systems/Track/spline.gd
 class_name Spline extends Curve3D
 
-## Per-point half-width (left + right from center line), meters.
-@export var point_widths: PackedFloat32Array
-## Per-point mesh recipe (ROAD / TUNNEL / NONE).
-@export var point_recipes: Array[int]
-## Per-point recipe scalar (e.g. tunnel height in meters). Ignored for ROAD/NONE.
-@export var point_recipe_params: Array[float]
-## Per-point flags bitfield (START_FINISH, WAYPOINT, RESPAWN, BRANCH_*).
-@export var point_flags: Array[int]
-
+## Per-point authoring data, one SplinePointData per point (1:1 with point_count).
+## A SplinePointData holds width, tilt (radians), recipe, recipe_param, and flags.
+@export var point_data: Array[SplinePointData]
+## Display name for this path (toolbar/dock selectors). Empty = positional "Main"/"Alt N".
+@export var path_name: String
+## Closed loop (circuit) vs run once (rally); maps to Curve3D.closed.
 @export var cyclic: bool = true
+## Defaults a point inherits until it sets its own values.
+@export var default_width: float
+@export var default_recipe: SegmentRecipe
+@export var default_recipe_param: float
+@export var default_flags: int
 ```
 
-All metadata arrays are indexed 1:1 with `Curve3D.point_count`. Native `Curve3D` methods (`add_point`, `remove_point`, `set_point_count`, `clear_points`) **cannot be overridden in GDScript** — the engine calls its internal C++ implementation directly, so script overrides are never invoked. Instead the `Spline` resource subscribes to `Curve3D.changed`, which the engine emits on every mutation (add/remove/move point, bake, tilt, closed), and reconciles the metadata arrays to `point_count` in the handler. This covers every edit path, including Path3D gizmo editing. Accessors also reconcile lazily as a safety net. See the `spline.gd` implementation for the sync contract.
+All metadata lives in `point_data`, indexed 1:1 with `Curve3D.point_count`. Native `Curve3D` methods (`add_point`, `remove_point`, `set_point_count`, `clear_points`) **cannot be overridden in GDScript** — the engine calls its internal C++ implementation directly, so script overrides are never invoked. Instead the `Spline` resource subscribes to `Curve3D.changed`, which the engine emits on every mutation (add/remove/move point, bake, tilt, closed), and reconciles `point_data` to `point_count` in the handler. This covers every edit path, including Path3D gizmo editing. Accessors also reconcile lazily as a safety net. See the `spline.gd` implementation for the sync contract.
 
 ### BranchConnection
 
@@ -65,17 +67,17 @@ The mesh generator pass (ADR 0010) and AI branch traversal (`select_branch`) sti
 
 ## Per-Point Data Format
 
-`Curve3D` provides per-point **position**, **in/out handles** (Catmull-Rom/Cubic smoothing), and **tilt** (rotation about the forward axis). Our metadata adds the rest:
+`Curve3D` provides per-point **position**, **in/out handles** (Catmull-Rom/Cubic smoothing), and **tilt** (rotation about the forward axis). The rest lives in each point's `SplinePointData` (`Systems/Track/spline_point_data.gd`), one entry per point in `Spline.point_data`, edited live via the track-editor dock (`addons/arcwing_track_editor/path_data_dock.gd`):
 
 | Field | Source | Meaning |
 |---|---|---|
 | `position` | `Curve3D` | World-space location of the point |
 | `in` / `out` | `Curve3D` | Curve smoothing handles (leave zero for raw spline) |
 | `tilt` | `Curve3D` | Banking — roll angle in radians, positive = right-side down |
-| `width` | `point_widths[i]` | Track half-width in meters (left + right from center) |
-| `recipe` | `point_recipes[i]` | Mesh to generate on the span AFTER this point |
-| `recipe_param` | `point_recipe_params[i]` | Per-recipe scalar (e.g. tunnel height) |
-| `flags` | `point_flags[i]` | Bitfield for point type |
+| `width` | `point_data[i].width` | Track half-width in meters (left + right from center) |
+| `recipe` | `point_data[i].recipe` | Mesh to generate on the span AFTER this point |
+| `recipe_param` | `point_data[i].recipe_param` | Per-recipe scalar (e.g. tunnel height) |
+| `flags` | `point_data[i].flags` | Bitfield for point type |
 | `normal` | derived | Surface up direction, from tangent × tilt (see below) |
 
 ### Width Encoding
@@ -113,7 +115,7 @@ enum SplinePointFlags:
 
 ### Segment Recipes
 
-`point_recipes[i]` names the mesh the generator builds on the span from point `i` to point `i+1`:
+Each point's `recipe` names the mesh the generator builds on the span from that point to the next:
 
 | Recipe | Generated geometry | Extra param |
 |---|---|---|
@@ -386,7 +388,7 @@ func get_respawn_position(spline: Spline, racer) -> Transform3D:
 
 Spline data is authored in two ways:
 
-1. **Editor-first (`Path3D` gizmos)** — a `Path3D` node in the level scene gets a `Spline` assigned to its `curve` property. The built-in `Path3D` editor gizmos place and move points in the 3D viewport. Per-point metadata (width, recipe, flags) is edited via the Inspector arrays; the `TrackSpline` node script (see `Systems/Track/track_spline.gd`) keeps the arrays synced on point edits and triggers re-generation of road geometry.
+1. **Editor-first (`Path3D` gizmos + track-editor dock)** — a `Path3D` node in the level scene gets a `Spline` assigned to its `curve` property. The built-in `Path3D` editor gizmos place and move points in the 3D viewport; clicking a point loads it into the track-editor dock, which edits the point's `SplinePointData` (width, tilt, recipe, flags) live with undo. Path-level controls in the dock name the path and delete connections/points/paths; the nav-bar Save button writes the whole state into its `TrackSplineData` (naming each saved spline `"{name}_Spline"`).
 
 2. **Runtime assembly** (modular tracks) — a track definition references a sequence of segment `.tscn` files plus connection metadata. At load time, the segment meshes are stitched and a new `Spline` resource is assembled from the segment endpoints. This is how the modular chunk system works. (ADR 0010 defers the branch/multi-path mesh pass; the `TrackSpline` container + `branches` graph exist, but multi-path modular stitching is not wired in yet.)
 
@@ -400,8 +402,8 @@ The editor tooling lives in `addons/arcwing_track_editor/` (`plugin.gd` + `track
 
 - **Phase 1 — Draw everything.** ✅ (`f7c7a14`) Viewport gizmo renders the main path with draggable point and in/out control handles.
 - **Phase 2 — Other paths.** ✅ (`a24e03a`, `51695e9`, `89c4d1d`, `5abb07a`, `d7d5001`) Alternate paths added as separate splines with distinct palette colors; sub-gizmo (move-tool) point dragging; `TrackSplineData` resource; built-in add button; per-path color assignment.
-  - **Phase 2, part 2 — Live path-data editor (pending).** An editor dock/window that edits per-point track data (width, banking/tilt, recipe, recipe param, flags) live for the selected point instead of raw Inspector arrays. Driven from the same `SplinePointData` the inspector uses. Active plan: `agent-context/plans/plan-live-path-data-editor.md`. Not started.
-- **Phase 3 — Mesh generation (pending).** The `ROAD`/`TUNNEL` ribbon generator (`TrackMeshGenerator`, ADR 0010) — road surface + side walls + tunnel roof along the spline, honoring `point_widths`, `tilt`, and recipe params. Reference for approach: `https://github.com/iiMidnightii/PathMesh3D` (study only, do not adopt). Branches have no mesh pass yet (deferred in ADR 0010).
+  - **Phase 2, part 2 — Live path-data editor.** ✅ (`8ac07fe`, `ac4c07c`, `c19f368`, `73fd6ee`, `c7b8159`) Editor dock that edits the selected point's `SplinePointData` (width, tilt, recipe, recipe param, flags) live with undo, plus Path Controls (per-path names + three delete levels), toolbar/dock selector display names, a nav-bar Save button mirroring "Save Track to Data", and saved-spline `resource_name = "{name}_Spline"` on save. Branches section sits under the nav bar with per-connection Jump buttons. See the closed plan `agent-context/plans/plan-live-path-data-editor.md`.
+- **Phase 3 — Mesh generation (pending — the remaining track-editor work).** The `ROAD`/`TUNNEL` ribbon generator (`TrackMeshGenerator`, ADR 0010) — road surface + side walls + tunnel roof along the spline, honoring `point_widths`, `tilt`, and recipe params. Reference for approach: `https://github.com/iiMidnightii/PathMesh3D` (study only, do not adopt). Branches have no mesh pass yet (deferred in ADR 0010).
 
 ### Editor hardening (2026-08, post-Phase-2)
 
@@ -409,13 +411,15 @@ The editor tooling lives in `addons/arcwing_track_editor/` (`plugin.gd` + `track
 - **Pit flags removed.** ✅ `PIT_ENTRY`/`PIT_EXIT` removed from `SplinePointFlags`, the `@export_flags` list, and docs — pit lanes never go on race tracks (pits = pit droids, out-of-race meta only).
 - **Gizmo sub-gizmo stale visuals.** ✅ Drag redraw via `track.update_gizmos()` (no `gizmo.redraw()` on `EditorNode3DGizmo`).
 - **Per-flag handle colors.** ✅ Start/Finish cyan + large billboard, Branch Split green, Branch Join red, Waypoint editor icon, default white.
+- **Path Controls + dock polish (2026-08).** ✅ `Spline.path_name` (null-coercing getter/setter — a scene saved mid-reload can serialize `path_name = null`, and the setter coerces it to `""` so consumers never see Nil), `get_path_display_name` + display-name selectors, three undoable path-level deletes, toolbar name-sync watcher for inspector renames, nav-bar Save button (mirrors "Save Track to Data"), saved-spline `resource_name = "{name}_Spline"`, and the Branches section relocated directly under the dock's nav bar.
 
 ---
 
 ## Summary
 
 - `Spline extends Curve3D` — geometry math and Path3D authoring come free from the engine
-- Per-point metadata arrays (width, recipe, recipe param, flags) run parallel to `point_count`
+- Per-point metadata lives in `point_data` (`Array[SplinePointData]`), reconciled 1:1 with `point_count`; edited live via the track-editor dock
+- `path_name` (nullable-coerced) gives paths display names in the dock + toolbar selectors
 - `tilt` = banking; `normal` derived from tangent × banked lateral
 - Recipes (`NONE` / `ROAD` / `TUNNEL`) decide where geometry is generated vs. modeled terrain
 - Generated road + modeled terrain coexist as separate physics bodies; pod hovers on whichever is present
