@@ -232,7 +232,9 @@ func _refresh_branches() -> void:
 	for child in _branch_box.get_children():
 		child.queue_free()
 	if _track == null or _track.branches.is_empty():
-		_branch_box.add_child(Label.new_with_label_text("None"))
+		var none_label : Label = Label.new()
+		none_label.text = "None"
+		_branch_box.add_child(none_label)
 		return
 	var found := false
 	for i in _track.branches.size():
@@ -260,7 +262,9 @@ func _refresh_branches() -> void:
 		row.add_child(jump)
 		_branch_box.add_child(row)
 	if not found:
-		_branch_box.add_child(Label.new_with_label_text("None"))
+		var none_label : Label = Label.new()
+		none_label.text = "None"
+		_branch_box.add_child(none_label)
 
 
 func _refresh_defaults() -> void:
