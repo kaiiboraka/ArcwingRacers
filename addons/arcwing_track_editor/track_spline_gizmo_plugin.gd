@@ -30,6 +30,12 @@ const ID_BASE := 0x100000
 ## to the camera-facing plane when nothing is under the cursor.
 const SNAP_TO_SURFACE := true
 
+## Screen-space click radius for point selection AND subgizmo picking. Matches the
+## engine's hard-coded HANDLE_HALF_SIZE (9.5px) so a click that selects a point is
+## always also a click that grabs it — a wider selection radius than the grab radius
+## made "select" and "drag" activate inconsistently.
+const CLICK_HALF_SIZE := 9.5
+
 ## Distinct colors for alternate paths (path index 0 = main path, drawn white).
 const ALTERNATE_COLORS := [
 	Color(0.95, 0.5, 0.1, 0.95),
@@ -78,6 +84,19 @@ func _setup_flag_handle(name: String, color: Color, point_size: float, billboard
 		mat.point_size = point_size
 
 
+## Selected-point marker: bright ring drawn on top of the flag-colored handle so the
+## point the path-data dock controls is obvious. Larger than every flag handle.
+## NOTE: billboard=false on purpose — billboarded handles render as quads offset from the
+## true projected position, so a billboarded marker only ever lines up with other billboarded
+## handles (Start/Finish). A plain point primitive centers exactly like the white handles.
+func _setup_selected_point_handle() -> void:
+	create_handle_material("handle_selected_point", false)
+	var mat := get_material("handle_selected_point") as StandardMaterial3D
+	if mat:
+		mat.albedo_color = Color(1.0, 0.95, 0.1, 1.0)
+		mat.point_size = 28.0
+
+
 ## Waypoints draw as a billboarded editor icon marker (falls back to a gold point).
 func _setup_waypoint_handle() -> void:
 	var icon: Texture2D = null
@@ -88,6 +107,15 @@ func _setup_waypoint_handle() -> void:
 		create_handle_material("handle_waypoint", true, icon)
 	else:
 		_setup_flag_handle("handle_waypoint", Color(1.0, 0.8, 0.1, 1.0), 16.0, true)
+
+
+## Set (or clear, with -1/-1) the point the path-data dock edits. No-op when unchanged.
+## The caller is responsible for update_gizmos() so the marker refreshes.
+func set_selected_point(path_index: int, point_index: int) -> void:
+	if selected_path_index == path_index and selected_point_index == point_index:
+		return
+	selected_path_index = path_index
+	selected_point_index = point_index
 
 
 func _get_priority() -> int:
@@ -133,6 +161,28 @@ func _redraw(gizmo: EditorNode3DGizmo) -> void:
 
 	_draw_branches(gizmo, track)
 	_draw_wire_source(gizmo, track)
+	_draw_selected_point(gizmo, track)
+
+
+## The currently selected point, as {path_index, point_index} or {} when nothing selected.
+## The live path-data dock reads this to know which point to display.
+func get_selected_point() -> Dictionary:
+	if selected_path_index < 0 or selected_point_index < 0:
+		return {}
+	return {"path_index": selected_path_index, "point_index": selected_point_index}
+
+
+## Draws the bright selection marker over the chosen point (clamped to valid points, so
+## a stale selection after removal simply doesn't draw until cleared).
+func _draw_selected_point(gizmo: EditorNode3DGizmo, track: TrackSpline) -> void:
+	if selected_path_index < 0 or selected_point_index < 0:
+		return
+	var spline: Spline = track.get_spline_at(selected_path_index)
+	if spline == null or selected_point_index >= spline.point_count:
+		return
+	var pos: Vector3 = spline.get_point_position(selected_point_index)
+	var ids := PackedInt32Array([_encode(selected_path_index, selected_point_index, ID_POINT)])
+	gizmo.add_handles(PackedVector3Array([pos]), get_material("handle_selected_point", gizmo), ids, true, false)
 
 
 func _draw_path(gizmo: EditorNode3DGizmo, path_index: int, spline: Spline) -> void:
@@ -408,7 +458,7 @@ func _subgizmos_intersect_ray(gizmo: EditorNode3DGizmo, camera: Camera3D, screen
 	if track == null:
 		return -1
 	var best_id := -1
-	var best_dist := 12.0
+	var best_dist := CLICK_HALF_SIZE
 	for path_index in track.get_path_count():
 		var spline: Spline = track.get_spline_at(path_index)
 		if spline == null:
@@ -518,7 +568,7 @@ func _valid_point(d: Dictionary, spline: Spline) -> bool:
 
 ## Nearest point under the cursor across every path, or {} when nothing is within max_dist
 ## screen pixels. Used by the plugin's Wire Branch tool (and point-add collision guard).
-func find_point_at_screen(track: TrackSpline, camera: Camera3D, screen_pos: Vector2, max_dist: float = 12.0) -> Dictionary:
+func find_point_at_screen(track: TrackSpline, camera: Camera3D, screen_pos: Vector2, max_dist: float = CLICK_HALF_SIZE) -> Dictionary:
 	var best := {}
 	var best_dist := max_dist
 	for path_index in track.get_path_count():

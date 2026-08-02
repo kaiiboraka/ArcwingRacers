@@ -117,6 +117,7 @@ func _make_visible(p_visible: bool) -> void:
 		_track = null
 		_unwatch_main_spline()
 		_clear_wire()
+		_clear_selection()
 
 
 # --- Toolbar handlers ------------------------------------------------------------------------
@@ -300,11 +301,29 @@ func _forward_3d_gui_input(camera: Camera3D, event: InputEvent) -> int:
 		return EditorPlugin.AFTER_GUI_INPUT_PASS
 	if mb.button_index == MOUSE_BUTTON_RIGHT:
 		return _remove_point_click(camera, mb.position)
-	if _mode == MODE_EDIT or mb.button_index != MOUSE_BUTTON_LEFT:
+	if _mode == MODE_EDIT:
+		if mb.button_index == MOUSE_BUTTON_LEFT:
+			_select_point_on_press(camera, mb.position)
+		return EditorPlugin.AFTER_GUI_INPUT_PASS
+	if mb.button_index != MOUSE_BUTTON_LEFT:
 		return EditorPlugin.AFTER_GUI_INPUT_PASS
 	if _mode == MODE_WIRE:
 		return _wire_click(camera, mb.position)
 	return EditorPlugin.AFTER_GUI_INPUT_PASS
+
+
+## Left-click over a point in EDIT mode selects it for the live path-data dock. Selecting on
+## press (not release) means the click that starts a drag also selects, and plain clicks work
+## too. Returns AFTER_GUI_INPUT_PASS so the viewport's handle/subgizmo grab proceeds; the
+## gizmo refresh is deferred so it can't cancel an in-flight drag grab.
+func _select_point_on_press(camera: Camera3D, screen_pos: Vector2) -> void:
+	if _track == null or _gizmo_plugin == null:
+		return
+	var hit: Dictionary = _gizmo_plugin.find_point_at_screen(_track, camera, screen_pos)
+	if hit.is_empty():
+		return
+	_gizmo_plugin.set_selected_point(hit.path_index, hit.point_index)
+	call_deferred("_update_gizmos")
 
 
 func _remove_point_click(camera: Camera3D, screen_pos: Vector2) -> int:
@@ -363,6 +382,12 @@ func _clear_wire() -> void:
 	_wire_from = {}
 	if _gizmo_plugin:
 		_gizmo_plugin.wire_source = {}
+
+
+## Clear the gizmo's selected point (dock hides / shows "no selection").
+func _clear_selection() -> void:
+	if _gizmo_plugin:
+		_gizmo_plugin.set_selected_point(-1, -1)
 
 
 func _update_gizmos() -> void:
