@@ -17,14 +17,29 @@
 [ext_resource type="Texture2D" uid="uid://cjnl6wf2tfar0" path="res://UI/HUD/Spedometer/Light/glowy bits/large icon borderless Opaque.PNG" id="11_ey6tm"]
 [ext_resource type="Texture2D" uid="uid://cu2w3k4q0ivgj" path="res://UI/HUD/Spedometer/Light/glowy bits/large icon borderless Alpha.PNG" id="12_ekksg"]
 [ext_resource type="Texture2D" uid="uid://2ykrm3qx2syb" path="res://UI/HUD/Spedometer/bar_colored.PNG" id="12_qw2y1"]
+[ext_resource type="Shader" uid="uid://cxqpjbnyed3jx" path="res://UI/HUD/Spedometer/spedometer.gdshader" id="13_ccgid"]
 [ext_resource type="Texture2D" uid="uid://v5xomu8we2cr" path="res://UI/HUD/Spedometer/Light/glowy bits/glass tubes.PNG" id="13_idu3f"]
+[ext_resource type="Script" uid="uid://cnsm6aoqauks8" path="res://UI/HUD/Spedometer/bar_fill.gd" id="14_05qfl"]
 [ext_resource type="Texture2D" uid="uid://ib6q27hiabd5" path="res://UI/HUD/Spedometer/Light/glowy bits/Light.PNG" id="14_rfeee"]
 [ext_resource type="Texture2D" uid="uid://ddo43tir6dqsb" path="res://UI/HUD/Spedometer/Light/glowy bits/Light_Blend.png" id="18_w1j0j"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_wj5hs"]
 
-[sub_resource type="ViewportTexture" id="ViewportTexture_ccgid"]
-viewport_path = NodePath("bar/SubViewport")
+[sub_resource type="ViewportTexture" id="ViewportTexture_05qfl"]
+viewport_path = NodePath("bar/bar fill/MaskViewport")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_qw2y1"]
+resource_local_to_scene = true
+shader = ExtResource("13_ccgid")
+shader_parameter/mask = SubResource("ViewportTexture_05qfl")
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_3xeic"]
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_6bhdk"]
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_ddw1h"]
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_js2ye"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_wj5hs"]
 
@@ -174,17 +189,77 @@ texture = ExtResource("7_qw2y1")
 stretch_mode = 4
 
 [node name="bar fill" type="TextureRect" parent="bar" unique_id=2062978745 groups=["borders"]]
-clip_children = 1
 texture_filter = 1
 texture_repeat = 1
+material = SubResource("ShaderMaterial_qw2y1")
+layout_mode = 0
+offset_top = -5.0
+offset_right = 180.0
+offset_bottom = 221.0
+texture = ExtResource("12_qw2y1")
+expand_mode = 1
+stretch_mode = 4
+script = ExtResource("14_05qfl")
+
+[node name="MaskViewport" type="SubViewport" parent="bar/bar fill" unique_id=1429260706]
+transparent_bg = true
+handle_input_locally = false
+scaling_3d_mode = 5
+canvas_item_default_texture_filter = 0
+size = Vector2i(180, 226)
+render_target_update_mode = 4
+
+[node name="fill1" type="TextureRect" parent="bar/bar fill/MaskViewport" unique_id=911387485 groups=["borders"]]
+self_modulate = Color(0, 1, 1, 1)
+show_behind_parent = true
+texture_filter = 1
+texture_repeat = 1
+offset_left = -26.0
+offset_top = 190.00002
+offset_right = 49.0
+offset_bottom = 315.0
+rotation = -0.34906584
+texture = SubResource("CanvasTexture_3xeic")
+
+[node name="fill2" type="TextureRect" parent="bar/bar fill/MaskViewport" unique_id=1582522584 groups=["borders"]]
+self_modulate = Color(1, 1, 0, 1)
+show_behind_parent = true
+texture_filter = 1
+texture_repeat = 1
+offset_left = 137.00002
+offset_top = 105.0
+offset_right = 237.00002
+offset_bottom = 305.00006
+rotation = 0.7853982
+texture = SubResource("CanvasTexture_3xeic")
+
+[node name="fill3" type="TextureRect" parent="bar/bar fill/MaskViewport" unique_id=1947375221 groups=["borders"]]
+self_modulate = Color(1, 0, 1, 1)
+show_behind_parent = true
+texture_filter = 1
+texture_repeat = 1
+offset_left = 48.0
+offset_top = 22.0
+offset_right = 123.0
+offset_bottom = 222.0
+rotation = -0.7853982
+texture = SubResource("CanvasTexture_3xeic")
+
+[node name="old backup bar fill2" type="TextureRect" parent="bar" unique_id=702500798 groups=["borders"]]
+visible = false
+texture_filter = 1
+texture_repeat = 1
+material = SubResource("ShaderMaterial_qw2y1")
 layout_mode = 0
 offset_top = -5.0
 offset_right = 180.0
 offset_bottom = 221.0
 texture = ExtResource("12_qw2y1")
 stretch_mode = 4
+script = ExtResource("14_05qfl")
 
-[node name="fill1" type="TextureRect" parent="bar/bar fill" unique_id=1722957014 groups=["borders"]]
+[node name="fill1" type="TextureRect" parent="bar/old backup bar fill2" unique_id=733025550 groups=["borders"]]
+visible = false
 self_modulate = Color(0, 1, 1, 1)
 show_behind_parent = true
 texture_filter = 1
@@ -195,9 +270,10 @@ offset_top = 195.00002
 offset_right = 49.0
 offset_bottom = 320.0
 rotation = -0.34906584
-texture = SubResource("ViewportTexture_ccgid")
+texture = SubResource("CanvasTexture_6bhdk")
 
-[node name="fill2" type="TextureRect" parent="bar/bar fill" unique_id=1345717178 groups=["borders"]]
+[node name="fill2" type="TextureRect" parent="bar/old backup bar fill2" unique_id=2033552513 groups=["borders"]]
+visible = false
 self_modulate = Color(1, 1, 0, 1)
 show_behind_parent = true
 texture_filter = 1
@@ -208,9 +284,10 @@ offset_top = 110.0
 offset_right = 237.00002
 offset_bottom = 310.00006
 rotation = 0.7853982
-texture = SubResource("ViewportTexture_ccgid")
+texture = SubResource("CanvasTexture_ddw1h")
 
-[node name="fill3" type="TextureRect" parent="bar/bar fill" unique_id=1267333292 groups=["borders"]]
+[node name="fill3" type="TextureRect" parent="bar/old backup bar fill2" unique_id=1269654466 groups=["borders"]]
+visible = false
 self_modulate = Color(1, 0, 1, 1)
 show_behind_parent = true
 texture_filter = 1
@@ -221,29 +298,7 @@ offset_top = 22.0
 offset_right = 123.0
 offset_bottom = 222.0
 rotation = -0.7853982
-texture = SubResource("ViewportTexture_ccgid")
-
-[node name="SubViewport" type="SubViewport" parent="bar" unique_id=1429260706]
-transparent_bg = true
-handle_input_locally = false
-scaling_3d_mode = 5
-canvas_item_default_texture_filter = 0
-size = Vector2i(180, 226)
-render_target_update_mode = 4
-
-[node name="bar fill2" type="TextureRect" parent="bar/SubViewport" unique_id=854773419 groups=["borders"]]
-top_level = true
-clip_children = 2
-z_index = -2
-texture_filter = 1
-texture_repeat = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-texture = ExtResource("12_qw2y1")
-stretch_mode = 4
+texture = SubResource("CanvasTexture_js2ye")
 
 [node name="Light" type="Control" parent="." unique_id=1569408803]
 anchors_preset = 0
