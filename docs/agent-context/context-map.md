@@ -30,6 +30,7 @@ Built on **Godot 4** (GDScript). 3D. See `technical/code-standards.md` for the p
 | `decisions/` | Why choices were made — ADRs, tradeoffs | You're questioning an existing approach or proposing a change |
 | `marketing/` | Go-to-market strategy — audience, positioning, launch | You're working on store listing, launch, or growth tasks |
 | `agent-context/` | How agents should work in this repo | You're an AI agent (you're here now) |
+| `agent-context/plans/` | Working plan documents — agreed multi-step plans (`plan-<topic>.md`) written before execution | You're starting an agreed multi-step task and need the active plan |
 | `superpowers/` | Archived features, specs, and plans (legacy — previous project) | Reference only |
 
 ---
@@ -74,6 +75,9 @@ Built on **Godot 4** (GDScript). 3D. See `technical/code-standards.md` for the p
 
 **Filing a new idea, question, or TODO**
 → Drop it in `unfiled-ideas.md`. Periodically, ideas are promoted into the appropriate design doc.
+
+**Writing or checking an agreed multi-step plan (phases, roadmaps, task lists)**
+→ Working plans live in `agent-context/plans/` (`plan-<topic>.md`). Agreed plans must be written there before execution starts; see `agent-rules.md`. Check it for any active plan before starting work.
 
 **Delivering Godot scenes, resources, or editor integration steps**
 → Read `agent-context/workflows/godot-editor-workflow.md`.

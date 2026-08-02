@@ -6,7 +6,7 @@
 - When a documented process or standard exists for a category of work (asset licensing, code style, etc.), follow it exactly, every time — don't skip steps because a task feels small or low-risk.
 - When a new recurring process is established (a new tracker doc, checklist item, tagging convention), wire it into the relevant rules/checklist file in the same session — a process that isn't enforced anywhere won't get followed later.
 - Read `agent-context/context-map.md` at the start of every session before any other file.
-- **Any multi-step plan — phases, roadmaps, task lists, agreed follow-ups, or brainstormed alternatives that end in a decision — MUST be written down to a working document file on disk (in `docs/`, usually `docs/agent-context/`) BEFORE any execution begins.** Never retain a plan only in conversation memory: context is finite and plans get lost mid-session. The moment an agreement is reached on what steps to take, document it immediately, then start executing. Mark items `✅`/done as they complete and note where the changes landed.
+- **Any multi-step plan — phases, roadmaps, task lists, agreed follow-ups, or brainstormed alternatives that end in a decision — MUST be written down to a working document file on disk BEFORE any execution begins.** Working plans go in `agent-context/plans/` (`plan-<topic>.md`). Never retain a plan only in conversation memory: context is finite and plans get lost mid-session. The moment an agreement is reached on what steps to take, document it immediately, then start executing. Mark items `✅`/done as they complete and note where the changes landed.
 
 ---
 
