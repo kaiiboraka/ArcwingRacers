@@ -22,8 +22,6 @@ enum SplinePointFlags {
 	RESPAWN       = 1 << 2,
 	BRANCH_SPLIT  = 1 << 3,
 	BRANCH_JOIN   = 1 << 4,
-	PIT_ENTRY     = 1 << 5,
-	PIT_EXIT      = 1 << 6,
 }
 
 ## Per-point track authoring data, indexed 1:1 with Curve3D.point_count. One editable object per
@@ -63,7 +61,7 @@ enum SplinePointFlags {
 ## Default flags applied when a point is added without explicit metadata (editor authoring).[br]
 ## Intended purpose: new points are unflagged until explicitly marked.[br]
 ## 0 = no flags.
-@export_flags("None","Start Finish","Waypoint","Respawn", "Path Entrance", "Path Exit", "Pit Entry", "Pit Exit") 
+@export_flags("None","Start Finish","Waypoint","Respawn", "Path Entrance", "Path Exit") 
 var default_flags: int = SplinePointFlags.NONE
 
 

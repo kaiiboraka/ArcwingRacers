@@ -80,7 +80,7 @@ The mesh generator pass (ADR 0010) and AI branch traversal (`select_branch`) sti
 
 ### Width Encoding
 
-`width` is a single float representing half-width (radius from center line). The actual playable surface extends `width` units to the left and right of the center line. Interpolated between points so tracks can narrow (tunnel entrances) and widen (straights, pit areas).
+`width` is a single float representing half-width (radius from center line). The actual playable surface extends `width` units to the left and right of the center line. Interpolated between points so tracks can narrow (tunnel entrances) and widen (straights, sweeping bends).
 
 ### Banking
 
@@ -109,8 +109,6 @@ enum SplinePointFlags:
     RESPAWN       = 1 << 2  # valid respawn location
     BRANCH_SPLIT  = 1 << 3  # AI hint: path splits here
     BRANCH_JOIN   = 1 << 4  # AI hint: paths merge here
-    PIT_ENTRY     = 1 << 5  # pit lane entrance
-    PIT_EXIT      = 1 << 6  # pit lane exit
 ```
 
 ### Segment Recipes
@@ -393,6 +391,24 @@ Spline data is authored in two ways:
 2. **Runtime assembly** (modular tracks) — a track definition references a sequence of segment `.tscn` files plus connection metadata. At load time, the segment meshes are stitched and a new `Spline` resource is assembled from the segment endpoints. This is how the modular chunk system works. (ADR 0010 defers the branch/multi-path mesh pass; the `TrackSpline` container + `branches` graph exist, but multi-path modular stitching is not wired in yet.)
 
 The `Spline` resource is a standalone `.tres` file, not embedded in the scene. This allows the same spline to be shared between gameplay logic and editor tooling, and enables runtime spline assembly. **Recipes tagged `NONE` leave geometry to modeled `.glb` terrain (ADR 0009); recipes tagged `ROAD`/`TUNNEL` generate geometry from the spline.**
+
+---
+
+## Track Editor Roadmap
+
+The editor tooling lives in `addons/arcwing_track_editor/` (`plugin.gd` + `track_spline_gizmo_plugin.gd`) and works against the `TrackSpline` container (`Systems/Track/track_spline.gd`). Work is tracked in phases; completed items note where they landed.
+
+- **Phase 1 — Draw everything.** ✅ (`f7c7a14`) Viewport gizmo renders the main path with draggable point and in/out control handles.
+- **Phase 2 — Other paths.** ✅ (`a24e03a`, `51695e9`, `89c4d1d`, `5abb07a`, `d7d5001`) Alternate paths added as separate splines with distinct palette colors; sub-gizmo (move-tool) point dragging; `TrackSplineData` resource; built-in add button; per-path color assignment.
+  - **Phase 2, part 2 — Live path-data editor (pending).** An editor dock/window that edits per-point track data (width, banking/tilt, recipe, recipe param, flags) live for the selected point instead of raw Inspector arrays. Driven from the same `SplinePointData` the inspector uses. Not started.
+- **Phase 3 — Mesh generation (pending).** The `ROAD`/`TUNNEL` ribbon generator (`TrackMeshGenerator`, ADR 0010) — road surface + side walls + tunnel roof along the spline, honoring `point_widths`, `tilt`, and recipe params. Reference for approach: `https://github.com/iiMidnightii/PathMesh3D` (study only, do not adopt). Branches have no mesh pass yet (deferred in ADR 0010).
+
+### Editor hardening (2026-08, post-Phase-2)
+
+- **Branch-aware point removal.** ✅ `remove_point_with_branches(path_index, point_index)` in `track_spline.gd` deletes/shift-downs `BranchConnection` endpoints atomically with point removal (undo-safe via value-dict branch backup; `EditorUndoRedoManager` deep-copies action args so object refs break across undo). Plugin right-click Remove now uses it. Tested in `tests/test_track_branch_reconcile.gd`.
+- **Pit flags removed.** ✅ `PIT_ENTRY`/`PIT_EXIT` removed from `SplinePointFlags`, the `@export_flags` list, and docs — pit lanes never go on race tracks (pits = pit droids, out-of-race meta only).
+- **Gizmo sub-gizmo stale visuals.** ✅ Drag redraw via `track.update_gizmos()` (no `gizmo.redraw()` on `EditorNode3DGizmo`).
+- **Per-flag handle colors.** ✅ Start/Finish cyan + large billboard, Branch Split green, Branch Join red, Waypoint editor icon, default white.
 
 ---
 

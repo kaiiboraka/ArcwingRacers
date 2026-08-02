@@ -40,7 +40,6 @@ A **track definition** is a sequence of segment references plus the spline conne
 - **Branching paths:** Every track has at least one alternate route, usually a shortcut that trades difficulty for time.
 - **Environmental hazards:** Per-biome hazards (heat, ice, water, monsters, geysers). Elemental Imbalance mode remixes which hazards appear.
 - **Checkpoints:** Waypoints at choke points before/after splits and at start/finish (see [ADR 0005: Spline Track System](../decisions/adrs/0005-spline-track-system.md)).
-- **Pit area:** Off-track repair zone (future — repair during race is post-launch scope).
 - **Spectator areas:** Visual-only geometry not on the racing line.
 
 ---

@@ -32,3 +32,7 @@ Tasks explicitly deferred to a later session — not urgent, not forgotten. Remo
 
 - **Recipe-phase reference: `https://github.com/iiMidnightii/PathMesh3D`.** Found while building the track editor. Generates a road mesh along a Path3D (spline ribbon + walls) — directly relevant to the ROAD/TUNNEL mesh generation phase (ADR 0010 / `TrackMeshGenerator`). Do NOT adopt the plugin itself; study its approach when implementing our generator.
 
+- **Live path-data editor dock/window.** Phase 2 part 2 of the track editor (see `technical/tracks-and-splines.md` → Track Editor Roadmap). An editor dock/window to modify per-point track data (width, banking/tilt, recipe, recipe param, flags) more easily than raw Inspector arrays — select a point, edit its `SplinePointData` live. Tracked in the roadmap doc.
+
+- **Test_Level track-data migration.** `Test_Level.tscn` still embeds its spline data inline (`SubResource("Resource_5pj16")` at `Test_Level.tscn:936`); `Test_Level_TrackData.tres` exists (uid://c1t0a5ta0001) but is unwired and currently fails to parse (`Parse Error: Expected '['` at line 1) — the file needs regenerating before it can be referenced. Move Test_Level to the `.tres` data file so gameplay and editor tooling share one source.
+

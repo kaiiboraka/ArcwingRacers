@@ -103,6 +103,7 @@ func _load_from_data() -> void:
 	for branch in data.branches:
 		branches.append(branch.duplicate(true) if branch else null)
 	_apply_bake_settings()
+	_sync_path_watchers()
 	notify_property_list_changed()
 	paths_changed.emit()
 
@@ -120,6 +121,7 @@ func add_alternate_path(spline: Spline = null) -> Spline:
 		spline.closed = false
 	spline.bake_interval = bake_interval
 	alternate_paths.append(spline)
+	_sync_path_watchers()
 	notify_property_list_changed()
 	paths_changed.emit()
 	return spline
@@ -130,6 +132,7 @@ func remove_alternate_path(index: int) -> void:
 	if index < 0 or index >= alternate_paths.size():
 		return
 	alternate_paths.remove_at(index)
+	_sync_path_watchers()
 	notify_property_list_changed()
 	paths_changed.emit()
 
@@ -160,6 +163,7 @@ func _enter_tree() -> void:
 		push_warning("TrackSpline '%s': curve is a Curve3D, not a Spline — metadata arrays unavailable." % name)
 		return
 	_apply_bake_settings()
+	_sync_path_watchers()
 
 func _ready() -> void:
 	# Restore the track definition from its data asset in BOTH editor and runtime, so a
@@ -198,6 +202,200 @@ func _apply_bake_settings() -> void:
 		var spline: Spline = get_spline_at(i)
 		if spline:
 			spline.bake_interval = bake_interval
+
+# --- Branch reconciliation on point removal ----------------------------------------------
+# Deleting a point (built-in Path3D gizmo DELETE key, our right-click remove, undo replay)
+# removes it from the Spline and fires Curve3D.changed. Branches pin their endpoints by point
+# index, so a removal must reconcile them: endpoints AT the removed index are deleted outright
+# (their anchor point is gone), endpoints BEYOND it shift down by one. We watch every path's
+# `changed` signal and keep a per-path position snapshot to find WHICH index was removed
+# (positions before it match the snapshot; at/after it differ).
+
+var _watched_splines: Array[Spline] = []
+var _watched_callables: Array[Callable] = []
+var _path_snapshots: Array[PackedVector3Array] = []
+var _path_counts: Array[int] = []
+
+## Set while a removal is being driven by remove_point_with_branches (which reconciles itself),
+## so the watcher skips its own reconcile and avoids a double shift/delete.
+var _reconcile_suspended: bool = false
+
+
+## (Re)connect the per-path `changed` watchers and snapshot each path. Call whenever the path
+## list changes (add/remove alternate path, load from data) or the main curve is swapped.
+func _sync_path_watchers() -> void:
+	for i in _watched_splines.size():
+		var spline: Spline = _watched_splines[i]
+		if is_instance_valid(spline):
+			var cb: Callable = _watched_callables[i]
+			if spline.changed.is_connected(cb):
+				spline.changed.disconnect(cb)
+	_watched_splines.clear()
+	_watched_callables.clear()
+	_path_snapshots.clear()
+	_path_counts.clear()
+	for i in get_path_count():
+		var spline: Spline = get_spline_at(i)
+		if spline == null:
+			continue
+		var cb := _on_path_changed.bind(i)
+		spline.changed.connect(cb)
+		_watched_splines.append(spline)
+		_watched_callables.append(cb)
+		_path_snapshots.append(_snapshot_positions(spline))
+		_path_counts.append(spline.point_count)
+
+
+func _snapshot_positions(spline: Spline) -> PackedVector3Array:
+	var arr := PackedVector3Array()
+	for i in spline.point_count:
+		arr.append(spline.get_point_position(i))
+	return arr
+
+
+func _on_path_changed(path_index: int) -> void:
+	var spline: Spline = get_spline_at(path_index)
+	if spline == null or path_index >= _path_snapshots.size():
+		return
+	var old_count: int = _path_counts[path_index]
+	var new_count: int = spline.point_count
+	if new_count < old_count and not _reconcile_suspended:
+		var removed_index: int = -1
+		if new_count == old_count - 1:
+			removed_index = _detect_removed_index(_path_snapshots[path_index], spline)
+		_reconcile_branches_for_removal(path_index, spline, removed_index)
+	_path_counts[path_index] = new_count
+	_path_snapshots[path_index] = _snapshot_positions(spline)
+
+
+## Reconcile branches after a point was removed from `path_index`. Pass the removed point index
+## when known (plugin-driven removal), or -1 when it could not be determined (bulk shrink) —
+## in that case endpoints that fell out of range are pruned instead of guessing an index.
+func _reconcile_branches_for_removal(path_index: int, spline: Spline, removed_index: int) -> void:
+	if branches.is_empty():
+		return
+	var to_delete := {}
+	var shifted := false
+	if removed_index >= 0:
+		for i in branches.size():
+			var b: BranchConnection = branches[i]
+			if b == null:
+				continue
+			var doomed := false
+			if b.from_path_index == path_index:
+				if b.from_point_index == removed_index:
+					doomed = true
+				elif b.from_point_index > removed_index:
+					b.from_point_index -= 1
+					shifted = true
+			if not doomed and b.to_path_index == path_index:
+				if b.to_point_index == removed_index:
+					doomed = true
+				elif b.to_point_index > removed_index:
+					b.to_point_index -= 1
+					shifted = true
+			if doomed:
+				to_delete[i] = true
+	else:
+		# Bulk shrink (clear_points, multi-remove): prune endpoints now out of range instead
+		# of guessing which single index vanished.
+		for i in branches.size():
+			var b: BranchConnection = branches[i]
+			if b == null:
+				continue
+			if (b.from_path_index == path_index and b.from_point_index >= spline.point_count) \
+					or (b.to_path_index == path_index and b.to_point_index >= spline.point_count):
+				to_delete[i] = true
+	if to_delete.size() > 0:
+		var keys: Array = to_delete.keys()
+		keys.sort()
+		for i in range(keys.size() - 1, -1, -1):
+			branches.remove_at(keys[i])
+	if shifted or to_delete.size() > 0:
+		notify_property_list_changed()
+		paths_changed.emit()
+
+
+## Remove a point and reconcile branch connections in ONE undo action (point removal and
+## branch shift/delete undo together). Editor-only. The plugin's right-click remove uses this;
+## the built-in Path3D gizmo DELETE key is covered by the changed-signal watcher instead.
+func remove_point_with_branches(path_index: int, point_index: int) -> void:
+	if not Engine.is_editor_hint():
+		return
+	var spline: Spline = get_spline_at(path_index)
+	if spline == null or point_index < 0 or point_index >= spline.point_count:
+		return
+	var pos: Vector3 = spline.get_point_position(point_index)
+	var in_ctl: Vector3 = spline.get_point_in(point_index)
+	var out_ctl: Vector3 = spline.get_point_out(point_index)
+	var branch_backup: Array = _branch_state_backup()
+	var ur: EditorUndoRedoManager = EditorInterface.get_editor_undo_redo()
+	ur.create_action("Remove Track Point")
+	ur.add_do_method(self, "_do_remove_point", path_index, point_index)
+	ur.add_undo_method(self, "_undo_remove_point", path_index, point_index, pos, in_ctl, out_ctl, branch_backup)
+	ur.commit_action()
+
+
+func _do_remove_point(path_index: int, point_index: int) -> void:
+	var spline: Spline = get_spline_at(path_index)
+	if spline == null or point_index < 0 or point_index >= spline.point_count:
+		return
+	_reconcile_suspended = true
+	spline.remove_point(point_index)
+	_reconcile_suspended = false
+	_reconcile_branches_for_removal(path_index, spline, point_index)
+
+
+func _undo_remove_point(path_index: int, point_index: int, pos: Vector3, in_ctl: Vector3, out_ctl: Vector3, branch_backup: Array) -> void:
+	var spline: Spline = get_spline_at(path_index)
+	if spline == null:
+		return
+	spline.add_point(pos, in_ctl, out_ctl, point_index)
+	_restore_branches(branch_backup)
+
+
+## Snapshot of the branches array as plain data (no object references) for undo. Stored by
+## value because EditorUndoRedoManager deep-copies action arguments, which would break any
+## BranchConnection references threaded through add_undo_method. The gizmo re-reads the
+## branches array every redraw and wire-source uses path/point dicts, so value restore is
+## safe — undo rebuilds equivalent BranchConnection instances.
+func _branch_state_backup() -> Array:
+	var backup: Array = []
+	for b in branches:
+		backup.append({
+			"from_path": b.from_path_index if b else 0,
+			"from_point": b.from_point_index if b else 0,
+			"to_path": b.to_path_index if b else 0,
+			"to_point": b.to_point_index if b else 0,
+			"is_split": b.is_split if b else true,
+		})
+	return backup
+
+
+func _restore_branches(branch_backup: Array) -> void:
+	branches.clear()
+	for entry in branch_backup:
+		var b := BranchConnection.new()
+		b.from_path_index = entry.get("from_path", 0)
+		b.from_point_index = entry.get("from_point", 0)
+		b.to_path_index = entry.get("to_path", 0)
+		b.to_point_index = entry.get("to_point", 0)
+		b.is_split = entry.get("is_split", true)
+		branches.append(b)
+	notify_property_list_changed()
+	paths_changed.emit()
+
+
+## First index where the current positions diverge from the pre-removal snapshot. For a
+## single-point removal at N, positions 0..N-1 are identical and N onwards differ, so this is N.
+func _detect_removed_index(old_positions: PackedVector3Array, spline: Spline) -> int:
+	for i in old_positions.size():
+		if i >= spline.point_count:
+			return i
+		if not old_positions[i].is_equal_approx(spline.get_point_position(i)):
+			return i
+	return -1
+
 
 # --- World-space wrappers ---------------------------------------------------------------
 # Curve3D's baked sampling and closest-point queries are local to the curve (relative to this

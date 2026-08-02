@@ -46,6 +46,11 @@ var _path_line_materials_created: Dictionary = {}
 ## the plugin waits for the second click. Empty dict = nothing pending.
 var wire_source: Dictionary = {}
 
+## Point currently selected for the live path-data editor dock. -1 = nothing selected.
+## Set via set_selected_point(); drawn as a bright on-top marker in _draw_selected_point.
+var selected_path_index: int = -1
+var selected_point_index: int = -1
+
 
 func _init() -> void:
 	create_material("line_main", Color(1, 1, 1, 0.9))
@@ -53,10 +58,36 @@ func _init() -> void:
 	create_material("wire_source", Color(1.0, 0.85, 0.0, 1.0))
 	create_handle_material("point_handles")
 	create_handle_material("control_handles")
+	_setup_flag_handle("handle_start_finish", Color(0.0, 0.9, 1.0, 1.0), 22.0, true)
+	_setup_flag_handle("handle_branch_split", Color(0.2, 1.0, 0.3, 1.0), 14.0, false)
+	_setup_flag_handle("handle_branch_join", Color(1.0, 0.3, 0.3, 1.0), 14.0, false)
+	_setup_waypoint_handle()
+	_setup_selected_point_handle()
 
 
 func _get_gizmo_name() -> String:
 	return "ArcwingTrack"
+
+
+## Create a point-handle material with a solid tint and pixel size, one per flag group.
+func _setup_flag_handle(name: String, color: Color, point_size: float, billboard: bool) -> void:
+	create_handle_material(name, billboard)
+	var mat := get_material(name) as StandardMaterial3D
+	if mat:
+		mat.albedo_color = color
+		mat.point_size = point_size
+
+
+## Waypoints draw as a billboarded editor icon marker (falls back to a gold point).
+func _setup_waypoint_handle() -> void:
+	var icon: Texture2D = null
+	var theme: Theme = EditorInterface.get_editor_theme()
+	if theme:
+		icon = theme.get_icon(&"3d_handle_point", &"EditorIcons")
+	if icon:
+		create_handle_material("handle_waypoint", true, icon)
+	else:
+		_setup_flag_handle("handle_waypoint", Color(1.0, 0.8, 0.1, 1.0), 16.0, true)
 
 
 func _get_priority() -> int:
@@ -141,9 +172,19 @@ func _draw_path(gizmo: EditorNode3DGizmo, path_index: int, spline: Spline) -> vo
 	if line_points.size() > 0:
 		gizmo.add_collision_segments(line_points)
 
-	# Point handles + control handles.
+	# Point handles + control handles. Point handles split by flag so Start/Finish (cyan,
+	# large), Branch Split (green), Branch Join (red), and Waypoints (icon) are distinct.
+	# Flag priority when a point carries several: Start/Finish > Split > Join > Waypoint.
 	var point_handles := PackedVector3Array()
 	var point_ids := PackedInt32Array()
+	var start_finish_handles := PackedVector3Array()
+	var start_finish_ids := PackedInt32Array()
+	var split_handles := PackedVector3Array()
+	var split_ids := PackedInt32Array()
+	var join_handles := PackedVector3Array()
+	var join_ids := PackedInt32Array()
+	var waypoint_handles := PackedVector3Array()
+	var waypoint_ids := PackedInt32Array()
 	var control_handles := PackedVector3Array()
 	var control_ids := PackedInt32Array()
 	var control_lines := PackedVector3Array()
@@ -151,8 +192,23 @@ func _draw_path(gizmo: EditorNode3DGizmo, path_index: int, spline: Spline) -> vo
 	var point_count: int = spline.point_count
 	for idx in point_count:
 		var pos: Vector3 = spline.get_point_position(idx)
-		point_handles.append(pos)
-		point_ids.append(_encode(path_index, idx, ID_POINT))
+
+		var flags: int = spline.get_point_flags(idx)
+		if flags & Spline.SplinePointFlags.START_FINISH:
+			start_finish_handles.append(pos)
+			start_finish_ids.append(_encode(path_index, idx, ID_POINT))
+		elif flags & Spline.SplinePointFlags.BRANCH_SPLIT:
+			split_handles.append(pos)
+			split_ids.append(_encode(path_index, idx, ID_POINT))
+		elif flags & Spline.SplinePointFlags.BRANCH_JOIN:
+			join_handles.append(pos)
+			join_ids.append(_encode(path_index, idx, ID_POINT))
+		elif flags & Spline.SplinePointFlags.WAYPOINT:
+			waypoint_handles.append(pos)
+			waypoint_ids.append(_encode(path_index, idx, ID_POINT))
+		else:
+			point_handles.append(pos)
+			point_ids.append(_encode(path_index, idx, ID_POINT))
 
 		# In-control handle (skip first point).
 		if idx > 0:
@@ -174,6 +230,14 @@ func _draw_path(gizmo: EditorNode3DGizmo, path_index: int, spline: Spline) -> vo
 		gizmo.add_lines(control_lines, get_material("control_lines", gizmo), false)
 	if point_handles.size() > 0:
 		gizmo.add_handles(point_handles, get_material("point_handles", gizmo), point_ids, false, false)
+	if split_handles.size() > 0:
+		gizmo.add_handles(split_handles, get_material("handle_branch_split", gizmo), split_ids, false, false)
+	if join_handles.size() > 0:
+		gizmo.add_handles(join_handles, get_material("handle_branch_join", gizmo), join_ids, false, false)
+	if waypoint_handles.size() > 0:
+		gizmo.add_handles(waypoint_handles, get_material("handle_waypoint", gizmo), waypoint_ids, true, false)
+	if start_finish_handles.size() > 0:
+		gizmo.add_handles(start_finish_handles, get_material("handle_start_finish", gizmo), start_finish_ids, true, false)
 	if control_handles.size() > 0:
 		gizmo.add_handles(control_handles, get_material("control_handles", gizmo), control_ids, false, true)
 
@@ -399,7 +463,8 @@ func _set_subgizmo_transform(gizmo: EditorNode3DGizmo, subgizmo_id: int, transfo
 	if not _valid_point(d, spline):
 		return
 	spline.set_point_position(d.point_index, transform.origin)
-	gizmo.redraw()
+	if track and track.is_inside_tree():
+		track.update_gizmos()
 
 
 func _commit_subgizmos(gizmo: EditorNode3DGizmo, ids: PackedInt32Array, restores: Array, cancel: bool) -> void:
@@ -415,7 +480,8 @@ func _commit_subgizmos(gizmo: EditorNode3DGizmo, ids: PackedInt32Array, restores
 			var spline: Spline = track.get_spline_at(d.path_index)
 			if spline and _valid_point(d, spline):
 				spline.set_point_position(d.point_index, (restores[i] as Transform3D).origin)
-		gizmo.redraw()
+		if track.is_inside_tree():
+			track.update_gizmos()
 		return
 	ur.create_action("Move Track Points")
 	for i in ids.size():

@@ -3,7 +3,7 @@ extends Resource
 
 ## Track half-width at this point in meters (left + right from the center line).[br]
 ## Intended purpose: interpolated between points so tracks narrow (tunnel entrances) and widen
-## (straights, pit areas).[br]
+## (straights, sweeping bends).[br]
 ## Higher = wider road; lower = narrower ribbon.
 @export var width: float = 5.0
 
@@ -28,8 +28,6 @@ extends Resource
 	"Respawn",
 	"Path Entrance",
 	"Path Exit",
-	"Pit Entry",
-	"Pit Exit",
 )
 var flags: int = Spline.SplinePointFlags.NONE
 

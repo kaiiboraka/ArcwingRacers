@@ -314,16 +314,9 @@ func _remove_point_click(camera: Camera3D, screen_pos: Vector2) -> int:
 	var spline: Spline = _track.get_spline_at(hit.path_index)
 	if spline == null or hit.point_index >= spline.point_count:
 		return EditorPlugin.AFTER_GUI_INPUT_PASS
-	var pos: Vector3 = spline.get_point_position(hit.point_index)
-	var in_ctl: Vector3 = spline.get_point_in(hit.point_index)
-	var out_ctl: Vector3 = spline.get_point_out(hit.point_index)
 	if _gizmo_plugin.wire_source == hit:
 		_clear_wire()
-	var ur: EditorUndoRedoManager = EditorInterface.get_editor_undo_redo()
-	ur.create_action("Remove Track Point")
-	ur.add_do_method(spline, "remove_point", hit.point_index)
-	ur.add_undo_method(spline, "add_point", pos, in_ctl, out_ctl, hit.point_index)
-	ur.commit_action()
+	_track.remove_point_with_branches(hit.path_index, hit.point_index)
 	_update_gizmos()
 	return EditorPlugin.AFTER_GUI_INPUT_STOP
 
