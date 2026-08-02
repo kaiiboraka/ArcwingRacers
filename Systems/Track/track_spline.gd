@@ -116,6 +116,8 @@ func _load_from_data() -> void:
 func add_alternate_path(spline: Spline = null) -> Spline:
 	if spline == null:
 		spline = Spline.new()
+		# Alternate routes default to point-to-point (cyclic OFF); only the main circuit is a loop.
+		spline.closed = false
 	spline.bake_interval = bake_interval
 	alternate_paths.append(spline)
 	notify_property_list_changed()

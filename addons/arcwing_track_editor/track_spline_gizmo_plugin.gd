@@ -105,24 +105,26 @@ func _redraw(gizmo: EditorNode3DGizmo) -> void:
 
 
 func _draw_path(gizmo: EditorNode3DGizmo, path_index: int, spline: Spline) -> void:
+	var track := gizmo.get_node_3d() as TrackSpline
 	var path_material: StandardMaterial3D = get_material("line_main", gizmo)
 	if path_index > 0:
 		var name := "line_path_%d" % path_index
 		if not _path_line_materials_created.has(name):
-			create_material(name, _path_color(path_index))
+			create_material(name, _path_color(track, path_index))
 			_path_line_materials_created[name] = true
 		path_material = get_material(name, gizmo)
 
-	# Sampled curve as a line LIST (pairs of vertices — add_lines requires an even
-	# vertex count). Each consecutive pair draws one segment; a closed spline also
-	# wraps the last sample back to the first. (Reload bump 1.)
+	# The built-in Path3D gizmo already draws the MAIN path's curve itself, so only
+	# alternate paths need our sampled line here. `line_main` / _path_color(0) stays
+	# white as the reference color alt-path colors and branch midpoints derive from.
 	var samples := PackedVector3Array()
-	var total_length: float = spline.get_baked_length()
-	if total_length > 0.001:
-		var step := 0.25
-		var count := int(total_length / step) + 2
-		for i in count:
-			samples.append(spline.sample_baked(minf(i * step, total_length)))
+	if path_index > 0:
+		var total_length: float = spline.get_baked_length()
+		if total_length > 0.001:
+			var step := 0.25
+			var count := int(total_length / step) + 2
+			for i in count:
+				samples.append(spline.sample_baked(minf(i * step, total_length)))
 
 	var line_points := PackedVector3Array()
 	for i in samples.size() - 1:
@@ -199,18 +201,22 @@ func _draw_branches(gizmo: EditorNode3DGizmo, track: TrackSpline) -> void:
 		var key := "%d:%d-%d:%d" % [connection.from_path_index, connection.from_point_index,
 				connection.to_path_index, connection.to_point_index]
 		if not materials_created.has(key):
-			var midpoint: Color = _path_color(connection.from_path_index).lerp(
-					_path_color(connection.to_path_index), 0.5)
+			var midpoint: Color = _path_color(track, connection.from_path_index).lerp(
+					_path_color(track, connection.to_path_index), 0.5)
 			create_material("branch_%s" % key, midpoint)
 			materials_created[key] = true
 		var mat := get_material("branch_%s" % key, gizmo)
 		gizmo.add_lines(PackedVector3Array([a, b]), mat, false)
 
 
-## The color a path draws in (white for main, ALTERNATE_COLORS for alternates).
-func _path_color(path_index: int) -> Color:
+## The color a path draws in. Main path reads the node's Debug Shape > Custom color
+## (pure black 0000 = "use default", falls back to white). Alternates use ALTERNATE_COLORS.
+func _path_color(track: Node3D, path_index: int) -> Color:
 	if path_index <= 0:
-		return Color(1, 1, 1, 0.9)
+		var debug_color: Color = track.debug_custom_color
+		if debug_color.r == 0.0 and debug_color.g == 0.0 and debug_color.b == 0.0:
+			return Color(1, 1, 1, 0.9)
+		return debug_color
 	return ALTERNATE_COLORS[path_index % ALTERNATE_COLORS.size()]
 
 
