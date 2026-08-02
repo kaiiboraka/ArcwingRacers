@@ -400,7 +400,7 @@ The editor tooling lives in `addons/arcwing_track_editor/` (`plugin.gd` + `track
 
 - **Phase 1 — Draw everything.** ✅ (`f7c7a14`) Viewport gizmo renders the main path with draggable point and in/out control handles.
 - **Phase 2 — Other paths.** ✅ (`a24e03a`, `51695e9`, `89c4d1d`, `5abb07a`, `d7d5001`) Alternate paths added as separate splines with distinct palette colors; sub-gizmo (move-tool) point dragging; `TrackSplineData` resource; built-in add button; per-path color assignment.
-  - **Phase 2, part 2 — Live path-data editor (pending).** An editor dock/window that edits per-point track data (width, banking/tilt, recipe, recipe param, flags) live for the selected point instead of raw Inspector arrays. Driven from the same `SplinePointData` the inspector uses. Not started.
+  - **Phase 2, part 2 — Live path-data editor (pending).** An editor dock/window that edits per-point track data (width, banking/tilt, recipe, recipe param, flags) live for the selected point instead of raw Inspector arrays. Driven from the same `SplinePointData` the inspector uses. Active plan: `agent-context/plans/plan-live-path-data-editor.md`. Not started.
 - **Phase 3 — Mesh generation (pending).** The `ROAD`/`TUNNEL` ribbon generator (`TrackMeshGenerator`, ADR 0010) — road surface + side walls + tunnel roof along the spline, honoring `point_widths`, `tilt`, and recipe params. Reference for approach: `https://github.com/iiMidnightii/PathMesh3D` (study only, do not adopt). Branches have no mesh pass yet (deferred in ADR 0010).
 
 ### Editor hardening (2026-08, post-Phase-2)
