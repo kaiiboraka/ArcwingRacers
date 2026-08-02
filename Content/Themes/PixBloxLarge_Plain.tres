@@ -1,6 +1,6 @@
-[gd_resource type="Theme" load_steps=5 format=3 uid="uid://s1xfnvuqyf1w"]
+[gd_resource type="Theme" format=3 uid="uid://s1xfnvuqyf1w"]
 
-[ext_resource type="FontFile" uid="uid://kuphg0meymun" path="res://Assets/Fonts/PixBlox Large.ttf" id="1_vnavw"]
+[ext_resource type="FontFile" path="res://Assets/Fonts/PixBlox Large.ttf" id="1_vnavw"]
 
 [sub_resource type="FontVariation" id="FontVariation_aclk1"]
 base_font = ExtResource("1_vnavw")

@@ -1,6 +1,6 @@
-[gd_resource type="Theme" load_steps=5 format=3 uid="uid://c13ydo7rm1686"]
+[gd_resource type="Theme" format=3 uid="uid://c13ydo7rm1686"]
 
-[ext_resource type="FontFile" uid="uid://gri25iv24hks" path="res://Assets/Fonts/PixBlox Large Shadow.ttf" id="1_yfjad"]
+[ext_resource type="FontFile" path="res://Assets/Fonts/PixBlox Large Shadow.ttf" id="1_yfjad"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qmeou"]
 content_margin_left = 4.0

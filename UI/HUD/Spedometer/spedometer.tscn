@@ -1,0 +1,350 @@
+[gd_scene format=3 uid="uid://6v2cl3ywfpn4"]
+
+[ext_resource type="Script" uid="uid://dovc6w7qrxskv" path="res://UI/HUD/Spedometer/spedometer.gd" id="1_8fiw5"]
+[ext_resource type="Texture2D" uid="uid://b26o2fvrd0lr6" path="res://UI/HUD/Spedometer/Number Frame/gold frame.PNG" id="1_t3amr"]
+[ext_resource type="Texture2D" uid="uid://u4cms831it84" path="res://UI/HUD/Spedometer/Number Frame/black med inset.PNG" id="2_2hkps"]
+[ext_resource type="Texture2D" uid="uid://dwkval7x6abf6" path="res://UI/HUD/Spedometer/Number Frame/Gradient BG.PNG" id="3_su0jh"]
+[ext_resource type="FontFile" uid="uid://bjifctc1o8sj0" path="res://UI/Fonts/Minasans-KVaBX.otf" id="4_w1j0j"]
+[ext_resource type="Texture2D" uid="uid://pjkg2g3etkbn" path="res://UI/HUD/Spedometer/diamond bg SMOL border.PNG" id="4_xo6yw"]
+[ext_resource type="FontFile" uid="uid://xeik5cdgmhrh" path="res://UI/Fonts/MinasansBold-m2mmP.otf" id="5_8fiw5"]
+[ext_resource type="Texture2D" uid="uid://cck1gtvxqx7ag" path="res://UI/HUD/Spedometer/diamond bg SMOL.PNG" id="5_w1j0j"]
+[ext_resource type="FontFile" uid="uid://bji78r500j7ed" path="res://UI/Fonts/MinasansItalic-7OmmP.otf" id="6_qw2y1"]
+[ext_resource type="Texture2D" uid="uid://bbfv1oupkarj5" path="res://UI/HUD/Spedometer/bar border.PNG" id="7_qw2y1"]
+[ext_resource type="Texture2D" uid="uid://ccwc7344xk26b" path="res://UI/HUD/Spedometer/Light/diamond bg BIG border.PNG" id="8_aisgu"]
+[ext_resource type="Texture2D" uid="uid://dp55kwo2ttoyd" path="res://UI/HUD/Spedometer/Light/diamond bg BIG.PNG" id="9_05qfl"]
+[ext_resource type="Texture2D" uid="uid://cftutmtx8q7ts" path="res://UI/HUD/Spedometer/bar_bg.PNG" id="10_8fiw5"]
+[ext_resource type="Texture2D" uid="uid://dp8taon21pwet" path="res://UI/HUD/Spedometer/Light/glowy bits/large icon with bg.PNG" id="10_ccgid"]
+[ext_resource type="Texture2D" uid="uid://cjnl6wf2tfar0" path="res://UI/HUD/Spedometer/Light/glowy bits/large icon borderless Opaque.PNG" id="11_ey6tm"]
+[ext_resource type="Texture2D" uid="uid://cu2w3k4q0ivgj" path="res://UI/HUD/Spedometer/Light/glowy bits/large icon borderless Alpha.PNG" id="12_ekksg"]
+[ext_resource type="Texture2D" uid="uid://2ykrm3qx2syb" path="res://UI/HUD/Spedometer/bar_colored.PNG" id="12_qw2y1"]
+[ext_resource type="Texture2D" uid="uid://v5xomu8we2cr" path="res://UI/HUD/Spedometer/Light/glowy bits/glass tubes.PNG" id="13_idu3f"]
+[ext_resource type="Texture2D" uid="uid://ib6q27hiabd5" path="res://UI/HUD/Spedometer/Light/glowy bits/Light.PNG" id="14_rfeee"]
+[ext_resource type="Texture2D" uid="uid://ddo43tir6dqsb" path="res://UI/HUD/Spedometer/Light/glowy bits/Light_Blend.png" id="18_w1j0j"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_wj5hs"]
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_ccgid"]
+viewport_path = NodePath("bar/SubViewport")
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_wj5hs"]
+
+[node name="Spedometer" type="Control" unique_id=1585667712]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_8fiw5")
+speed_mph = 9.0
+light_color = Color(1, 1, 0, 1)
+light_transition_duration = 0.25
+
+[node name="Number Frame" type="Control" parent="." unique_id=136675151]
+anchors_preset = 0
+offset_top = 94.0
+offset_right = 40.0
+offset_bottom = 134.0
+
+[node name="gold frame" type="TextureRect" parent="Number Frame" unique_id=1715667252]
+texture_filter = 1
+texture_repeat = 1
+layout_mode = 0
+offset_right = 238.0
+offset_bottom = 137.0
+texture = ExtResource("1_t3amr")
+stretch_mode = 4
+
+[node name="black med inset" type="TextureRect" parent="Number Frame" unique_id=133193394 groups=["borders"]]
+texture_filter = 1
+texture_repeat = 1
+layout_mode = 0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 234.0
+offset_bottom = 133.0
+texture = ExtResource("2_2hkps")
+stretch_mode = 4
+
+[node name="Gradient BG" type="TextureRect" parent="Number Frame" unique_id=1137041187]
+self_modulate = Color(1, 0, 1, 0.5019608)
+texture_filter = 1
+texture_repeat = 1
+layout_mode = 0
+offset_right = 238.0
+offset_bottom = 137.0
+texture = ExtResource("3_su0jh")
+stretch_mode = 4
+
+[node name="Number Panel" type="PanelContainer" parent="Number Frame" unique_id=965770142]
+layout_mode = 0
+offset_right = 238.0
+offset_bottom = 137.0
+theme_override_styles/panel = SubResource("StyleBoxEmpty_wj5hs")
+
+[node name="CenterContainer" type="CenterContainer" parent="Number Frame/Number Panel" unique_id=7158916]
+layout_mode = 2
+
+[node name="SpeedText_RichTextLabel" type="RichTextLabel" parent="Number Frame/Number Panel/CenterContainer" unique_id=432565958]
+unique_name_in_owner = true
+clip_contents = false
+layout_mode = 2
+theme_override_colors/default_color = Color(0.8, 0.8, 0.8, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_outline_size = 12
+theme_override_constants/shadow_offset_x = 4
+theme_override_constants/shadow_offset_y = 3
+theme_override_constants/outline_size = 4
+theme_override_fonts/normal_font = ExtResource("4_w1j0j")
+theme_override_fonts/bold_font = ExtResource("5_8fiw5")
+theme_override_fonts/italics_font = ExtResource("6_qw2y1")
+theme_override_font_sizes/normal_font_size = 64
+text = "9"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[node name="MPH_RichTextLabel" type="RichTextLabel" parent="Number Frame/Number Panel" unique_id=474325366]
+clip_contents = false
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 8
+offset_transform_enabled = true
+offset_transform_position = Vector2(-50, -20)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_outline_size = 3
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_constants/outline_size = 1
+theme_override_fonts/normal_font = ExtResource("4_w1j0j")
+theme_override_fonts/bold_font = ExtResource("5_8fiw5")
+theme_override_fonts/italics_font = ExtResource("6_qw2y1")
+bbcode_enabled = true
+text = "[i]mph"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+
+[node name="Smol" type="Control" parent="." unique_id=173937306]
+anchors_preset = 0
+offset_left = 124.0
+offset_top = 221.0
+offset_right = 1404.0
+offset_bottom = 941.0
+
+[node name="diamond bg SMOL border" type="TextureRect" parent="Smol" unique_id=451298549 groups=["borders"]]
+texture_filter = 1
+texture_repeat = 1
+layout_mode = 0
+offset_right = 85.0
+offset_bottom = 85.0
+texture = ExtResource("4_xo6yw")
+stretch_mode = 4
+
+[node name="diamond bg SMOL" type="TextureRect" parent="Smol" unique_id=1795214429]
+texture_filter = 1
+texture_repeat = 1
+layout_mode = 0
+offset_right = 83.0
+offset_bottom = 83.0
+texture = ExtResource("5_w1j0j")
+stretch_mode = 4
+
+[node name="bar" type="Control" parent="." unique_id=236131798]
+anchors_preset = 0
+offset_left = 139.0
+offset_top = 57.0
+offset_right = 179.0
+offset_bottom = 97.0
+
+[node name="TextureProgressBar" type="TextureRect" parent="bar" unique_id=2053949708]
+texture_filter = 1
+layout_mode = 0
+offset_top = -5.0
+offset_right = 180.0
+offset_bottom = 221.0
+texture = ExtResource("10_8fiw5")
+
+[node name="bar border" type="TextureRect" parent="bar" unique_id=763677829 groups=["borders"]]
+texture_filter = 1
+texture_repeat = 1
+layout_mode = 0
+offset_left = -4.0
+offset_top = -13.0
+offset_right = 185.0
+offset_bottom = 225.0
+texture = ExtResource("7_qw2y1")
+stretch_mode = 4
+
+[node name="bar fill" type="TextureRect" parent="bar" unique_id=2062978745 groups=["borders"]]
+clip_children = 1
+texture_filter = 1
+texture_repeat = 1
+layout_mode = 0
+offset_top = -5.0
+offset_right = 180.0
+offset_bottom = 221.0
+texture = ExtResource("12_qw2y1")
+stretch_mode = 4
+
+[node name="fill1" type="TextureRect" parent="bar/bar fill" unique_id=1722957014 groups=["borders"]]
+self_modulate = Color(0, 1, 1, 1)
+show_behind_parent = true
+texture_filter = 1
+texture_repeat = 1
+layout_mode = 0
+offset_left = -26.0
+offset_top = 195.00002
+offset_right = 49.0
+offset_bottom = 320.0
+rotation = -0.34906584
+texture = SubResource("ViewportTexture_ccgid")
+
+[node name="fill2" type="TextureRect" parent="bar/bar fill" unique_id=1345717178 groups=["borders"]]
+self_modulate = Color(1, 1, 0, 1)
+show_behind_parent = true
+texture_filter = 1
+texture_repeat = 1
+layout_mode = 0
+offset_left = 137.00002
+offset_top = 110.0
+offset_right = 237.00002
+offset_bottom = 310.00006
+rotation = 0.7853982
+texture = SubResource("ViewportTexture_ccgid")
+
+[node name="fill3" type="TextureRect" parent="bar/bar fill" unique_id=1267333292 groups=["borders"]]
+self_modulate = Color(1, 0, 1, 1)
+show_behind_parent = true
+texture_filter = 1
+texture_repeat = 1
+layout_mode = 0
+offset_left = 48.0
+offset_top = 22.0
+offset_right = 123.0
+offset_bottom = 222.0
+rotation = -0.7853982
+texture = SubResource("ViewportTexture_ccgid")
+
+[node name="SubViewport" type="SubViewport" parent="bar" unique_id=1429260706]
+transparent_bg = true
+handle_input_locally = false
+scaling_3d_mode = 5
+canvas_item_default_texture_filter = 0
+size = Vector2i(180, 226)
+render_target_update_mode = 4
+
+[node name="bar fill2" type="TextureRect" parent="bar/SubViewport" unique_id=854773419 groups=["borders"]]
+top_level = true
+clip_children = 2
+z_index = -2
+texture_filter = 1
+texture_repeat = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("12_qw2y1")
+stretch_mode = 4
+
+[node name="Light" type="Control" parent="." unique_id=1569408803]
+anchors_preset = 0
+offset_left = 115.0
+offset_top = -4.0
+offset_right = 155.0
+offset_bottom = 36.0
+
+[node name="diamond bg BIG border" type="TextureRect" parent="Light" unique_id=869866147 groups=["borders"]]
+texture_filter = 1
+texture_repeat = 1
+layout_mode = 0
+offset_left = -3.0
+offset_top = -3.0
+offset_right = 104.0
+offset_bottom = 104.0
+texture = ExtResource("8_aisgu")
+stretch_mode = 4
+
+[node name="diamond bg BIG" type="TextureRect" parent="Light" unique_id=2084817366]
+texture_filter = 1
+texture_repeat = 1
+layout_mode = 0
+offset_right = 101.0
+offset_bottom = 101.0
+texture = ExtResource("9_05qfl")
+stretch_mode = 4
+
+[node name="glowy bits" type="Control" parent="Light" unique_id=1625649153]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="large icon bg" type="TextureRect" parent="Light/glowy bits" unique_id=808246142 groups=["colored"]]
+visible = false
+texture_filter = 1
+texture_repeat = 1
+layout_mode = 0
+offset_left = 2.0
+offset_top = 2.0
+offset_right = 99.0
+offset_bottom = 99.0
+texture = ExtResource("10_ccgid")
+stretch_mode = 4
+
+[node name="large icon opq" type="TextureRect" parent="Light/glowy bits" unique_id=1720317824 groups=["colored"]]
+visible = false
+texture_filter = 1
+texture_repeat = 1
+layout_mode = 0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 81.0
+offset_bottom = 81.0
+texture = ExtResource("11_ey6tm")
+stretch_mode = 4
+
+[node name="LargeIcon_ALPHA" type="TextureRect" parent="Light/glowy bits" unique_id=1123703999 groups=["colored"]]
+unique_name_in_owner = true
+self_modulate = Color(1, 1, 1, 0.57735026)
+texture_filter = 1
+texture_repeat = 1
+layout_mode = 0
+offset_left = 31.0
+offset_top = 31.000002
+offset_right = 92.0
+offset_bottom = 92.0
+scale = Vector2(0.65, 0.65)
+texture = ExtResource("12_ekksg")
+stretch_mode = 4
+
+[node name="LightTexture" type="TextureRect" parent="Light/glowy bits" unique_id=2073556450 groups=["colored"]]
+unique_name_in_owner = true
+self_modulate = Color(1, 1, 0, 1)
+texture_filter = 1
+texture_repeat = 1
+material = SubResource("CanvasItemMaterial_wj5hs")
+layout_mode = 0
+offset_left = 18.0
+offset_top = 18.0
+offset_right = 83.0
+offset_bottom = 83.0
+texture = ExtResource("14_rfeee")
+stretch_mode = 4
+
+[node name="GlassTubes" type="TextureRect" parent="Light/glowy bits/LightTexture" unique_id=1243880076 groups=["colored"]]
+self_modulate = Color(1, 1, 0, 1)
+texture_filter = 1
+texture_repeat = 1
+layout_mode = 0
+offset_left = -12.0
+offset_top = -11.0
+offset_right = 76.0
+offset_bottom = 76.0
+texture = ExtResource("13_idu3f")
+stretch_mode = 4
+
+[node name="PointLight2D" type="PointLight2D" parent="Light/glowy bits" unique_id=841607238]
+unique_name_in_owner = true
+position = Vector2(50, 50)
+color = Color(1, 1, 0, 0.57735026)
+energy = 2.0
+texture = ExtResource("18_w1j0j")
+texture_scale = 1.7
