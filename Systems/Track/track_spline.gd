@@ -156,6 +156,129 @@ func remove_branch(index : int) -> void:
 	paths_changed.emit();
 
 
+# --- Path-level deletion ------------------------------------------------------------------
+# Three severity levels, each one undo action via EditorUndoRedoManager (mirrors
+# remove_point_with_branches): Delete Connections (branches only), Delete Points (points,
+# which prunes their branches), Delete Entire Path (alternates: branches + points + the path
+# itself; the main path cannot be removed, so it falls back to deleting its points).
+
+## Remove every BranchConnection touching `path_index` in one undo action. Editor-only.
+func delete_path_connections(path_index : int) -> void:
+	if not Engine.is_editor_hint():
+		return;
+	if not has_path(path_index):
+		return;
+	var branch_backup : Array = _branch_state_backup();
+	var ur : EditorUndoRedoManager = EditorInterface.get_editor_undo_redo();
+	ur.create_action("Delete %s Connections" % get_path_display_name(path_index));
+	ur.add_do_method(self, "_do_delete_path_connections", path_index);
+	ur.add_undo_method(self, "_restore_branches", branch_backup);
+	ur.commit_action();
+
+
+func _do_delete_path_connections(path_index : int) -> void:
+	var removed := false;
+	for i in range(branches.size() - 1, -1, -1):
+		var b : BranchConnection = branches[i];
+		if b == null:
+			continue;
+		if b.from_path_index == path_index or b.to_path_index == path_index:
+			branches.remove_at(i);
+			removed = true;
+	if removed:
+		notify_property_list_changed();
+		paths_changed.emit();
+
+
+## Remove every point on `path_index` in one undo action. Branches whose endpoints lived on
+## the path are pruned too (their anchors cease to exist). Editor-only.
+func delete_path_points(path_index : int) -> void:
+	if not Engine.is_editor_hint():
+		return;
+	var spline : Spline = get_spline_at(path_index);
+	if spline == null or spline.point_count == 0:
+		return;
+	var backup : Dictionary = _spline_points_backup(spline);
+	var branch_backup : Array = _branch_state_backup();
+	var ur : EditorUndoRedoManager = EditorInterface.get_editor_undo_redo();
+	ur.create_action("Delete %s Points" % get_path_display_name(path_index));
+	ur.add_do_method(self, "_do_delete_path_points", path_index);
+	ur.add_undo_method(self, "_undo_delete_path_points", path_index, backup, branch_backup);
+	ur.commit_action();
+
+
+func _do_delete_path_points(path_index : int) -> void:
+	var spline : Spline = get_spline_at(path_index);
+	if spline == null or spline.point_count == 0:
+		return;
+	_reconcile_suspended = true;
+	spline.clear_points();
+	_reconcile_suspended = false;
+	_reconcile_branches_for_removal(path_index, spline, -1);
+	_sync_path_watchers();
+	notify_property_list_changed();
+	paths_changed.emit();
+
+
+func _undo_delete_path_points(path_index : int, backup : Dictionary, branch_backup : Array) -> void:
+	var spline : Spline = get_spline_at(path_index);
+	if spline == null:
+		return;
+	_restore_spline_points(spline, backup);
+	_restore_branches(branch_backup);
+	_sync_path_watchers();
+
+
+## Delete `path_index` entirely — its branches, its points, and the alternate path itself.
+## The main path (index 0) cannot be removed, so this clears its points instead. Editor-only.
+func delete_path(path_index : int) -> void:
+	if not Engine.is_editor_hint():
+		return;
+	if path_index <= 0:
+		delete_path_points(path_index);
+		return;
+	if not has_path(path_index):
+		return;
+	var spline : Spline = get_spline_at(path_index);
+	if spline == null:
+		return;
+	var backup : Dictionary = _spline_points_backup(spline);
+	var branch_backup : Array = _branch_state_backup();
+	var alternate_index : int = path_index - 1;
+	var ur : EditorUndoRedoManager = EditorInterface.get_editor_undo_redo();
+	ur.create_action("Delete Path %s" % get_path_display_name(path_index));
+	ur.add_do_method(self, "_do_delete_path", path_index, alternate_index);
+	ur.add_undo_method(self, "_undo_delete_path", path_index, alternate_index, backup, branch_backup);
+	ur.commit_action();
+
+
+func _do_delete_path(path_index : int, alternate_index : int) -> void:
+	for i in range(branches.size() - 1, -1, -1):
+		var b : BranchConnection = branches[i];
+		if b == null:
+			branches.remove_at(i);
+			continue;
+		if b.from_path_index == path_index or b.to_path_index == path_index:
+			branches.remove_at(i);
+		else:
+			if b.from_path_index > path_index:
+				b.from_path_index -= 1;
+			if b.to_path_index > path_index:
+				b.to_path_index -= 1;
+	remove_alternate_path(alternate_index);
+
+
+func _undo_delete_path(path_index : int, alternate_index : int, backup : Dictionary, branch_backup : Array) -> void:
+	var spline : Spline = Spline.new();
+	spline.bake_interval = bake_interval;
+	_restore_spline_points(spline, backup);
+	alternate_paths.insert(clampi(alternate_index, 0, alternate_paths.size()), spline);
+	_restore_branches(branch_backup);
+	_sync_path_watchers();
+	notify_property_list_changed();
+	paths_changed.emit();
+
+
 func _enter_tree() -> void:
 	if curve == null:
 		curve = Spline.new();
@@ -195,6 +318,17 @@ func get_spline_at(index : int) -> Spline:
 ## Returns true when path `index` exists and its curve is usable.
 func has_path(index : int) -> bool:
 	return get_spline_at(index) != null;
+
+## Human-readable name for a path: its Spline.path_name when set, else a positional fallback
+## ("Main" for index 0, "Alt N" for alternates). Used by the dock and toolbar path selectors
+## and by undo-action labels for the path-level delete operations.
+func get_path_display_name(path_index : int) -> String:
+	var spline : Spline = get_spline_at(path_index);
+	if spline == null:
+		return "Path %d" % path_index;
+	if not spline.path_name.is_empty():
+		return spline.path_name;
+	return "Main" if path_index <= 0 else "Alt %d" % path_index;
 
 ## Apply bake_interval to every path's Spline. Runs at enter-tree and on geometry generation.
 func _apply_bake_settings() -> void:
@@ -384,6 +518,69 @@ func _restore_branches(branch_backup : Array) -> void:
 		branches.append(b);
 	notify_property_list_changed();
 	paths_changed.emit();
+
+
+## Snapshot a spline's points as plain data for undo — positions, in/out handles, tilts,
+## per-point metadata, closed/up-vector flags, and path name. Value types only, so the
+## snapshot is safe through EditorUndoRedoManager's deep-copied action arguments.
+func _spline_points_backup(spline : Spline) -> Dictionary:
+	var positions := PackedVector3Array();
+	var ins := PackedVector3Array();
+	var outs := PackedVector3Array();
+	var tilts := PackedFloat64Array();
+	var widths := PackedFloat64Array();
+	var recipes := PackedInt32Array();
+	var recipe_params := PackedFloat64Array();
+	var flags := PackedInt32Array();
+	for i in spline.point_count:
+		positions.append(spline.get_point_position(i));
+		ins.append(spline.get_point_in(i));
+		outs.append(spline.get_point_out(i));
+		tilts.append(spline.get_point_tilt(i));
+		widths.append(spline.get_point_width(i));
+		recipes.append(int(spline.get_point_recipe(i)));
+		recipe_params.append(spline.get_point_recipe_param(i));
+		flags.append(spline.get_point_flags(i));
+	return {
+		"positions": positions,
+		"ins": ins,
+		"outs": outs,
+		"tilts": tilts,
+		"widths": widths,
+		"recipes": recipes,
+		"recipe_params": recipe_params,
+		"flags": flags,
+		"closed": spline.closed,
+		"up_vector_enabled": spline.up_vector_enabled,
+		"path_name": spline.path_name,
+	}
+
+
+## Rebuild a spline's points and metadata from a `_spline_points_backup` snapshot. Clears
+## existing points first. Used by the undo paths for Delete Points / Delete Path.
+func _restore_spline_points(spline : Spline, backup : Dictionary) -> void:
+	var positions : PackedVector3Array = backup["positions"];
+	var ins : PackedVector3Array = backup["ins"];
+	var outs : PackedVector3Array = backup["outs"];
+	var tilts : PackedFloat64Array = backup["tilts"];
+	var widths : PackedFloat64Array = backup["widths"];
+	var recipes : PackedInt32Array = backup["recipes"];
+	var recipe_params : PackedFloat64Array = backup["recipe_params"];
+	var flags : PackedInt32Array = backup["flags"];
+	spline.clear_points();
+	for i in positions.size():
+		spline.add_point(positions[i], ins[i], outs[i], -1);
+		spline.set_point_tilt(i, tilts[i]);
+		var pd : SplinePointData = spline.get_point_data(i);
+		if pd:
+			pd.width = widths[i];
+			pd.recipe = recipes[i];
+			pd.recipe_param = recipe_params[i];
+			pd.flags = flags[i];
+			pd.tilt = tilts[i];
+	spline.closed = backup.get("closed", true);
+	spline.up_vector_enabled = backup.get("up_vector_enabled", false);
+	spline.path_name = backup.get("path_name", "");
 
 
 ## First index where the current positions diverge from the pre-removal snapshot. For a

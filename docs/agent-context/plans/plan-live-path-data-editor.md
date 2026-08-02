@@ -1,6 +1,7 @@
 # Plan: Live Path-Data Editor Dock (Track Editor Phase 2 part 2)
 
-Status: agreed 2026-08, pending execution. Check off items as they land.
+Status: agreed 2026-08. Steps 1-4 code landed (awaiting plugin-reload verification); step 6
+(Path Controls) code landed too. Check off items as they land.
 Roadmap home: `technical/tracks-and-splines.md` → Track Editor Roadmap.
 
 ## Goal
@@ -77,9 +78,28 @@ editor dock that shows the currently-selected point's `SplinePointData`
   undo/redo works; right-click still removes; ◀ ▶ navigates; branch jump works.
 - Zero editor errors; `diagnostics: []` on all new .gd files.
 
+### 6. Path Controls (path-level editing; added on user request)
+- **Names:** `Spline` gains `@export var path_name : String = ""` (empty = positional
+  fallback); copied by `Spline.import_from` so Import Points preserves names.
+  `TrackSpline.get_path_display_name(path_index)` returns `path_name` or "Main"/"Alt N".
+- **Three delete levels** on `TrackSpline`, each one undo action (value backups survive
+  EditorUndoRedoManager deep-copy, like `_branch_state_backup`):
+  - `delete_path_connections(path_index)` — remove every branch touching the path.
+  - `delete_path_points(path_index)` — clear all points (+ prune branches to them).
+  - `delete_path(path_index)` — branches + points + remove the alternate path itself
+    (path indices of later branches decrement); main path falls back to clearing points.
+- **Dock "Path Controls" section** (below the path selector): Name LineEdit (Enter/blur
+  commits via `EditorUndoRedoManager`) + Delete Connections / Delete Points /
+  Delete Entire Path buttons. Delete Entire Path disabled for the main path.
+- **Selectors** in the dock and the 3D toolbar show display names (`get_path_display_name`).
+- Selection is cleared when a delete invalidates it (alternate-path delete clears outright;
+  point delete clears only if the selected point is gone).
+
 ## Files touched
 - `addons/arcwing_track_editor/track_spline_gizmo_plugin.gd` — selection + highlight.
-- `addons/arcwing_track_editor/plugin.gd` — dock registration, click-select input.
-- `addons/arcwing_track_editor/path_data_dock.gd` — NEW dock Control.
-- `Systems/Track/spline.gd` — only if `set_point_tilt`/`get_point_tilt` missing.
+- `addons/arcwing_track_editor/plugin.gd` — dock registration, click-select input,
+  toolbar path selector shows display names.
+- `addons/arcwing_track_editor/path_data_dock.gd` — NEW dock Control + Path Controls section.
+- `Systems/Track/spline.gd` — `path_name` export + import_from copy.
+- `Systems/Track/track_spline.gd` — `get_path_display_name` + 3 path-level delete ops.
 - `docs/technical/tracks-and-splines.md` — flip Phase 2 part 2 to ✅ on completion.

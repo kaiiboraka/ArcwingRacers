@@ -3,6 +3,8 @@ import os, re
 GODOT_SCRIPTS_DIR = r"C:\Projects\ArcwingRacers\Content"
 GODOT_SCRIPTS_DIR2 = r"C:\Projects\ArcwingRacers\UI"
 GODOT_SCRIPTS_DIR3 = r"C:\Projects\ArcwingRacers\Systems"
+GODOT_SCRIPTS_DIR4 = r"C:\Projects\ArcwingRacers\addons\arcwing_track_editor"
+GODOT_SCRIPTS_DIR5 = r"C:\Projects\ArcwingRacers\addons\utility_scripts"
 
 
 def extract_code(line: str) -> tuple[str, str]:
@@ -288,6 +290,8 @@ def main():
 	process_path(GODOT_SCRIPTS_DIR)
 	process_path(GODOT_SCRIPTS_DIR2)
 	process_path(GODOT_SCRIPTS_DIR3)
+	process_path(GODOT_SCRIPTS_DIR4)
+	process_path(GODOT_SCRIPTS_DIR5)
 
 
 if __name__ == "__main__":

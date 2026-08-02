@@ -20,4 +20,4 @@ extends Resource;
 
 ## Meters between baked samples; drives sampling fidelity for banking and tunnels.
 ## Stored here (not on the node) so the whole track definition travels as one asset.
-@export_range(0.05, 5.0, 0.05) var bake_interval : float = 0.25;
+@export_range(0.05, 5.0, 0.05) var bake_interval : float = 0.25

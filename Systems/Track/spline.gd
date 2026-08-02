@@ -34,6 +34,13 @@ enum SplinePointFlags {
 ## Editable per-point in the inspector: expand an entry to see/edit that point's data.
 @export var point_data : Array[SplinePointData] = [];
 
+## Display name for this path, shown in the editor path selectors (track dock + 3D toolbar)
+## instead of the positional "Main"/"Alt N" label.[br]
+## Intended purpose: lets a designer name routes ("Pit Lane", "Shortcut") so the dock and
+## toolbar identify a path at a glance; empty falls back to the positional label.[br]
+## Empty = positional fallback name.
+@export var path_name : String = "";
+
 ## Whether the spline forms a closed loop (circuit) or runs point 0 → last once (rally).[br]
 ## Intended purpose: maps to Curve3D.closed — cyclic tracks wrap last→first and lap offsets
 ## mod the total length; non-cyclic tracks are always 1 lap.[br]
@@ -267,6 +274,7 @@ func import_from(source : Curve3D) -> void:
 	up_vector_enabled = source.up_vector_enabled;
 	if source is Spline:
 		var src : Spline = source;
+		path_name = src.path_name;
 		for i in src.point_data.size():
 			var src_pd : SplinePointData = src.point_data[i];
 			if src_pd == null:
