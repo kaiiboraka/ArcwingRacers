@@ -1,0 +1,11 @@
+[gd_scene format=3 uid="uid://bf2gcoa6m1m7j"]
+
+[ext_resource type="Script" uid="uid://2i8s6ki7usj2" path="res://addons/arcwing_track_editor/path_data_dock.gd" id="1"]
+
+[node name="TrackPointData" type="VBoxContainer" unique_id=1392230819]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1")

@@ -14,11 +14,13 @@ extends EditorPlugin
 ## nav schemes), it discards the accidental point.
 
 const TrackSplineGizmoPluginScript = preload("res://addons/arcwing_track_editor/track_spline_gizmo_plugin.gd")
+const PathDataDockScene = preload("res://addons/arcwing_track_editor/path_data_dock.tscn")
 
 const MODE_EDIT := 0
 const MODE_WIRE := 1
 
 var _gizmo_plugin: EditorNode3DGizmoPlugin
+var _dock : PathDataDock
 
 var _toolbar: HBoxContainer
 var _path_selector: OptionButton
@@ -49,15 +51,24 @@ func _enter_tree() -> void:
 	_gizmo_plugin = TrackSplineGizmoPluginScript.new()
 	add_node_3d_gizmo_plugin(_gizmo_plugin)
 	_build_toolbar()
+	_dock = PathDataDockScene.instantiate()
+	_dock.name = "Track Point Data"
+	_dock.point_navigated.connect(_on_dock_navigated)
+	add_control_to_dock(EditorPlugin.DOCK_SLOT_RIGHT_UL, _dock)
 	var ur: EditorUndoRedoManager = EditorInterface.get_editor_undo_redo()
 	ur.version_changed.connect(_refresh_path_selector)
 	ur.version_changed.connect(_update_gizmos)
+	ur.version_changed.connect(_refresh_dock)
 
 
 func _exit_tree() -> void:
 	if _gizmo_plugin:
 		remove_node_3d_gizmo_plugin(_gizmo_plugin)
 		_gizmo_plugin = null
+	if _dock:
+		remove_control_from_docks(_dock)
+		_dock.queue_free()
+		_dock = null
 	if _toolbar:
 		remove_control_from_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_MENU, _toolbar)
 		_toolbar.queue_free()
@@ -106,11 +117,17 @@ func _edit(object: Object) -> void:
 		_refresh_path_selector()
 		_watch_main_spline()
 		_update_gizmos()
+	if _dock:
+		_dock.visible = _track != null
+		_dock.set_track(_track)
+		_dock.refresh(_gizmo_plugin.get_selected_point())
 
 
 func _make_visible(p_visible: bool) -> void:
 	if _toolbar:
 		_toolbar.visible = p_visible
+	if _dock:
+		_dock.visible = p_visible
 	if not p_visible:
 		if _track and _track.paths_changed.is_connected(_on_track_paths_changed):
 			_track.paths_changed.disconnect(_on_track_paths_changed)
@@ -118,6 +135,9 @@ func _make_visible(p_visible: bool) -> void:
 		_unwatch_main_spline()
 		_clear_wire()
 		_clear_selection()
+		if _dock:
+			_dock.set_track(null)
+			_dock.refresh({})
 
 
 # --- Toolbar handlers ------------------------------------------------------------------------
@@ -324,6 +344,7 @@ func _select_point_on_press(camera: Camera3D, screen_pos: Vector2) -> void:
 		return
 	_gizmo_plugin.set_selected_point(hit.path_index, hit.point_index)
 	call_deferred("_update_gizmos")
+	_refresh_dock()
 
 
 func _remove_point_click(camera: Camera3D, screen_pos: Vector2) -> int:
@@ -388,6 +409,19 @@ func _clear_wire() -> void:
 func _clear_selection() -> void:
 	if _gizmo_plugin:
 		_gizmo_plugin.set_selected_point(-1, -1)
+
+
+## Dock ◀ ▶ / path / branch-jump navigation: retarget the gizmo selection and refresh.
+func _on_dock_navigated(path_index: int, point_index: int) -> void:
+	if _gizmo_plugin:
+		_gizmo_plugin.set_selected_point(path_index, point_index)
+		_update_gizmos()
+		_refresh_dock()
+
+
+func _refresh_dock() -> void:
+	if _dock:
+		_dock.refresh(_gizmo_plugin.get_selected_point() if _gizmo_plugin else {})
 
 
 func _update_gizmos() -> void:

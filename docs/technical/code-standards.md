@@ -130,14 +130,22 @@ Before importing or committing any non-original audio asset, see `technical/audi
 
 **Always annotate types explicitly. Never use the `:=` (walrus) inference operator.** Inferred types can differ from the intended type and surface only as runtime-exclusive compilation errors when the script loads — the exact failure mode that GDScript's explicit syntax exists to prevent.
 
+**Spacing in type hints: put a space on both sides of the colon.** This applies to every type-hint site — variable declarations (`var name : Type`), `const` declarations, `@export`/`@onready`/`@tool` annotated vars, function parameters (`func f(arg : Type)`), and signal parameters. Never write the colon flush against the identifier (`var name: Type`).
+
 ```gdscript
 # Wrong — inferred type (runtime-exclusive errors)
 var speed := 30.0
 var mid := (a + b) * 0.5
 
-# Right — explicit
+# Wrong — colon flush against the identifier
 var speed: float = 30.0
-var mid: Vector3 = (a + b) * 0.5
+
+# Right — explicit, spaced colon
+var speed : float = 30.0
+var mid : Vector3 = (a + b) * 0.5
+
+func _process(delta : float) -> void:
+	pass
 ```
 
 Exceptions: only where dynamic typing is genuinely required (polymorphic `Variant` values), and even then annotate `Variant` explicitly rather than inferring.
