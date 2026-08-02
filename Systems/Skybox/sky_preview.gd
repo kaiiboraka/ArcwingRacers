@@ -18,7 +18,7 @@ const TEXTURE_EXTS := ["png", "jpg", "jpeg", "webp", "bmp", "tga", "exr"];
 		if Engine.is_editor_hint():
 			notify_property_list_changed();
 
-@export_custom(PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_READ_ONLY);
+@export_custom(PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_READ_ONLY)
 var current_sky_name : String:
 	get:
 		return _clean_texture_name();

@@ -61,7 +61,7 @@ enum SplinePointFlags {
 ## Default flags applied when a point is added without explicit metadata (editor authoring).[br]
 ## Intended purpose: new points are unflagged until explicitly marked.[br]
 ## 0 = no flags.
-@export_flags("None","Start Finish","Waypoint","Respawn", "Path Entrance", "Path Exit"); 
+@export_flags("None","Start Finish","Waypoint","Respawn", "Path Entrance", "Path Exit")
 var default_flags : int = SplinePointFlags.NONE;
 
 

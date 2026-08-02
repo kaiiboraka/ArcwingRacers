@@ -205,7 +205,7 @@ def process_file(filepath: str) -> bool:
 		if trimmed.endswith(";"):
 			nosemi = trimmed[:-1].strip()
 			if (nosemi == '@tool' or nosemi.startswith('class_name ') or
-					re.match(r'^@export_(group|subgroup|category|tool_button)\s*\(', nosemi) or
+					re.match(r'^@\w+\s*\(', nosemi) or
 					nosemi.endswith("\\")):
 				trailing_ws = code_part[len(code_trimmed):]
 				new_line = trimmed[:-1] + trailing_ws + comment_part
@@ -224,8 +224,8 @@ def process_file(filepath: str) -> bool:
 		elif trimmed.startswith('class_name '):
 			should_add = False
 
-		# @export_group / @export_subgroup / @export_category / @export_tool_button (bare, no var on same line)
-		elif re.match(r'^@export_(group|subgroup|category|tool_button)\s*\(', trimmed):
+		# @export_* annotations that are immediately followed by the var on the NEXT line
+		elif re.match(r'^@\w+\s*\(', trimmed):
 			should_add = False
 
 		# Header lines (ends with :)

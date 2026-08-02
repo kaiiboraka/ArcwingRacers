@@ -8,7 +8,7 @@ class_name Skybox extends Node3D
 
 ## Read-only mirror of the child SkyPreviewer's current panorama name, exposed on the root so
 ## the active sky can be read without opening the child scene.
-@export_custom(PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_READ_ONLY);
+@export_custom(PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_READ_ONLY)
 var current_sky_name : String:
 	get:
 		var previewer : SkyPreviewer = _find_sky_previewer();
