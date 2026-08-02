@@ -42,6 +42,7 @@ _data = {
 point_count = 7
 script = ExtResource("1_bx276")
 point_data = Array[ExtResource("2_pygo4")]([SubResource("Resource_bx276"), SubResource("Resource_pygo4"), SubResource("Resource_4twbn"), SubResource("Resource_tcxc8"), SubResource("Resource_plkfy"), SubResource("Resource_gxigo"), SubResource("Resource_q4qob")])
+path_name = "Start_Right"
 cyclic = false
 
 [sub_resource type="Resource" id="Resource_br3hp"]
@@ -117,34 +118,39 @@ _data = {
 point_count = 16
 script = ExtResource("1_bx276")
 point_data = Array[ExtResource("2_pygo4")]([SubResource("Resource_br3hp"), SubResource("Resource_t1ij3"), SubResource("Resource_ia80j"), SubResource("Resource_p1bb6"), SubResource("Resource_rrsa3"), SubResource("Resource_hku66"), SubResource("Resource_1v15v"), SubResource("Resource_0lohd"), SubResource("Resource_lgo6f"), SubResource("Resource_2tcvn"), SubResource("Resource_kk3dr"), SubResource("Resource_rikuf"), SubResource("Resource_1oc5y"), SubResource("Resource_5lwjx"), SubResource("Resource_d8c63"), SubResource("Resource_7ki6v")])
+path_name = "Midway"
 cyclic = false
 
-[sub_resource type="Resource" id="Resource_4lwru"]
+[sub_resource type="Resource" id="Resource_jfr6a"]
 script = ExtResource("3_4twbn")
 from_path_index = 1
 to_point_index = 1
 
-[sub_resource type="Resource" id="Resource_md2oi"]
+[sub_resource type="Resource" id="Resource_4lwru"]
 script = ExtResource("3_4twbn")
 from_path_index = 2
 from_point_index = 15
 to_point_index = 27
 
-[sub_resource type="Resource" id="Resource_tblqr"]
+[sub_resource type="Resource" id="Resource_md2oi"]
 script = ExtResource("3_4twbn")
 from_path_index = 2
 to_point_index = 11
 
-[sub_resource type="Resource" id="Resource_a03j4"]
+[sub_resource type="Resource" id="Resource_tblqr"]
 script = ExtResource("3_4twbn")
 from_path_index = 1
 from_point_index = 6
 to_point_index = 7
 
-[sub_resource type="Resource" id="Resource_34jh2"]
+[sub_resource type="Resource" id="Resource_a03j4"]
 resource_local_to_scene = true
 script = ExtResource("2_pygo4")
 flags = 1
+
+[sub_resource type="Resource" id="Resource_34jh2"]
+resource_local_to_scene = true
+script = ExtResource("2_pygo4")
 
 [sub_resource type="Resource" id="Resource_up5qv"]
 resource_local_to_scene = true
@@ -278,25 +284,21 @@ script = ExtResource("2_pygo4")
 resource_local_to_scene = true
 script = ExtResource("2_pygo4")
 
-[sub_resource type="Resource" id="Resource_iqa1y"]
-resource_local_to_scene = true
-script = ExtResource("2_pygo4")
-
-[sub_resource type="Curve3D" id="Curve3D_4kodp"]
+[sub_resource type="Curve3D" id="Curve3D_iqa1y"]
 closed = true
 bake_interval = 0.25
 _data = {
-"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -30.183659, 0, -72.17536, 0, 0, 0, 0, 0, 0, -65.778496, 0, -123.00637, 0, 0, 0, 0, 0, 0, -133.23328, 3.7823029, -132.7869, 0, 0, 0, 0, 0, 0, -205.95132, 0, -74.45372, 0, 0, 0, 0, 0, 0, -248.09964, 0, -13.565903, 0, 0, 0, 0, 0, 0, -292.54993, 8.59816, 51.535034, 0, 0, 0, 0, 0, 0, -489.52814, -1.5258789e-05, 134.86964, 0, 0, 0, 0, 0, 0, -576.78076, 0, 211.56111, 0, 0, 0, 0, 0, 0, -666.88306, 0, 264.70398, 0, 0, 0, 0, 0, 0, -717.04535, 3.0517578e-05, 387.498, 0, 0, 0, 0, 0, 0, -687.98596, 0, 457.68057, 0, 0, 0, 0, 0, 0, -627.39465, 0, 565.7223, 0, 0, 0, 0, 0, 0, -484.4727, 0, 632.88074, 0, 0, 0, 0, 0, 0, -390.0428, 0, 692.49884, 0, 0, 0, 0, 0, 0, -366.37735, 0, 821.3484, 0, 0, 0, 0, 0, 0, -407.8685, 0, 938.6877, 0, 0, 0, 0, 0, 0, -476.58063, 0, 1079.432, 0, 0, 0, 0, 0, 0, -472.7571, 0, 1207.4006, 0, 0, 0, 0, 0, 0, -410.9278, 0, 1287.0302, 0, 0, 0, 0, 0, 0, -296.68353, 0, 1356.368, 0, 0, 0, 0, 0, 0, -191.07878, 1.5258789e-05, 1346.8253, 0, 0, 0, 0, 0, 0, -90.40575, 0, 1309.1604, 0, 0, 0, 0, 0, 0, -0.5631504, 0, 1233.7555, 0, 0, 0, 0, 0, 0, 61.57742, 0, 1128.3641, 0, 0, 0, 0, 0, 0, 75.07982, 0, 976.1542, 0, 0, 0, 0, 0, 0, 69.08367, 0, 834.6866, 0, 0, 0, 0, 0, 0, 111.05892, 0, 679.6202, 0, 0, 0, 0, 0, 0, 162.17596, 0, 557.2273, 0, 0, 0, 0, 0, 0, 163.23083, 0, 440.5808, 0, 0, 0, 0, 0, 0, 104.114044, 0, 348.15543, 0, 0, 0, 0, 0, 0, 50.30561, 0, 240.91786, 0, 0, 0, 0, 0, 0, 40.037956, 0, 163.49242, 0, 0, 0, 0, 0, 0, 26.069992, 0, 89.78571, 0, 0, 0, 0, 0, 0, 16.649338, 0, 54.80797),
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -30.183659, 0, -72.17536, 0, 0, 0, 0, 0, 0, -66.83301, 3.0517578e-05, -123.058975, 0, 0, 0, 0, 0, 0, -133.23328, 3.7823029, -132.7869, 0, 0, 0, 0, 0, 0, -205.95132, 0, -74.45372, 0, 0, 0, 0, 0, 0, -248.09964, 0, -13.565903, 0, 0, 0, 0, 0, 0, -292.54993, 8.59816, 51.535034, 0, 0, 0, 0, 0, 0, -489.52814, -1.5258789e-05, 134.86964, 0, 0, 0, 0, 0, 0, -576.78076, 0, 211.56111, 0, 0, 0, 0, 0, 0, -666.88306, 0, 264.70398, 0, 0, 0, 0, 0, 0, -717.04535, 3.0517578e-05, 387.498, 0, 0, 0, 0, 0, 0, -687.98596, 0, 457.68057, 0, 0, 0, 0, 0, 0, -627.39465, 0, 565.7223, 0, 0, 0, 0, 0, 0, -484.4727, 0, 632.88074, 0, 0, 0, 0, 0, 0, -390.0428, 0, 692.49884, 0, 0, 0, 0, 0, 0, -366.37735, 0, 821.3484, 0, 0, 0, 0, 0, 0, -407.8685, 0, 938.6877, 0, 0, 0, 0, 0, 0, -476.58063, 0, 1079.432, 0, 0, 0, 0, 0, 0, -472.7571, 0, 1207.4006, 0, 0, 0, 0, 0, 0, -410.9278, 0, 1287.0302, 0, 0, 0, 0, 0, 0, -296.68353, 0, 1356.368, 0, 0, 0, 0, 0, 0, -191.07878, 1.5258789e-05, 1346.8253, 0, 0, 0, 0, 0, 0, -90.40575, 0, 1309.1604, 0, 0, 0, 0, 0, 0, -0.5631504, 0, 1233.7555, 0, 0, 0, 0, 0, 0, 61.57742, 0, 1128.3641, 0, 0, 0, 0, 0, 0, 75.07982, 0, 976.1542, 0, 0, 0, 0, 0, 0, 69.08367, 0, 834.6866, 0, 0, 0, 0, 0, 0, 111.05892, 0, 679.6202, 0, 0, 0, 0, 0, 0, 162.17596, 0, 557.2273, 0, 0, 0, 0, 0, 0, 163.23083, 0, 440.5808, 0, 0, 0, 0, 0, 0, 104.114044, 0, 348.15543, 0, 0, 0, 0, 0, 0, 50.30561, 0, 240.91786, 0, 0, 0, 0, 0, 0, 40.037956, 0, 163.49242, 0, 0, 0, 0, 0, 0, 26.069992, 0, 89.78571, 0, 0, 0, 0, 0, 0, 16.649338, 0, 54.80797),
 "tilts": PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 }
 point_count = 35
 script = ExtResource("1_bx276")
-point_data = Array[ExtResource("2_pygo4")]([SubResource("Resource_34jh2"), SubResource("Resource_up5qv"), SubResource("Resource_tpscb"), SubResource("Resource_40v3o"), SubResource("Resource_os1cy"), SubResource("Resource_svhv8"), SubResource("Resource_47euv"), SubResource("Resource_ielto"), SubResource("Resource_ldg81"), SubResource("Resource_otqmp"), SubResource("Resource_h1cfo"), SubResource("Resource_wl7kj"), SubResource("Resource_cbb1o"), SubResource("Resource_dsp2g"), SubResource("Resource_ddt4g"), SubResource("Resource_jwp4i"), SubResource("Resource_p6i1l"), SubResource("Resource_okrh5"), SubResource("Resource_21kd1"), SubResource("Resource_xy4cg"), SubResource("Resource_1bf5p"), SubResource("Resource_trbww"), SubResource("Resource_5udhd"), SubResource("Resource_shfrf"), SubResource("Resource_ecw50"), SubResource("Resource_f1rxj"), SubResource("Resource_5836v"), SubResource("Resource_rih42"), SubResource("Resource_8cnpe"), SubResource("Resource_hpeew"), SubResource("Resource_64yxs"), SubResource("Resource_ooi55"), SubResource("Resource_txun5"), SubResource("Resource_ajvva"), SubResource("Resource_iqa1y")])
+point_data = Array[ExtResource("2_pygo4")]([SubResource("Resource_a03j4"), SubResource("Resource_34jh2"), SubResource("Resource_up5qv"), SubResource("Resource_tpscb"), SubResource("Resource_40v3o"), SubResource("Resource_os1cy"), SubResource("Resource_svhv8"), SubResource("Resource_47euv"), SubResource("Resource_ielto"), SubResource("Resource_ldg81"), SubResource("Resource_otqmp"), SubResource("Resource_h1cfo"), SubResource("Resource_wl7kj"), SubResource("Resource_cbb1o"), SubResource("Resource_dsp2g"), SubResource("Resource_ddt4g"), SubResource("Resource_jwp4i"), SubResource("Resource_p6i1l"), SubResource("Resource_okrh5"), SubResource("Resource_21kd1"), SubResource("Resource_xy4cg"), SubResource("Resource_1bf5p"), SubResource("Resource_trbww"), SubResource("Resource_5udhd"), SubResource("Resource_shfrf"), SubResource("Resource_ecw50"), SubResource("Resource_f1rxj"), SubResource("Resource_5836v"), SubResource("Resource_rih42"), SubResource("Resource_8cnpe"), SubResource("Resource_hpeew"), SubResource("Resource_64yxs"), SubResource("Resource_ooi55"), SubResource("Resource_txun5"), SubResource("Resource_ajvva")])
 metadata/_custom_type_script = "uid://dkyobseeo0c7n"
 
 [resource]
 script = ExtResource("4_tcxc8")
-main_curve = SubResource("Curve3D_4kodp")
+main_curve = SubResource("Curve3D_iqa1y")
 alternate_paths = Array[ExtResource("1_bx276")]([SubResource("Curve3D_lyuog"), SubResource("Curve3D_61wwr")])
-branches = Array[ExtResource("3_4twbn")]([SubResource("Resource_4lwru"), SubResource("Resource_md2oi"), SubResource("Resource_tblqr"), SubResource("Resource_a03j4")])
+branches = Array[ExtResource("3_4twbn")]([SubResource("Resource_jfr6a"), SubResource("Resource_4lwru"), SubResource("Resource_md2oi"), SubResource("Resource_tblqr")])
 metadata/_custom_type_script = "uid://cguaiwyhsvuir"

@@ -46,6 +46,12 @@ var _handling_add : bool = false;
 ## baseline sync in case TrackSpline.load_from_data swaps Path3D.curve.
 var _main_spline_watching : Spline;
 
+## Splines whose `changed` signal is watched so a path_name edit made outside the undo system
+## (e.g. in the inspector) refreshes the toolbar + dock path selectors. Rebuilt whenever a new
+## track is edited or paths are added/removed.
+var _name_watched_splines : Array[Spline] = [];
+var _spline_name_snapshot : Array[String] = [];
+
 
 func _enter_tree() -> void:
 	_gizmo_plugin = TrackSplineGizmoPluginScript.new();
@@ -73,6 +79,7 @@ func _exit_tree() -> void:
 		remove_control_from_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_MENU, _toolbar);
 		_toolbar.queue_free();
 		_toolbar = null;
+	_unwatch_spline_names();
 
 
 func _build_toolbar() -> void:
@@ -116,6 +123,7 @@ func _edit(object : Object) -> void:
 		_set_mode(MODE_EDIT);
 		_refresh_path_selector();
 		_watch_main_spline();
+		_watch_spline_names();
 		_update_gizmos();
 	if _dock:
 		_dock.visible = _track != null;
@@ -133,6 +141,7 @@ func _make_visible(p_visible : bool) -> void:
 			_track.paths_changed.disconnect(_on_track_paths_changed);
 		_track = null;
 		_unwatch_main_spline();
+		_unwatch_spline_names();
 		_clear_wire();
 		_clear_selection();
 		if _dock:
@@ -191,7 +200,62 @@ func _refresh_path_selector() -> void:
 func _on_track_paths_changed() -> void:
 	_refresh_path_selector();
 	_watch_main_spline();
+	_watch_spline_names();
 	_update_gizmos();
+
+
+# --- Toolbar/dock selector name sync ----------------------------------------------------------
+
+## Rebuild the watched-spline set so a path_name edit made outside the undo system (e.g. in
+## the inspector) refreshes the toolbar + dock path selectors. Called on edit and whenever
+## paths are added/removed.
+func _watch_spline_names() -> void:
+	_unwatch_spline_names();
+	if _track == null:
+		return;
+	_sync_spline_name_snapshot();
+	for i in _track.get_path_count():
+		var spline : Spline = _track.get_spline_at(i);
+		if spline == null:
+			continue;
+		spline.changed.connect(_on_spline_names_changed);
+		_name_watched_splines.append(spline);
+
+
+func _unwatch_spline_names() -> void:
+	for spline in _name_watched_splines:
+		if spline and spline.changed.is_connected(_on_spline_names_changed):
+			spline.changed.disconnect(_on_spline_names_changed);
+	_name_watched_splines.clear();
+
+
+func _sync_spline_name_snapshot() -> void:
+	_spline_name_snapshot.clear();
+	if _track == null:
+		return;
+	for i in _track.get_path_count():
+		var spline : Spline = _track.get_spline_at(i);
+		_spline_name_snapshot.append(spline.path_name if spline else "");
+
+
+## Spline.changed handler: rebuild the path selectors only when a path_name actually changed
+## (point edits also fire `changed`; those must not rebuild the dropdowns every frame).
+func _on_spline_names_changed() -> void:
+	if _track == null:
+		return;
+	var dirty := false;
+	for i in _track.get_path_count():
+		var name : String = "";
+		var spline : Spline = _track.get_spline_at(i);
+		if spline:
+			name = spline.path_name;
+		if i >= _spline_name_snapshot.size() or name != _spline_name_snapshot[i]:
+			dirty = true;
+			break;
+	_sync_spline_name_snapshot();
+	if dirty:
+		_refresh_path_selector();
+		_refresh_dock();
 
 
 # --- Built-in "Add Point (in empty space)" redirect ----------------------------------------

@@ -39,6 +39,7 @@ var _path_name_edit : LineEdit;
 var _delete_connections_button : Button;
 var _delete_points_button : Button;
 var _delete_path_button : Button;
+var _save_button : Button;
 
 ## Set while refreshing the UI so control signals don't fire edits back into the spline.
 var _updating := false;
@@ -80,9 +81,19 @@ func _build_ui() -> void:
 	_next_button.pressed.connect(_on_nav.bind(1));
 	header.add_child(_next_button);
 
-	var path_label : Label = Label.new();
-	path_label.text = "Path Controls";
-	path_label.add_theme_color_override("font_color", Color(0.85, 0.85, 0.85));
+	_save_button = Button.new();
+	_save_button.text = "Save";
+	_save_button.tooltip_text = "Save this track's state (curve, paths, branches) into its TrackSplineData asset — same as the 'Save Track to Data' button on the TrackSpline";
+	_save_button.pressed.connect(_on_save_pressed);
+	header.add_child(_save_button);
+
+	var branch_label : Label = _make_section_label("Branches");
+	_form.add_child(branch_label);
+	_branch_box = VBoxContainer.new();
+	_branch_box.add_theme_constant_override("separation", 2);
+	_form.add_child(_branch_box);
+
+	var path_label : Label = _make_section_label("Path Controls");
 	_form.add_child(path_label);
 
 	var name_row := HBoxContainer.new();
@@ -92,7 +103,6 @@ func _build_ui() -> void:
 	name_row.add_child(name_label);
 	_path_name_edit = LineEdit.new();
 	_path_name_edit.placeholder_text = "Main / Alt N";
-	_path_name_edit.text = "Path"; # bandaid fix... actually didn't even work tho. still says <null> in the field inside the dock.
 	_path_name_edit.tooltip_text = "Display name for this path (empty = positional default)";
 	_path_name_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL;
 	_path_name_edit.text_submitted.connect(_on_path_name_submitted);
@@ -105,8 +115,7 @@ func _build_ui() -> void:
 
 	var point_row := HBoxContainer.new();
 	_form.add_child(point_row);
-	var label : Label = Label.new();
-	label.text = "Point";
+	var label : Label = _make_section_label("Point");
 	point_row.add_child(label);
 	_point_label = Label.new();
 	_point_label.text = "-";
@@ -131,8 +140,7 @@ func _build_ui() -> void:
 	_recipe_option.item_selected.connect(_on_recipe_changed);
 	_form.add_child(_recipe_option);
 
-	var flag_label : Label = Label.new();
-	flag_label.text = "Flags";
+	var flag_label : Label = _make_section_label("Flags");
 	_form.add_child(flag_label);
 	for i in FLAG_NAMES.size():
 		var check := CheckBox.new();
@@ -140,13 +148,6 @@ func _build_ui() -> void:
 		check.toggled.connect(_on_flag_toggled.bind(i));
 		_form.add_child(check);
 		_flag_checks.append(check);
-
-	var branch_label : Label = Label.new();
-	branch_label.text = "Branches";
-	_form.add_child(branch_label);
-	_branch_box = VBoxContainer.new();
-	_branch_box.add_theme_constant_override("separation", 2);
-	_form.add_child(_branch_box);
 
 	_defaults_label = Label.new();
 	_defaults_label.text = "";
@@ -180,6 +181,17 @@ func _make_delete_button(label_text : String, tooltip : String, cb : Callable) -
 	button.pressed.connect(cb);
 	_form.add_child(button);
 	return button;
+
+
+## Section header label: bold so each dock section ("Branches", "Path Controls", "Point",
+## "Flags") reads as a heading. Falls back to the regular font when the theme has no bold font.
+func _make_section_label(text : String) -> Label:
+	var label := Label.new();
+	label.text = text;
+	var bold_font : Font = get_theme_font("bold_font");
+	if bold_font:
+		label.add_theme_font_override("font", bold_font);
+	return label;
 
 
 # --- Public API (called by plugin.gd) ------------------------------------------------------
@@ -392,6 +404,7 @@ func _apply_path_name(path_index : int, value : String) -> void:
 	if spline == null:
 		return;
 	spline.path_name = value;
+	spline.emit_changed();
 
 
 func _on_delete_connections_pressed() -> void:
@@ -484,6 +497,14 @@ func _on_nav(delta : int) -> void:
 	if _spline == null:
 		return;
 	point_navigated.emit(_path_index, clampi(_point_index + delta, 0, _spline.point_count - 1));
+
+
+## Persist the track's current state (main curve, alternate paths, branches, bake interval)
+## into its TrackSplineData asset — the dock twin of the TrackSpline "Save Track to Data"
+## export button.
+func _on_save_pressed() -> void:
+	if _track:
+		_track._save_to_data();
 
 
 func _on_jump(path_index : int, point_index : int) -> void:
