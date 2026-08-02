@@ -176,7 +176,7 @@ _data = {
 point_count = 35
 script = ExtResource("9_f4ioe")
 point_data = Array[ExtResource("8_10ci5")]([SubResource("Resource_10ci5"), SubResource("Resource_ufwmt"), SubResource("Resource_b4edc"), SubResource("Resource_f1f0g"), SubResource("Resource_ydmu4"), SubResource("Resource_tks8d"), SubResource("Resource_0vxxn"), SubResource("Resource_n70bg"), SubResource("Resource_7wscn"), SubResource("Resource_o72uh"), SubResource("Resource_j84e5"), SubResource("Resource_0lxio"), SubResource("Resource_nvica"), SubResource("Resource_hmtux"), SubResource("Resource_f8qj4"), SubResource("Resource_qeawq"), SubResource("Resource_ndfhm"), SubResource("Resource_4005e"), SubResource("Resource_wo3q2"), SubResource("Resource_1w3gd"), SubResource("Resource_fe5xm"), SubResource("Resource_4kx2u"), SubResource("Resource_awjn4"), SubResource("Resource_tw28w"), SubResource("Resource_7mxe8"), SubResource("Resource_8mrgg"), SubResource("Resource_knjn7"), SubResource("Resource_nx86o"), SubResource("Resource_862fn"), SubResource("Resource_f8hg3"), SubResource("Resource_htu76"), SubResource("Resource_pkgtq"), SubResource("Resource_fmqs3"), SubResource("Resource_nst2s"), SubResource("Resource_0ys6a")])
-path_name = null
+path_name = "Main"
 metadata/_custom_type_script = "uid://dkyobseeo0c7n"
 
 [node name="Test_Level" type="Node3D" unique_id=421134206]

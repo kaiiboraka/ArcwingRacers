@@ -216,7 +216,7 @@ func refresh(selection : Dictionary) -> void:
 	_show_empty(false);
 	_populate_path_selector();
 	_path_selector.select(clampi(_path_index, 0, _path_selector.item_count - 1));
-	_path_name_edit.text = _spline.path_name;
+	_path_name_edit.text = _spline.path_name if _spline.path_name != null else "";
 	_delete_path_button.disabled = _path_index <= 0;
 	_point_label.text = "%d / %d" % [_point_index, _spline.point_count - 1];
 	_prev_button.disabled = _point_index <= 0;

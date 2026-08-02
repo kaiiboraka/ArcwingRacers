@@ -38,8 +38,18 @@ enum SplinePointFlags {
 ## instead of the positional "Main"/"Alt N" label.[br]
 ## Intended purpose: lets a designer name routes ("Pit Lane", "Shortcut") so the dock and
 ## toolbar identify a path at a glance; empty falls back to the positional label.[br]
-## Empty = positional fallback name.
-@export var path_name : String = "";
+## Empty = positional fallback name. Never null: scenes saved while this property was mid-reload
+## can serialize `path_name = null`, and a null String reaches consumers as Nil — the setter
+## coerces it to "" on load so `is_empty()`/`LineEdit.text =` stay safe.
+@export var path_name : String = "":
+	get:
+		return _path_name;
+	set(value):
+		_path_name = value if value != null else "";
+
+## Backing field for path_name. Kept private so a serialized null is coerced to "" instead of
+## surfacing as Nil to consumers (dock text, selector labels, undo/redo payloads).
+var _path_name : String = "";
 
 ## Whether the spline forms a closed loop (circuit) or runs point 0 → last once (rally).[br]
 ## Intended purpose: maps to Curve3D.closed — cyclic tracks wrap last→first and lap offsets
