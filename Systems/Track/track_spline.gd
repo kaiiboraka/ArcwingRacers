@@ -75,10 +75,13 @@ func _save_to_data() -> void:
 		push_warning("TrackSpline '%s': assign a TrackSplineData to `data` before saving." % name);
 		return;
 	data.main_curve = get_spline().duplicate(true) if get_spline() else null;
+	_name_saved_spline(data.main_curve, 0);
 	data.bake_interval = bake_interval;
 	data.alternate_paths.clear();
-	for spline in alternate_paths:
-		data.alternate_paths.append(spline.duplicate(true) if spline else null);
+	for i in alternate_paths.size():
+		var saved : Spline = alternate_paths[i].duplicate(true) if alternate_paths[i] else null;
+		_name_saved_spline(saved, i + 1);
+		data.alternate_paths.append(saved);
 	data.branches.clear();
 	for branch in branches:
 		data.branches.append(branch.duplicate(true) if branch else null);
@@ -86,6 +89,16 @@ func _save_to_data() -> void:
 		var err : int = ResourceSaver.save(data, data.resource_path);
 		if err != OK:
 			push_warning("TrackSpline '%s': failed to save TrackSplineData (%s)." % [name, error_string(err)]);
+
+
+## Name a spline being persisted into `data` from its path display name ("Main_Spline",
+## "Pit Lane_Spline") so the splines inside a saved TrackSplineData are identifiable in the
+## inspector / asset browser. Same idea as the resource_namer addon's "Set Resource Name to
+## Filename", but derived from Spline.path_name instead of the file path.
+func _name_saved_spline(saved : Spline, path_index : int) -> void:
+	if saved == null:
+		return;
+	saved.resource_name = get_path_display_name(path_index) + "_Spline";
 
 
 ## Replace the node's state from `data`: main curve, bake interval, alternates, branches.
