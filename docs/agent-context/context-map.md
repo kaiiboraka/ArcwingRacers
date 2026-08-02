@@ -77,7 +77,7 @@ Built on **Godot 4** (GDScript). 3D. See `technical/code-standards.md` for the p
 → Drop it in `unfiled-ideas.md`. Periodically, ideas are promoted into the appropriate design doc.
 
 **Writing or checking an agreed multi-step plan (phases, roadmaps, task lists)**
-→ Working plans live in `agent-context/plans/` (`plan-<topic>.md`). Agreed plans must be written there before execution starts; see `agent-rules.md`. Check it for any active plan before starting work.
+→ Working plans live in `agent-context/plans/` (`plan-<topic>.md`). Agreed plans must be written there before execution starts; see `agent-rules.md`. Check it for any active plan before starting work. When work on a plan is committed to, its steps are mirrored into the active todo list prefixed with the plan's tag (e.g. `[LPDE]`).
 
 **Delivering Godot scenes, resources, or editor integration steps**
 → Read `agent-context/workflows/godot-editor-workflow.md`.
