@@ -1,9 +1,9 @@
 extends HBoxContainer
 
-@export var property_label: Label
-@export var value_label: Label
+@export var property_label : Label
+@export var value_label : Label
 
-@export var property_text: String:
+@export var property_text : String:
 	get:
 		if property_label != null:
 			return property_label.text
@@ -12,7 +12,7 @@ extends HBoxContainer
 		if property_label != null:
 			property_label.text = value
 
-@export var value_text: String:
+@export var value_text : String:
 	get:
 		if value_label != null:
 			return value_label.text
@@ -41,7 +41,7 @@ func _get_value_label() -> void:
 		value_label = %ValueLabel
 
 
-func update_value_text(which: String, value: String) -> void:
+func update_value_text(which : String, value : String) -> void:
 	if which != property_text:
 		return
 	value_text = value

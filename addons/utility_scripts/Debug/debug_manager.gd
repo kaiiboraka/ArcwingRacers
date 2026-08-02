@@ -1,22 +1,22 @@
 extends CanvasLayer
 
-var debug_logger: DebugLogger
+var debug_logger : DebugLogger
 
-@export var enabled: bool = true
-@export var property_entry_scene: PackedScene
+@export var enabled : bool = true
+@export var property_entry_scene : PackedScene
 
-signal property_changed(which: String, value: String)
-signal visuals_active_changed(visuals_active: bool)
+signal property_changed(which : String, value : String)
+signal visuals_active_changed(visuals_active : bool)
 
-var _game_size: Vector2 = Vector2.ZERO
+var _game_size : Vector2 = Vector2.ZERO
 
-var _hud_properties: Dictionary = {}
-var _entries: Array = []
-var _property_list: VBoxContainer
-var _debug_inputs: Node
+var _hud_properties : Dictionary = {}
+var _entries : Array = []
+var _property_list : VBoxContainer
+var _debug_inputs : Node
 
-var _visuals_active: bool = true
-var visuals_active: bool:
+var _visuals_active : bool = true
+var visuals_active : bool:
 	get:
 		return _visuals_active
 	set(value):
@@ -53,23 +53,23 @@ func _late_ready() -> void:
 	visuals_active = _visuals_active
 
 
-func trace(message: String) -> void:
+func trace(message : String) -> void:
 	debug_logger.trace(message)
 
 
-func debug(message: String) -> void:
+func debug(message : String) -> void:
 	debug_logger.debug(message)
 
 
-func warning(message: String) -> void:
+func warning(message : String) -> void:
 	debug_logger.warning(message)
 
 
-func error(message: String) -> void:
+func error(message : String) -> void:
 	debug_logger.error(message)
 
 
-func info(message: String) -> void:
+func info(message : String) -> void:
 	debug_logger.info(message)
 
 
@@ -82,7 +82,7 @@ func _fill_debug_hud() -> void:
 
 	_entries = []
 	for key in _hud_properties:
-		var property_entry: Node = property_entry_scene.instantiate()
+		var property_entry : Node = property_entry_scene.instantiate()
 		_property_list.add_child(property_entry)
 		property_entry.owner = self
 		property_entry.property_text = key
@@ -95,11 +95,11 @@ func toggle_visibility() -> void:
 	visuals_active = not visuals_active
 
 
-func _process(_delta: float) -> void:
+func _process(_delta : float) -> void:
 	update_hud_values()
 
 
-func update_property(which: String, value: Variant) -> void:
+func update_property(which : String, value : Variant) -> void:
 	if not visuals_active:
 		return
 	var property_value := str(value)

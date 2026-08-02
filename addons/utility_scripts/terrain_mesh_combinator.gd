@@ -1,13 +1,13 @@
 @tool
 extends Node3D
 
-@export var source_glb: PackedScene:
+@export var source_glb : PackedScene:
 	set(v):
 		source_glb = v
 		if Engine.is_editor_hint():
 			combine.call_deferred()
 
-@export_tool_button("Combine") var combine: Callable = _combine
+@export_tool_button("Combine") var combine : Callable = _combine
 
 func _combine():
 	if not source_glb:
@@ -58,8 +58,8 @@ func _combine():
 
 	Log.pr("Combined " + str(total) + " surfaces from " + str(meshes.size()) + " meshes")
 
-func _collect_mesh_instances(node: Node) -> Array[MeshInstance3D]:
-	var result: Array[MeshInstance3D] = []
+func _collect_mesh_instances(node : Node) -> Array[MeshInstance3D]:
+	var result : Array[MeshInstance3D] = []
 	var stack = [node]
 	while stack:
 		var current = stack.pop_back()
@@ -70,7 +70,7 @@ func _collect_mesh_instances(node: Node) -> Array[MeshInstance3D]:
 	return result
 
 func _get_configuration_warnings() -> PackedStringArray:
-	var warnings: PackedStringArray = []
+	var warnings : PackedStringArray = []
 	if not source_glb:
 		warnings.append("No source GLB set — set source_glb and click Combine")
 	if not get_node_or_null("Mesh") is MeshInstance3D:

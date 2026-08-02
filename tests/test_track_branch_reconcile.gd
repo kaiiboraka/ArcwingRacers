@@ -8,7 +8,7 @@ extends McpTestSuite
 
 const TrackSplineScript = preload("res://Systems/Track/track_spline.gd")
 
-var _track: TrackSpline
+var _track : TrackSpline
 
 
 func suite_name() -> String:
@@ -38,13 +38,13 @@ func teardown() -> void:
 
 ## Add `count` points at unit X positions (index-aligned so _detect_removed_index can
 ## distinguish them) with default in/out handles.
-func _build_path(spline: Spline, count: int) -> void:
+func _build_path(spline : Spline, count : int) -> void:
 	for i in count:
 		spline.add_point(Vector3(i, 0, 0))
 		spline.set_point_tilt(i, 0.0)
 
 
-func _add_branch(from_index: int, to_index: int) -> BranchConnection:
+func _add_branch(from_index : int, to_index : int) -> BranchConnection:
 	var connection := BranchConnection.new()
 	connection.from_path_index = 0
 	connection.from_point_index = from_index
@@ -95,7 +95,7 @@ func test_multiple_branches_reconcile_independently() -> void:
 ## The built-in gizmo DELETE path removes via direct remove_point -> watcher reconcile.
 func test_watcher_path_builtin_delete() -> void:
 	var branch := _add_branch(4, 1)
-	var spline: Spline = _track.get_spline()
+	var spline : Spline = _track.get_spline()
 	# Simulate the built-in Path3D gizmo: it calls remove_point directly, which fires
 	# Curve3D.changed; our watcher reconciles branches with no explicit index.
 	spline.remove_point(3)
@@ -107,7 +107,7 @@ func test_watcher_path_builtin_delete() -> void:
 ## guessing an index.
 func test_bulk_shrink_prunes_out_of_range_endpoints() -> void:
 	var branch := _add_branch(5, 1)
-	var spline: Spline = _track.get_spline()
+	var spline : Spline = _track.get_spline()
 	spline.clear_points()
 	assert_false(_track.branches.has(branch), "Out-of-range endpoint should be pruned on bulk shrink")
 	assert_eq(_track.branches.size(), 0, "All branches to the cleared path are pruned")
@@ -116,7 +116,7 @@ func test_bulk_shrink_prunes_out_of_range_endpoints() -> void:
 ## Undo of remove_point_with_branches restores both the point AND the branch state.
 func test_undo_restores_point_and_branches() -> void:
 	_add_branch(4, 1)
-	var ur: EditorUndoRedoManager = EditorInterface.get_editor_undo_redo()
+	var ur : EditorUndoRedoManager = EditorInterface.get_editor_undo_redo()
 	_track.remove_point_with_branches(0, 2)
 	assert_eq(_track.branches[0].from_point_index, 3, "endpoint shifted after removal")
 	# Undo the "Remove Track Point" action.

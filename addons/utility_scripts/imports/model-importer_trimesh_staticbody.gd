@@ -2,7 +2,7 @@
 @tool
 extends EditorScenePostImport
 
-func _post_import(scene: Node) -> Object:
+func _post_import(scene : Node) -> Object:
 	var meshes = _find_all_meshes(scene)
 	if meshes.is_empty(): 
 		return scene
@@ -40,7 +40,7 @@ func _post_import(scene: Node) -> Object:
 	scene.queue_free()
 	return new_root
 
-func _find_all_meshes(node: Node) -> Array:
+func _find_all_meshes(node : Node) -> Array:
 	var meshes = []
 	if node is MeshInstance3D:
 		meshes.append(node)

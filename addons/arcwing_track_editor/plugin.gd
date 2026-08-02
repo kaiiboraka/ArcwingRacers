@@ -19,18 +19,18 @@ const PathDataDockScene = preload("res://addons/arcwing_track_editor/path_data_d
 const MODE_EDIT := 0
 const MODE_WIRE := 1
 
-var _gizmo_plugin: EditorNode3DGizmoPlugin
+var _gizmo_plugin : EditorNode3DGizmoPlugin
 var _dock : PathDataDock
 
-var _toolbar: HBoxContainer
-var _path_selector: OptionButton
-var _new_path_button: Button
-var _wire_button: Button
+var _toolbar : HBoxContainer
+var _path_selector : OptionButton
+var _new_path_button : Button
+var _wire_button : Button
 
-var _track: TrackSpline
-var _mode: int = MODE_EDIT
-var _active_path_index: int = 0
-var _wire_from: Dictionary = {}
+var _track : TrackSpline
+var _mode : int = MODE_EDIT
+var _active_path_index : int = 0
+var _wire_from : Dictionary = {}
 
 ## Main-path point redirect for the built-in "Add Point (in empty space)" button. The
 ## built-in Path3D tool always appends to Path3D.curve (the MAIN path) and it forwards
@@ -38,13 +38,13 @@ var _wire_from: Dictionary = {}
 ## spline's `changed` signal and, when a point lands on main while a DIFFERENT path is
 ## selected, move it to the selected path (or discard it if a modifier was held — the
 ## built-in drops points on alt+click on non-Maya/Modo nav schemes).
-var _main_baseline_count: int = -1
-var _main_snapshot: Array[Vector3] = []
-var _handling_add: bool = false
+var _main_baseline_count : int = -1
+var _main_snapshot : Array[Vector3] = []
+var _handling_add : bool = false
 
 ## Spline resource currently watched for the main-path point redirect. Re-fetched every
 ## baseline sync in case TrackSpline.load_from_data swaps Path3D.curve.
-var _main_spline_watching: Spline
+var _main_spline_watching : Spline
 
 
 func _enter_tree() -> void:
@@ -55,7 +55,7 @@ func _enter_tree() -> void:
 	_dock.name = "Track Point Data"
 	_dock.point_navigated.connect(_on_dock_navigated)
 	add_control_to_dock(EditorPlugin.DOCK_SLOT_RIGHT_UL, _dock)
-	var ur: EditorUndoRedoManager = EditorInterface.get_editor_undo_redo()
+	var ur : EditorUndoRedoManager = EditorInterface.get_editor_undo_redo()
 	ur.version_changed.connect(_refresh_path_selector)
 	ur.version_changed.connect(_update_gizmos)
 	ur.version_changed.connect(_refresh_dock)
@@ -101,11 +101,11 @@ func _build_toolbar() -> void:
 	add_control_to_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_MENU, _toolbar)
 
 
-func _handles(object: Object) -> bool:
+func _handles(object : Object) -> bool:
 	return object is TrackSpline
 
 
-func _edit(object: Object) -> void:
+func _edit(object : Object) -> void:
 	if _track and _track.paths_changed.is_connected(_on_track_paths_changed):
 		_track.paths_changed.disconnect(_on_track_paths_changed)
 	_track = object as TrackSpline
@@ -123,7 +123,7 @@ func _edit(object: Object) -> void:
 		_dock.refresh(_gizmo_plugin.get_selected_point())
 
 
-func _make_visible(p_visible: bool) -> void:
+func _make_visible(p_visible : bool) -> void:
 	if _toolbar:
 		_toolbar.visible = p_visible
 	if _dock:
@@ -142,7 +142,7 @@ func _make_visible(p_visible: bool) -> void:
 
 # --- Toolbar handlers ------------------------------------------------------------------------
 
-func _on_path_selected(index: int) -> void:
+func _on_path_selected(index : int) -> void:
 	_active_path_index = index
 	_update_gizmos()
 
@@ -150,8 +150,8 @@ func _on_path_selected(index: int) -> void:
 func _on_new_path_pressed() -> void:
 	if _track == null:
 		return
-	var ur: EditorUndoRedoManager = EditorInterface.get_editor_undo_redo()
-	var undo_index: int = _track.alternate_paths.size()
+	var ur : EditorUndoRedoManager = EditorInterface.get_editor_undo_redo()
+	var undo_index : int = _track.alternate_paths.size()
 	ur.create_action("Add Alternate Path")
 	ur.add_do_method(_track, "add_alternate_path")
 	ur.add_undo_method(_track, "remove_alternate_path", undo_index)
@@ -161,14 +161,14 @@ func _on_new_path_pressed() -> void:
 	_update_gizmos()
 
 
-func _on_mode_toggled(pressed: bool, mode: int) -> void:
+func _on_mode_toggled(pressed : bool, mode : int) -> void:
 	if pressed:
 		_set_mode(mode)
 	elif _mode == mode:
 		_set_mode(MODE_EDIT)
 
 
-func _set_mode(mode: int) -> void:
+func _set_mode(mode : int) -> void:
 	_mode = mode
 	if _wire_button:
 		_wire_button.set_pressed_no_signal(mode == MODE_WIRE)
@@ -180,7 +180,7 @@ func _set_mode(mode: int) -> void:
 func _refresh_path_selector() -> void:
 	if _path_selector == null or _track == null:
 		return
-	var count: int = _track.get_path_count()
+	var count : int = _track.get_path_count()
 	_path_selector.clear()
 	_path_selector.add_item("Main (0)")
 	for i in count - 1:
@@ -210,7 +210,7 @@ func _watch_main_spline() -> void:
 		_main_spline_watching = null
 	if _track == null:
 		return
-	var main: Spline = _track.get_spline()
+	var main : Spline = _track.get_spline()
 	if main == null:
 		return
 	_main_spline_watching = main
@@ -228,7 +228,7 @@ func _unwatch_main_spline() -> void:
 
 
 func _sync_main_baseline() -> void:
-	var main: Spline = _track.get_spline() if _track else null
+	var main : Spline = _track.get_spline() if _track else null
 	if main == null:
 		_main_baseline_count = -1
 		_main_snapshot.clear()
@@ -242,19 +242,19 @@ func _sync_main_baseline() -> void:
 func _on_main_spline_changed() -> void:
 	if _handling_add or _track == null:
 		return
-	var main: Spline = _track.get_spline()
+	var main : Spline = _track.get_spline()
 	if main == null:
 		return
-	var count: int = main.point_count
+	var count : int = main.point_count
 	if count - _main_baseline_count != 1:
 		_sync_main_baseline()
 		return
 	if not EditorInterface.get_editor_undo_redo().is_committing_action():
 		_sync_main_baseline()
 		return
-	var modifiers: bool = Input.is_key_pressed(KEY_ALT) or Input.is_key_pressed(KEY_SHIFT) \
+	var modifiers : bool = Input.is_key_pressed(KEY_ALT) or Input.is_key_pressed(KEY_SHIFT) \
 			or Input.is_key_pressed(KEY_CTRL) or Input.is_key_pressed(KEY_META)
-	var added_index: int = _find_added_index(main)
+	var added_index : int = _find_added_index(main)
 	_sync_main_baseline()
 	if added_index < 0:
 		return
@@ -262,7 +262,7 @@ func _on_main_spline_changed() -> void:
 
 
 ## Index of the single point the main spline gained since the last baseline snapshot.
-func _find_added_index(main: Spline) -> int:
+func _find_added_index(main : Spline) -> int:
 	for i in main.point_count:
 		if i < _main_snapshot.size():
 			if _main_snapshot[i] == main.get_point_position(i):
@@ -271,17 +271,17 @@ func _find_added_index(main: Spline) -> int:
 	return -1
 
 
-func _redirect_added_point(added_index: int, modifiers: bool) -> void:
+func _redirect_added_point(added_index : int, modifiers : bool) -> void:
 	if _handling_add or _track == null:
 		return
-	var main: Spline = _track.get_spline()
+	var main : Spline = _track.get_spline()
 	if main == null or added_index < 0 or added_index >= main.point_count:
 		return
 	_handling_add = true
-	var ur: EditorUndoRedoManager = EditorInterface.get_editor_undo_redo()
-	var pos: Vector3 = main.get_point_position(added_index)
-	var in_ctl: Vector3 = main.get_point_in(added_index)
-	var out_ctl: Vector3 = main.get_point_out(added_index)
+	var ur : EditorUndoRedoManager = EditorInterface.get_editor_undo_redo()
+	var pos : Vector3 = main.get_point_position(added_index)
+	var in_ctl : Vector3 = main.get_point_in(added_index)
+	var out_ctl : Vector3 = main.get_point_out(added_index)
 	if modifiers:
 		ur.create_action("Discard Accidental Track Point")
 		ur.add_do_method(main, "remove_point", added_index)
@@ -291,7 +291,7 @@ func _redirect_added_point(added_index: int, modifiers: bool) -> void:
 		_sync_main_baseline()
 		_update_gizmos()
 		return
-	var target: Spline = _track.get_spline_at(_active_path_index)
+	var target : Spline = _track.get_spline_at(_active_path_index)
 	if target == null or target == main:
 		_handling_add = false
 		_sync_main_baseline()
@@ -309,7 +309,7 @@ func _redirect_added_point(added_index: int, modifiers: bool) -> void:
 
 # --- 3D viewport input -----------------------------------------------------------------------
 
-func _forward_3d_gui_input(camera: Camera3D, event: InputEvent) -> int:
+func _forward_3d_gui_input(camera : Camera3D, event : InputEvent) -> int:
 	if _track == null:
 		return EditorPlugin.AFTER_GUI_INPUT_PASS
 	var mb := event as InputEventMouseButton
@@ -336,10 +336,10 @@ func _forward_3d_gui_input(camera: Camera3D, event: InputEvent) -> int:
 ## press (not release) means the click that starts a drag also selects, and plain clicks work
 ## too. Returns AFTER_GUI_INPUT_PASS so the viewport's handle/subgizmo grab proceeds; the
 ## gizmo refresh is deferred so it can't cancel an in-flight drag grab.
-func _select_point_on_press(camera: Camera3D, screen_pos: Vector2) -> void:
+func _select_point_on_press(camera : Camera3D, screen_pos : Vector2) -> void:
 	if _track == null or _gizmo_plugin == null:
 		return
-	var hit: Dictionary = _gizmo_plugin.find_point_at_screen(_track, camera, screen_pos)
+	var hit : Dictionary = _gizmo_plugin.find_point_at_screen(_track, camera, screen_pos)
 	if hit.is_empty():
 		return
 	_gizmo_plugin.set_selected_point(hit.path_index, hit.point_index)
@@ -347,11 +347,11 @@ func _select_point_on_press(camera: Camera3D, screen_pos: Vector2) -> void:
 	_refresh_dock()
 
 
-func _remove_point_click(camera: Camera3D, screen_pos: Vector2) -> int:
-	var hit: Dictionary = _gizmo_plugin.find_point_at_screen(_track, camera, screen_pos)
+func _remove_point_click(camera : Camera3D, screen_pos : Vector2) -> int:
+	var hit : Dictionary = _gizmo_plugin.find_point_at_screen(_track, camera, screen_pos)
 	if hit.is_empty():
 		return EditorPlugin.AFTER_GUI_INPUT_PASS
-	var spline: Spline = _track.get_spline_at(hit.path_index)
+	var spline : Spline = _track.get_spline_at(hit.path_index)
 	if spline == null or hit.point_index >= spline.point_count:
 		return EditorPlugin.AFTER_GUI_INPUT_PASS
 	if _gizmo_plugin.wire_source == hit:
@@ -361,8 +361,8 @@ func _remove_point_click(camera: Camera3D, screen_pos: Vector2) -> int:
 	return EditorPlugin.AFTER_GUI_INPUT_STOP
 
 
-func _wire_click(camera: Camera3D, screen_pos: Vector2) -> int:
-	var hit: Dictionary = _gizmo_plugin.find_point_at_screen(_track, camera, screen_pos)
+func _wire_click(camera : Camera3D, screen_pos : Vector2) -> int:
+	var hit : Dictionary = _gizmo_plugin.find_point_at_screen(_track, camera, screen_pos)
 	if hit.is_empty():
 		if not _wire_from.is_empty():
 			_clear_wire()
@@ -373,7 +373,7 @@ func _wire_click(camera: Camera3D, screen_pos: Vector2) -> int:
 		_gizmo_plugin.wire_source = hit
 		_update_gizmos()
 		return EditorPlugin.AFTER_GUI_INPUT_STOP
-	var from: Dictionary = _wire_from
+	var from : Dictionary = _wire_from
 	_clear_wire()
 	if from.path_index == hit.path_index and from.point_index == hit.point_index:
 		_update_gizmos()
@@ -383,14 +383,14 @@ func _wire_click(camera: Camera3D, screen_pos: Vector2) -> int:
 	return EditorPlugin.AFTER_GUI_INPUT_STOP
 
 
-func _create_branch(from: Dictionary, to: Dictionary) -> void:
+func _create_branch(from : Dictionary, to : Dictionary) -> void:
 	var connection := BranchConnection.new()
 	connection.from_path_index = from.path_index
 	connection.from_point_index = from.point_index
 	connection.to_path_index = to.path_index
 	connection.to_point_index = to.point_index
 	connection.is_split = true
-	var ur: EditorUndoRedoManager = EditorInterface.get_editor_undo_redo()
+	var ur : EditorUndoRedoManager = EditorInterface.get_editor_undo_redo()
 	ur.create_action("Add Branch Connection")
 	ur.add_do_method(_track, "add_branch", connection)
 	ur.add_undo_method(_track, "remove_branch", _track.branches.size())
@@ -412,7 +412,7 @@ func _clear_selection() -> void:
 
 
 ## Dock ◀ ▶ / path / branch-jump navigation: retarget the gizmo selection and refresh.
-func _on_dock_navigated(path_index: int, point_index: int) -> void:
+func _on_dock_navigated(path_index : int, point_index : int) -> void:
 	if _gizmo_plugin:
 		_gizmo_plugin.set_selected_point(path_index, point_index)
 		_update_gizmos()

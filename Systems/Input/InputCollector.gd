@@ -6,29 +6,29 @@ extends Node;
 ## (that only applies when reading through Input.get_action_strength()).
 ## Values below this threshold are snapped to 0; the remaining range is
 ## rescaled back to full deflection so full stick travel still reaches 1.0.
-const ANALOG_DEADZONE: float = 0.2;
+const ANALOG_DEADZONE : float = 0.2;
 
-var steer: float = 0.0;
-var accelerate: float = 0.0;
-var brake: float = 0.0;
-var pitch: float = 0.0;
-var tilt: float = 0.0;
-var boost_just_pressed: bool = false;
-var boost_held: bool = false;
-var shield_just_pressed: bool = false;
-var shield_held: bool = false;
-var ability_just_pressed: bool = false;
-var ability_held: bool = false;
-var repair_held: bool = false;
-var look_behind_just_pressed: bool = false;
-var minimap_cycle_just_pressed: bool = false;
+var steer : float = 0.0;
+var accelerate : float = 0.0;
+var brake : float = 0.0;
+var pitch : float = 0.0;
+var tilt : float = 0.0;
+var boost_just_pressed : bool = false;
+var boost_held : bool = false;
+var shield_just_pressed : bool = false;
+var shield_held : bool = false;
+var ability_just_pressed : bool = false;
+var ability_held : bool = false;
+var repair_held : bool = false;
+var look_behind_just_pressed : bool = false;
+var minimap_cycle_just_pressed : bool = false;
 
-var _steer_left: bool = false;
-var _steer_right: bool = false;
-var _pitch_up: bool = false;
-var _pitch_down: bool = false;
-var _tilt_left: bool = false;
-var _tilt_right: bool = false;
+var _steer_left : bool = false;
+var _steer_right : bool = false;
+var _pitch_up : bool = false;
+var _pitch_down : bool = false;
+var _tilt_left : bool = false;
+var _tilt_right : bool = false;
 
 func _input(event):
 	if event.is_action_pressed("Player_Steer_Left"):
@@ -162,9 +162,9 @@ func _update_tilt_from_keyboard():
 		tilt = 0.0;
 
 
-func _apply_deadzone(value: float) -> float:
-	var abs_val: float = absf(value);
+func _apply_deadzone(value : float) -> float:
+	var abs_val : float = absf(value);
 	if abs_val <= ANALOG_DEADZONE:
 		return 0.0;
-	var rescaled: float = (abs_val - ANALOG_DEADZONE) / (1.0 - ANALOG_DEADZONE);
+	var rescaled : float = (abs_val - ANALOG_DEADZONE) / (1.0 - ANALOG_DEADZONE);
 	return signf(value) * clampf(rescaled, 0.0, 1.0);

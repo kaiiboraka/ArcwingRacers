@@ -1,11 +1,11 @@
 class_name AudioBucket
 extends AudioStream;
 
-@export var bucket: Array[AudioStream];
-@export var pitch_scale: float = 1.0;
-@export var volume_db: float = 0.0;
+@export var bucket : Array[AudioStream];
+@export var pitch_scale : float = 1.0;
+@export var volume_db : float = 0.0;
 
-var _count: int = 0;
+var _count : int = 0;
 
 func _init():
 	_count = bucket.size();

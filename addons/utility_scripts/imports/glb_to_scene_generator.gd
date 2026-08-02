@@ -2,21 +2,21 @@
 extends Node
 
 @export_category("Source")
-@export var source: String = ""
+@export var source : String = ""
 
 @export_category("StaticBody Scene")
-@export var generate: bool = true
-@export var skip_existing: bool = true
-@export_dir var output_folder: String = "res://Content/Scenes/Doodads"
+@export var generate : bool = true
+@export var skip_existing : bool = true
+@export_dir var output_folder : String = "res://Content/Scenes/Doodads"
 
-@export_tool_button("Generate") var _generate_button: Callable = _generate
+@export_tool_button("Generate") var _generate_button : Callable = _generate
 
 func _generate():
 	if source.is_empty():
 		push_error("Select a source .glb file or folder")
 		return
 
-	var files: Array[String] = []
+	var files : Array[String] = []
 	if source.ends_with(".glb") or source.ends_with(".gltf"):
 		files.append(source)
 	else:
@@ -65,7 +65,7 @@ func _generate():
 
 	Log.pr("Done: " + str(new_count + skip_count) + " total, " + str(new_count) + " new, " + str(skip_count) + " skipped")
 
-func _output_path_for(glb_path: String) -> String:
+func _output_path_for(glb_path : String) -> String:
 	var glb = load(glb_path) as PackedScene
 	if not glb:
 		return ""
@@ -75,7 +75,7 @@ func _output_path_for(glb_path: String) -> String:
 		return dir.path_join(basename + ".tscn")
 	return output_folder.path_join(basename + ".tscn")
 
-func _build_static_body(glb_path: String, out: String) -> bool:
+func _build_static_body(glb_path : String, out : String) -> bool:
 	var glb = load(glb_path) as PackedScene
 	if not glb:
 		push_error("Failed to load: ", glb_path)
@@ -86,7 +86,7 @@ func _build_static_body(glb_path: String, out: String) -> bool:
 	var instance = glb.instantiate()
 	var meshes = _collect_mesh_instances(instance)
 
-	var shapes: Array[Dictionary] = []
+	var shapes : Array[Dictionary] = []
 	var sub_idx := 1
 	for mi in meshes:
 		if not mi.mesh:
@@ -139,7 +139,7 @@ func _build_static_body(glb_path: String, out: String) -> bool:
 	Log.pr("  ", out)
 	return true
 
-func _resource_to_text(res: Resource, label: String) -> String:
+func _resource_to_text(res : Resource, label : String) -> String:
 	var tmp = "res://.godot/temp_" + label + ".tres"
 	var d = tmp.get_base_dir()
 	if not DirAccess.dir_exists_absolute(d):
@@ -175,8 +175,8 @@ func _resource_to_text(res: Resource, label: String) -> String:
 
 	return result.strip_edges()
 
-func _calc_aabb(node: Node) -> AABB:
-	var bounds: AABB
+func _calc_aabb(node : Node) -> AABB:
+	var bounds : AABB
 	var first := true
 	var stack = [node]
 	while stack:
@@ -192,8 +192,8 @@ func _calc_aabb(node: Node) -> AABB:
 			stack.append(child)
 	return bounds
 
-func _collect_mesh_instances(node: Node) -> Array[MeshInstance3D]:
-	var result: Array[MeshInstance3D] = []
+func _collect_mesh_instances(node : Node) -> Array[MeshInstance3D]:
+	var result : Array[MeshInstance3D] = []
 	var stack = [node]
 	while stack:
 		var current = stack.pop_back()
