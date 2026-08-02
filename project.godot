@@ -24,7 +24,6 @@ config/icon="uid://cxanvdcmlwtu6"
 [autoload]
 
 SignalLens="*uid://mh4uahxfhah"
-_mcp_game_helper="*res://addons/godot_ai/runtime/game_helper.gd"
 NetworkTime="*uid://cnqdxyjptkfvp"
 NetworkTimeSynchronizer="*uid://bqt8q5icbv3lq"
 NetworkRollback="*uid://gas743comroj"
@@ -39,6 +38,7 @@ DebugManager="*uid://g77bng7caocf"
 InputCollector="*res://Systems/Input/InputCollector.gd"
 PhantomCameraManager="*uid://duq6jhf6unyis"
 CameraRoot="*uid://btveng6akpeug"
+_mcp_game_helper="*res://addons/godot_ai/runtime/game_helper.gd"
 
 [display]
 

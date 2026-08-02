@@ -33,22 +33,23 @@ signal paths_changed
 ## into it; Load Track from Data (and scene load) copies it back onto the node.
 @export var data: TrackSplineData
 ## Copy the node's current state (curve, alternates, branches, bake interval) into `data`.
-@export_tool_button("Save Track to Data") var save_to_data: Callable = _save_to_data
+@export_tool_button("Save Track to Data","Save") var save_to_data: Callable = _save_to_data
 ## Replace the node's state from `data`. Runs automatically at _ready when data is set.
-@export_tool_button("Load Track from Data") var load_from_data: Callable = _load_from_data
+@export_tool_button("Load Track from Data", "Load") var load_from_data: Callable = _load_from_data
 
 @export_group("Editor")
+## Regenerate all track geometry from this spline. Editor-only; the mesh generator bakes
+## ROAD/TUNNEL spans into StaticBody3D + visuals (see ADR 0010).
+@export_tool_button("Generate Track Geometry", "3D") var generate_geometry: Callable = _generate_track_geometry
 ## Source curve to import points from (plain Curve3D or Spline) via the Import Points button.[br]
 ## Intended purpose: copy an authored dummy path/curve's points into this spline when the
 ## editor copy-paste cannot cross resource types.[br]
 ## Leave empty to skip.
+@export_subgroup("Import")
 @export var source_curve: Curve3D
 ## Copy all points from source_curve into this spline, replacing existing points. Editor-only;
 ## copies position/handles/tilt, plus metadata when the source is a Spline (see Spline.import_from).
-@export_tool_button("Import Points from Curve") var import_points: Callable = _import_points
-## Regenerate all track geometry from this spline. Editor-only; the mesh generator bakes
-## ROAD/TUNNEL spans into StaticBody3D + visuals (see ADR 0010).
-@export_tool_button("Generate Track Geometry") var generate_geometry: Callable = _generate_track_geometry
+@export_tool_button("Import Points from Curve", "Reload") var import_points: Callable = _import_points
 
 ## Copy all points from source_curve into this spline, replacing existing points. Editor-only;
 ## copies position/handles/tilt, plus metadata when the source is a Spline (see Spline.import_from).

@@ -3,9 +3,15 @@ extends EditorPlugin
 
 ## Registers the TrackSpline gizmo plugin and adds a 3D-viewport toolbar for authoring paths:
 ##   + New Path   — append an empty alternate Spline (path index 1..N)
-##   Add Point    — click in the viewport to append a point to the selected path (surface-snapped)
 ##   Wire Branch  — click a source point, then a target point to add a BranchConnection
 ## All actions are undoable via EditorUndoRedoManager.
+##
+## The built-in Path3D "Add Point (in empty space)" button always appends to Path3D.curve
+## (the MAIN path) and forwards input before this plugin, so it can't be intercepted. This
+## plugin watches the main spline's `changed` signal instead: when a point lands on main via
+## a live built-in click while a DIFFERENT path is selected, it moves the point to that path;
+## when a modifier key was held (the built-in drops points on alt+click on non-Maya/Modo
+## nav schemes), it discards the accidental point.
 
 const TrackSplineGizmoPluginScript = preload("res://addons/arcwing_track_editor/track_spline_gizmo_plugin.gd")
 
@@ -23,6 +29,20 @@ var _track: TrackSpline
 var _mode: int = MODE_EDIT
 var _active_path_index: int = 0
 var _wire_from: Dictionary = {}
+
+## Main-path point redirect for the built-in "Add Point (in empty space)" button. The
+## built-in Path3D tool always appends to Path3D.curve (the MAIN path) and it forwards
+## input before our plugin, so we can't intercept the click. Instead we watch the main
+## spline's `changed` signal and, when a point lands on main while a DIFFERENT path is
+## selected, move it to the selected path (or discard it if a modifier was held — the
+## built-in drops points on alt+click on non-Maya/Modo nav schemes).
+var _main_baseline_count: int = -1
+var _main_snapshot: Array[Vector3] = []
+var _handling_add: bool = false
+
+## Spline resource currently watched for the main-path point redirect. Re-fetched every
+## baseline sync in case TrackSpline.load_from_data swaps Path3D.curve.
+var _main_spline_watching: Spline
 
 
 func _enter_tree() -> void:
@@ -84,6 +104,7 @@ func _edit(object: Object) -> void:
 		_clear_wire()
 		_set_mode(MODE_EDIT)
 		_refresh_path_selector()
+		_watch_main_spline()
 		_update_gizmos()
 
 
@@ -94,6 +115,7 @@ func _make_visible(p_visible: bool) -> void:
 		if _track and _track.paths_changed.is_connected(_on_track_paths_changed):
 			_track.paths_changed.disconnect(_on_track_paths_changed)
 		_track = null
+		_unwatch_main_spline()
 		_clear_wire()
 
 
@@ -148,6 +170,119 @@ func _refresh_path_selector() -> void:
 
 func _on_track_paths_changed() -> void:
 	_refresh_path_selector()
+	_watch_main_spline()
+	_update_gizmos()
+
+
+# --- Built-in "Add Point (in empty space)" redirect ----------------------------------------
+## The built-in Path3D tool forwards clicks before this plugin and always targets
+## Path3D.curve (main). We watch the main spline's `changed` signal: a live commit
+## (is_committing_action) that grows the main spline by exactly one point is a built-in
+## click. When a different path is selected we move the new point there; when a modifier
+## key was held (the built-in drops points on alt+click outside Maya/Modo nav schemes) we
+## discard it instead. Undo/redo replays are ignored because they don't commit an action.
+
+func _watch_main_spline() -> void:
+	if _main_spline_watching:
+		if _main_spline_watching.changed.is_connected(_on_main_spline_changed):
+			_main_spline_watching.changed.disconnect(_on_main_spline_changed)
+		_main_spline_watching = null
+	if _track == null:
+		return
+	var main: Spline = _track.get_spline()
+	if main == null:
+		return
+	_main_spline_watching = main
+	_main_spline_watching.changed.connect(_on_main_spline_changed)
+	_sync_main_baseline()
+
+
+func _unwatch_main_spline() -> void:
+	if _main_spline_watching:
+		if _main_spline_watching.changed.is_connected(_on_main_spline_changed):
+			_main_spline_watching.changed.disconnect(_on_main_spline_changed)
+		_main_spline_watching = null
+	_main_baseline_count = -1
+	_main_snapshot.clear()
+
+
+func _sync_main_baseline() -> void:
+	var main: Spline = _track.get_spline() if _track else null
+	if main == null:
+		_main_baseline_count = -1
+		_main_snapshot.clear()
+		return
+	_main_baseline_count = main.point_count
+	_main_snapshot.clear()
+	for i in main.point_count:
+		_main_snapshot.append(main.get_point_position(i))
+
+
+func _on_main_spline_changed() -> void:
+	if _handling_add or _track == null:
+		return
+	var main: Spline = _track.get_spline()
+	if main == null:
+		return
+	var count: int = main.point_count
+	if count - _main_baseline_count != 1:
+		_sync_main_baseline()
+		return
+	if not EditorInterface.get_editor_undo_redo().is_committing_action():
+		_sync_main_baseline()
+		return
+	var modifiers: bool = Input.is_key_pressed(KEY_ALT) or Input.is_key_pressed(KEY_SHIFT) \
+			or Input.is_key_pressed(KEY_CTRL) or Input.is_key_pressed(KEY_META)
+	var added_index: int = _find_added_index(main)
+	_sync_main_baseline()
+	if added_index < 0:
+		return
+	call_deferred("_redirect_added_point", added_index, modifiers)
+
+
+## Index of the single point the main spline gained since the last baseline snapshot.
+func _find_added_index(main: Spline) -> int:
+	for i in main.point_count:
+		if i < _main_snapshot.size():
+			if _main_snapshot[i] == main.get_point_position(i):
+				continue
+		return i
+	return -1
+
+
+func _redirect_added_point(added_index: int, modifiers: bool) -> void:
+	if _handling_add or _track == null:
+		return
+	var main: Spline = _track.get_spline()
+	if main == null or added_index < 0 or added_index >= main.point_count:
+		return
+	_handling_add = true
+	var ur: EditorUndoRedoManager = EditorInterface.get_editor_undo_redo()
+	var pos: Vector3 = main.get_point_position(added_index)
+	var in_ctl: Vector3 = main.get_point_in(added_index)
+	var out_ctl: Vector3 = main.get_point_out(added_index)
+	if modifiers:
+		ur.create_action("Discard Accidental Track Point")
+		ur.add_do_method(main, "remove_point", added_index)
+		ur.add_undo_method(main, "add_point", pos, in_ctl, out_ctl, added_index)
+		ur.commit_action()
+		_handling_add = false
+		_sync_main_baseline()
+		_update_gizmos()
+		return
+	var target: Spline = _track.get_spline_at(_active_path_index)
+	if target == null or target == main:
+		_handling_add = false
+		_sync_main_baseline()
+		return
+	ur.create_action("Add Track Point to Path %d" % _active_path_index)
+	ur.add_do_method(main, "remove_point", added_index)
+	ur.add_do_method(target, "add_point", pos, in_ctl, out_ctl, -1)
+	ur.add_undo_method(target, "remove_point", target.point_count)
+	ur.add_undo_method(main, "add_point", pos, in_ctl, out_ctl, added_index)
+	ur.commit_action()
+	_handling_add = false
+	_sync_main_baseline()
 	_update_gizmos()
 
 

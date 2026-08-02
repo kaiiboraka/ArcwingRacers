@@ -393,6 +393,7 @@ func _set_subgizmo_transform(gizmo: EditorNode3DGizmo, subgizmo_id: int, transfo
 	if not _valid_point(d, spline):
 		return
 	spline.set_point_position(d.point_index, transform.origin)
+	gizmo.redraw()
 
 
 func _commit_subgizmos(gizmo: EditorNode3DGizmo, ids: PackedInt32Array, restores: Array, cancel: bool) -> void:
@@ -408,6 +409,7 @@ func _commit_subgizmos(gizmo: EditorNode3DGizmo, ids: PackedInt32Array, restores
 			var spline: Spline = track.get_spline_at(d.path_index)
 			if spline and _valid_point(d, spline):
 				spline.set_point_position(d.point_index, (restores[i] as Transform3D).origin)
+		gizmo.redraw()
 		return
 	ur.create_action("Move Track Points")
 	for i in ids.size():

@@ -26,8 +26,8 @@ extends Resource
 	"Start Finish",
 	"Waypoint",
 	"Respawn",
-	"Branch Split",
-	"Branch Join",
+	"Path Entrance",
+	"Path Exit",
 	"Pit Entry",
 	"Pit Exit",
 )
