@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://dblpebgaxt1jb"]
+
+[ext_resource type="Script" uid="uid://5cg4ffh5hfyo" path="res://UI/ui.gd" id="1_6dd3c"]
+
+[node name="UI" type="CanvasLayer" unique_id=314930358]
+script = ExtResource("1_6dd3c")
+
+[node name="Root_Control" type="Control" parent="." unique_id=1481956877]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2

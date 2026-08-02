@@ -167,6 +167,7 @@ resource_local_to_scene = true
 script = ExtResource("8_10ci5")
 
 [sub_resource type="Curve3D" id="Curve3D_plkha"]
+resource_name = "Main_Spline"
 closed = true
 bake_interval = 0.25
 _data = {

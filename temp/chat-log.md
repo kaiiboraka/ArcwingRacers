@@ -63,7 +63,7 @@ then rotates to
 from pixels 160 to 170 / 260 (up to 65.39%)
 
 then goes from
-137, 110, 0 deg
+137, 111, -45 deg
 then slides up to
 48, 22, -45 deg (final position)
 from pixels 170 to 260 / 260 (up to 100%)

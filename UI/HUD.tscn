@@ -1,0 +1,56 @@
+[gd_scene format=3 uid="uid://c1gnx5bseg8ac"]
+
+[ext_resource type="PackedScene" uid="uid://6v2cl3ywfpn4" path="res://UI/HUD/Spedometer/spedometer.tscn" id="1_yixhe"]
+
+[node name="HUD_Control" type="Control" unique_id=1390710289]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HUD_Margin" type="MarginContainer" parent="." unique_id=1196945917]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="Top_Control" type="Control" parent="HUD_Margin" unique_id=1503482771]
+layout_mode = 2
+
+[node name="TopBar_HBoxContainer" type="HBoxContainer" parent="HUD_Margin/Top_Control" unique_id=1383697863]
+layout_mode = 1
+
+[node name="Bottom_Control" type="Control" parent="HUD_Margin" unique_id=1743586221]
+custom_minimum_size = Vector2(0, 350)
+layout_mode = 2
+size_flags_vertical = 8
+
+[node name="HBoxContainer" type="HBoxContainer" parent="HUD_Margin/Bottom_Control" unique_id=881092937]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CenterContainer" type="CenterContainer" parent="HUD_Margin/Bottom_Control/HBoxContainer" unique_id=867617110]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="HUD_Margin/Bottom_Control/HBoxContainer" unique_id=1626760547]
+layout_mode = 2
+size_flags_horizontal = 8
+theme_override_constants/margin_right = 400
+
+[node name="Spedometer" parent="HUD_Margin/Bottom_Control/HBoxContainer/MarginContainer" unique_id=1585667712 instance=ExtResource("1_yixhe")]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0

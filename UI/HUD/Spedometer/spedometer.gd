@@ -5,7 +5,7 @@ extends Control
 ## Used by set_speed_mps() so the HUD can be fed pod-native units.
 const MPS_TO_MPH : float = 2.23694;
 
-## Current speed in mph. Writing this (or calling set_speed / set_speed_mps) updates the speed text and its gradient color.[br]
+## Current speed in mph. Writing this (or calling set_speed / set_speed_mp"res://UI/HUD/Spedometer/bar_colored.PNG"s) updates the speed text and its gradient color.[br]
 ## Intended purpose: the displayed speed value; source of truth for the speed text + color.[br]
 ## Higher = faster reading and warmer color.
 @export_range(0.0, 9999.0) var speed_mph : float = 0.0:
@@ -51,6 +51,11 @@ const MPS_TO_MPH : float = 2.23694;
 @onready var _point_light : PointLight2D = %PointLight2D;
 @onready var _large_icon_alpha : TextureRect = %LargeIcon_ALPHA;
 
+@onready var bar_fill_uncharged: BarFill = $bar/bar_fill_uncharged
+@onready var bar_fill_charging: BarFill = $bar/bar_fill_charging
+@onready var bar_fill_boost: BarFill = $bar/bar_fill_BOOST
+@onready var bar_black_background: TextureRect = $bar/bar_Background_Black
+
 var _display_color : Color = Color.WHITE;
 var _transition_from : Color = Color.WHITE;
 var _transition_to : Color = Color.WHITE;
@@ -62,6 +67,35 @@ func _ready():
 	set_process(false);
 	_update_speed_display();
 	_apply_light_state(light_color, _light_alpha_for(light_color));
+	if not Engine.is_editor_hint():
+		EventBus.speed_updated.connect(_on_speed_updated);
+		EventBus.boost_light_changed.connect(_on_boost_light_changed);
+
+## EventBus handler: pod speed in m/s + fraction of max_speed. Feeds the speed number
+## (converted to mph) and the fill-bar reveal percentage.
+func _on_speed_updated(speed_mps : float, speed_fraction : float) -> void:
+	speed_mph = speed_mps * MPS_TO_MPH;
+	if bar_fill != null:
+		bar_fill.set_percentage(clampf(speed_fraction, 0.0, 1.0) * 100.0);
+
+## EventBus handler: BoostLight int (0=OFF, 1=GREEN, 2=YELLOW, 3=RED). Mapped locally —
+## UI never references the system enum (ADR 0001).
+func _on_boost_light_changed(light : int) -> void:
+	light_color = _boost_light_color(light);
+
+func _boost_light_color(state : PodController.BoostState) -> Color:
+	match state:
+		PodController.BoostState.NORMAL:
+			return Color.WHITE;
+		PodController.BoostState.CHARGING:
+			return Color.GREEN;
+		PodController.BoostState.READY:
+			return Color.MAGENTA;
+		PodController.BoostState.BOOSTING:
+			return Color.YELLOW;
+		PodController.BoostState.OVERHEAT:
+			return Color.DARK_RED;
+	return Color.WHITE;
 
 ## External speed input in mph (e.g. connected from a system signal).
 func set_speed(mph : float) -> void:

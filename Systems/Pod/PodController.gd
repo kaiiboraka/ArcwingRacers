@@ -1,4 +1,4 @@
-extends CharacterBody3D;
+class_name PodController extends CharacterBody3D;
 
 ## Wall-angle penalty curve. x = angle fraction (0 = grazing side-scrape, 1 = dead-on nose hit).
 ## Penalty factor at 45° off-dead-on: COSINE 0.71, LINEAR 0.50, QUADRATIC 0.25, CUBIC 0.13, SMOOTHSTEP 0.25.
@@ -283,11 +283,14 @@ enum WallAngleCurve {
 @onready var hover_raycasts_root : Node3D = %HoverRaycasts;
 
 enum BoostState { NORMAL, CHARGING, READY, BOOSTING, OVERHEAT }
-enum BoostLight { OFF, GREEN, YELLOW, RED }
+#enum BoostLight -{ OFF, CHARGING, YELLOW, RED }
 
-var _boost_state : int = BoostState.NORMAL;
+var _boost_state : BoostState = BoostState.NORMAL;
 var _charge : float = 0.0;
 var _heat : float = 0.0;
+var _last_charge_pct : int = -1;
+var _last_heat_pct : int = -1;
+var _last_boost_state : BoostState = -1;
 var _current_speed : float = 0.0;
 var _yaw : float = 0.0;
 var _yaw_rate : float = 0.0;
@@ -342,6 +345,8 @@ func _ready():
 	if camera_mount:
 		_camera_mount_base_rot = camera_mount.rotation;
 		_camera_mount_base_pos = camera_mount.position;
+	EventBus.boost_light_changed.emit(BoostState.NORMAL);
+	_last_boost_state = BoostState.NORMAL;
 
 func _physics_process(delta):
 	if Engine.is_editor_hint():
@@ -367,6 +372,7 @@ func _physics_process(delta):
 	_handle_collisions();
 
 	_current_speed = velocity.length();
+	EventBus.speed_updated.emit(_current_speed, _speed_fraction());
 	DebugManager.update_property("~~_ Movement _~~", "~~~~~~~~~~~~");
 	DebugManager.update_property("Current Speed", String.num(_current_speed, 2));
 	DebugManager.update_property("Speed Fraction", String.num(_current_speed / max_speed, 2));
@@ -690,17 +696,19 @@ func _flat_right() -> Vector3:
 func _normal_boost(delta, input):
 	_cool_heat(delta);
 	if _charging_input(input) and _speed_fraction() >= min_charge_speed_fraction:
-		_boost_state = BoostState.CHARGING;
+		_change_boost_state(BoostState.CHARGING);
 
 func _charge_boost(delta, input):
 	if not _charging_input(input) or _speed_fraction() < min_charge_speed_fraction:
 		_charge = 0.0;
-		_boost_state = BoostState.NORMAL;
+		_emit_charge_if_changed();
+		_change_boost_state(BoostState.NORMAL);
 		return;
 	_charge += charge_rate * abs(input.pitch) * delta;
 	_charge = min(_charge, 1.0);
+	_emit_charge_if_changed();
 	if _charge >= 1.0:
-		_boost_state = BoostState.READY;
+		_change_boost_state(BoostState.READY);
 
 func _charging_input(input) -> bool:
 	if input.pitch >= 0.0:
@@ -712,11 +720,13 @@ func _cool_heat(delta):
 	if _heat <= 0.0:
 		return;
 	_heat = max(_heat - cool_rate * delta, 0.0);
+	_emit_heat_if_changed();
 
 func _ready_boost(delta, input):
 	if not _charging_input(input) or _speed_fraction() < min_charge_speed_fraction:
 		_charge = 0.0;
-		_boost_state = BoostState.NORMAL;
+		_emit_charge_if_changed();
+		_change_boost_state(BoostState.NORMAL);
 		return;
 	_cool_heat(delta);
 	if input.boost_just_pressed:
@@ -724,14 +734,16 @@ func _ready_boost(delta, input):
 
 func _reset_charge_level():
 	_charge = 0.0;
+	_emit_charge_if_changed();
 
 func _start_boost():
-	_boost_state = BoostState.BOOSTING;
+	_change_boost_state(BoostState.BOOSTING);
 	_reset_charge_level();
 	velocity += _flat_forward() * boost_thrust;
 
 func _boost_update(delta, input):
 	_heat += heat_rate * delta;
+	_emit_heat_if_changed();
 	if _heat >= 1.0:
 		_overheat();
 		return;
@@ -742,29 +754,54 @@ func _boost_update(delta, input):
 		_end_boost();
 
 func _overheat():
-	_boost_state = BoostState.OVERHEAT;
+	_change_boost_state(BoostState.OVERHEAT);
 
 func _end_boost():
-	_boost_state = BoostState.NORMAL;
+	_change_boost_state(BoostState.NORMAL);
 	_reset_charge_level();
 	_heat = max(_heat, 0.1);
+	_emit_heat_if_changed();
 
 func _cool_after_overheat(delta):
 	_heat -= cool_rate * delta;
 	_heat = max(_heat, 0.0);
+	_emit_heat_if_changed();
 	if _heat <= 0.0:
-		_boost_state = BoostState.NORMAL;
+		_change_boost_state(BoostState.NORMAL);
 		_reset_charge_level();
 
-func get_boost_light() -> BoostLight:
-	match _boost_state:
-		BoostState.BOOSTING:
-			return BoostLight.RED;
+
+func _change_boost_state(new_state : int) -> void:
+	if new_state == _boost_state:
+		return;
+	match new_state:
 		BoostState.READY:
-			return BoostLight.YELLOW;
-		BoostState.CHARGING:
-			return BoostLight.GREEN;
-	return BoostLight.OFF;
+			EventBus.boost_ready.emit();
+		BoostState.BOOSTING:
+			EventBus.boost_started.emit();
+		BoostState.OVERHEAT:
+			EventBus.overheat_started.emit();
+		BoostState.NORMAL:
+			if _boost_state == BoostState.BOOSTING:
+				EventBus.boost_ended.emit();
+			elif _boost_state == BoostState.OVERHEAT:
+				EventBus.overheat_ended.emit();
+	_boost_state = new_state;
+	if _boost_state != _last_boost_state:
+		_last_boost_state = _boost_state;
+		EventBus.boost_state_changed.emit(_boost_state);
+
+func _emit_charge_if_changed() -> void:
+	var pct : int = roundi(_charge * 100.0);
+	if pct != _last_charge_pct:
+		_last_charge_pct = pct;
+		EventBus.boost_charge_updated.emit(float(pct));
+
+func _emit_heat_if_changed() -> void:
+	var pct : int = roundi(_heat * 100.0);
+	if pct != _last_heat_pct:
+		_last_heat_pct = pct;
+		EventBus.boost_heat_updated.emit(float(pct));
 
 func _handle_collisions():
 	for i in get_slide_collision_count():
