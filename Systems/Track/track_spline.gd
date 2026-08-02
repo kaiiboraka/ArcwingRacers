@@ -281,7 +281,7 @@ func _do_delete_path(path_index : int, alternate_index : int) -> void:
 	remove_alternate_path(alternate_index);
 
 
-func _undo_delete_path(path_index : int, alternate_index : int, backup : Dictionary, branch_backup : Array) -> void:
+func _undo_delete_path(_path_index : int, alternate_index : int, backup : Dictionary, branch_backup : Array) -> void:
 	var spline : Spline = Spline.new();
 	spline.bake_interval = bake_interval;
 	_restore_spline_points(spline, backup);

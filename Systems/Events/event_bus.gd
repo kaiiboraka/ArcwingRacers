@@ -12,9 +12,8 @@ extends Node
 ## Current pod speed in m/s plus its fraction of max_speed (0..1, may exceed 1 during boost).
 signal speed_updated(speed_mps: float, speed_fraction: float)
 
-## BoostLight value (0 = OFF, 1 = GREEN, 2 = YELLOW, 3 = RED — mirrors PodController.BoostLight).
-## UI maps the int to its own colors; it never references the system enum.
-signal boost_state_changed(light : PodController.BoostState)
+## Pod boost state (BoostState enum). Emitted on every state change.
+signal boost_state_changed(state : PodController.BoostState)
 
 ## Boost charge gauge 0-100 (ADR 0002). Emitted when the integer percent changes.
 signal boost_charge_updated(charge_percent: float)

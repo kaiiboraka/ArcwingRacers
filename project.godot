@@ -18,8 +18,8 @@ project_layer_names/c#_namespace="ArcwingRacers"
 config/name="ArcwingRacers"
 run/main_scene="uid://ta4rkqlgf5a0"
 config/features=PackedStringArray("4.7", "C#")
-boot_splash/image="uid://cdxi6o7rb3osj"
-config/icon="uid://cxanvdcmlwtu6"
+boot_splash/image="uid://d02b1b1s58j40"
+config/icon="uid://caimmelb02tso"
 
 [autoload]
 
@@ -46,6 +46,7 @@ Ui="*uid://dblpebgaxt1jb"
 
 window/size/viewport_width=1920
 window/size/viewport_height=1080
+window/size/mode=3
 window/size/extend_to_title=true
 window/size/sharp_corners=true
 window/stretch/mode="canvas_items"
@@ -246,3 +247,4 @@ Debug_DecreaseHoverHeight={
 
 common/physics_ticks_per_second=120
 jolt_physics_3d/simulation/velocity_steps=11
+common/physics_interpolation=true

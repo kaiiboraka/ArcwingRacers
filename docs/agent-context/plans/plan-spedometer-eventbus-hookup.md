@@ -91,6 +91,29 @@ depends on `speed_updated` + `boost_light_changed`, so the naming choice is low-
 Add via editor MCP: `CanvasLayer` (name `SpedometerLayer`) → instance `spedometer.tscn`
 under it. Anchors stay `preset 0` (top-left of screen) for now; user positions later.
 
+## Bar fill v2 — three layered bars + black background (2026-08-02)
+
+`bar_fill` (single bar) is superseded. The scene (`spedometer.tscn`) now has, layered
+bottom→top: `bar/bar_fill_uncharged`, `bar/bar_fill_charging`, `bar/bar_Background_Black`
+(`visible=false`), `bar/bar_fill_BOOST`. The spedometer drives each by boost state.
+
+Behavior (from user, verbatim intent):
+- **NORMAL / accelerating, not charging/boosting** — uncharged bar = speed fraction (default meter); charging & BOOST bars = 0; black bg hidden.
+- **CHARGING begins** (cross speed threshold) — uncharged bar **stays full (100)**; charging bar fills with `boost_charge_updated`; BOOST = 0; black bg hidden.
+- **READY (fully charged)** — uncharged = 100; charging = 100; BOOST = 0; black bg hidden.
+- **BOOSTING** — black bg **visible**; BOOST bar fills with `boost_heat_updated`; charging bar = 0 (charge consumed on boost start); uncharged stays 100.
+- **Boost stops / OVERHEAT** — black bg hidden; BOOST bar = 0; charging bar = 0; uncharged resumes speed-fraction behavior.
+
+Signal-name correction: the bus actually declares **`boost_state_changed(light : PodController.BoostState)`** (BoostState enum: NORMAL=0, CHARGING=1, READY=2, BOOSTING=3, OVERHEAT=4), NOT `boost_light_changed`. PodController:348 and the spedometer `_ready()` connect used the stale `boost_light_changed` name (would fail at runtime). Both fixed to `boost_state_changed`.
+
+Implementation (`spedometer.gd`):
+- Local state constants mirroring BoostState (`BOOST_STATE_*`), `_boost_state` var.
+- `_ready()`: reset bars (uncharged=0, charging=0, boost=0, bg hidden); connect `speed_updated`, `boost_state_changed`, `boost_charge_updated`, `boost_heat_updated`.
+- `_on_speed_updated`: set speed_mph; set `bar_fill_uncharged` from `speed_fraction` ONLY while NORMAL/OVERHEAT (not charging/boosting).
+- `_on_boost_state_changed(state)`: sets `_boost_state` + `light_color`; per-state bar/bg updates as above.
+- `_on_boost_charge_updated(pct)`: `bar_fill_charging` = pct (covers CHARGING fill, READY=100, NORMAL/BOOSTING=0 via pod resets).
+- `_on_boost_heat_updated(pct)`: BOOST bar = pct only while BOOSTING (guarded so post-boost heat cooling doesn't refill it).
+
 ## Out of scope
 
 - Race signals (race manager doesn't exist yet), minimap, ability/shield signals.

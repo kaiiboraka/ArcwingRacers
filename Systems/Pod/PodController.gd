@@ -290,7 +290,7 @@ var _charge : float = 0.0;
 var _heat : float = 0.0;
 var _last_charge_pct : int = -1;
 var _last_heat_pct : int = -1;
-var _last_boost_state : BoostState = -1;
+var _last_boost_state : BoostState;
 var _current_speed : float = 0.0;
 var _yaw : float = 0.0;
 var _yaw_rate : float = 0.0;
@@ -345,7 +345,7 @@ func _ready():
 	if camera_mount:
 		_camera_mount_base_rot = camera_mount.rotation;
 		_camera_mount_base_pos = camera_mount.position;
-	EventBus.boost_light_changed.emit(BoostState.NORMAL);
+	EventBus.boost_state_changed.emit(BoostState.NORMAL);
 	_last_boost_state = BoostState.NORMAL;
 
 func _physics_process(delta):
@@ -472,7 +472,7 @@ func _accelerate(delta, input):
 	var current_forward_speed = velocity.dot(forward);
 
 	var target_forward = input.accelerate * target;
-	var new_forward_speed = lerp(current_forward_speed, target_forward, acceleration_factor * delta);
+	var new_forward_speed = lerp(current_forward_speed, target_forward, accel * delta);
 
 	velocity += forward * (new_forward_speed - current_forward_speed);
 
@@ -510,10 +510,10 @@ func _steer(delta, input):
 	velocity = forward * forward_speed + lat * (1.0 - min(1.0, traction * delta));
 
 func _build_pod_basis():
-	var basis : Basis = Basis(Vector3.UP, _yaw);
-	basis = basis.rotated(basis.z, _roll + _tilt_roll);
-	basis = basis.rotated(basis.x, _pitch);
-	global_transform.basis = basis;
+	var pod_basis : Basis = Basis(Vector3.UP, _yaw);
+	pod_basis = pod_basis.rotated(pod_basis.z, _roll + _tilt_roll);
+	pod_basis = pod_basis.rotated(pod_basis.x, _pitch);
+	global_transform.basis = pod_basis;
 
 func _tilt(delta, input):
 	var speed_frac = clampf(_current_speed / max_speed, 0.0, 1.0) if max_speed > 0.0 else 0.0;
@@ -547,7 +547,7 @@ func _pitch_attitude_target() -> float:
 		return 0.0;
 	return clampf(velocity.y * deg_to_rad(arc_pitch_gain), -max_arc, max_arc);
 
-func _counter_rotate_camera(delta):
+func _counter_rotate_camera(_delta):
 	if not camera_mount:
 		return;
 	var counter : float = -(_roll + _tilt_roll * (1.0 - camera_tilt_follow)) * camera_roll_counter;
@@ -771,7 +771,7 @@ func _cool_after_overheat(delta):
 		_reset_charge_level();
 
 
-func _change_boost_state(new_state : int) -> void:
+func _change_boost_state(new_state : BoostState) -> void:
 	if new_state == _boost_state:
 		return;
 	match new_state:

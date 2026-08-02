@@ -72,10 +72,10 @@ func _rebuild_grid():
 		_set_marker_sprite(marker, i);
 		start_positions.append(marker);
 
-func _parse_index(name : String) -> int:
-	if not name.begins_with("Position_"):
+func _parse_index(node_name : String) -> int:
+	if not node_name.begins_with("Position_"):
 		return -1;
-	var n : int = name.trim_prefix("Position_").to_int();
+	var n : int = node_name.trim_prefix("Position_").to_int();
 	if n >= 1 and n <= MAX_RACER_SLOTS:
 		return n - 1;
 	return -1;

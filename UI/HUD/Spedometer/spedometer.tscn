@@ -511,7 +511,7 @@ stretch_mode = 4
 
 [node name="LargeIcon_ALPHA" type="TextureRect" parent="Light/glowy bits" unique_id=1123703999 groups=["colored"]]
 unique_name_in_owner = true
-self_modulate = Color(1, 1, 1, 0.57735026)
+self_modulate = Color(1, 1, 1, 0)
 texture_filter = 1
 texture_repeat = 1
 layout_mode = 0
@@ -525,7 +525,6 @@ stretch_mode = 4
 
 [node name="LightTexture" type="TextureRect" parent="Light/glowy bits" unique_id=2073556450 groups=["colored"]]
 unique_name_in_owner = true
-self_modulate = Color(1, 1, 0, 1)
 texture_filter = 1
 texture_repeat = 1
 material = SubResource("CanvasItemMaterial_wj5hs")
@@ -538,7 +537,6 @@ texture = ExtResource("14_rfeee")
 stretch_mode = 4
 
 [node name="GlassTubes" type="TextureRect" parent="Light/glowy bits/LightTexture" unique_id=1243880076 groups=["colored"]]
-self_modulate = Color(1, 1, 0, 1)
 texture_filter = 1
 texture_repeat = 1
 layout_mode = 0
@@ -552,7 +550,8 @@ stretch_mode = 4
 [node name="PointLight2D" type="PointLight2D" parent="Light/glowy bits" unique_id=841607238]
 unique_name_in_owner = true
 position = Vector2(50, 50)
-color = Color(1, 1, 0, 0.57735026)
+color = Color(1, 1, 1, 0)
 energy = 2.0
+range_layer_max = 3
 texture = ExtResource("18_w1j0j")
 texture_scale = 1.7

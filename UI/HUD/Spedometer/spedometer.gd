@@ -3,14 +3,16 @@ extends Control
 
 ## Conversion factor from m/s to mph (1 m/s = 2.23694 mph).[br]
 ## Used by set_speed_mps() so the HUD can be fed pod-native units.
-const MPS_TO_MPH : float = 2.23694;
+#const MPS_TO_MPH : float = 2.23694;
 
 ## Current speed in mph. Writing this (or calling set_speed / set_speed_mp"res://UI/HUD/Spedometer/bar_colored.PNG"s) updates the speed text and its gradient color.[br]
 ## Intended purpose: the displayed speed value; source of truth for the speed text + color.[br]
 ## Higher = faster reading and warmer color.
-@export_range(0.0, 9999.0) var speed_mph : float = 0.0:
+@export_range(0.0, 9999.0) var current_speed : float = 0.0:
+#@export_range(0.0, 9999.0) var speed_mph : float = 0.0:
 	set(v):
-		speed_mph = v;
+		#speed_mph = v;
+		current_speed = v;
 		_update_speed_display();
 
 ## Lowest speed in mph at which the text color is cyan; below this it stays cyan.[br]
@@ -56,6 +58,8 @@ const MPS_TO_MPH : float = 2.23694;
 @onready var bar_fill_boost: BarFill = $bar/bar_fill_BOOST
 @onready var bar_black_background: TextureRect = $bar/bar_Background_Black
 
+var _boost_state : PodController.BoostState = PodController.BoostState.NORMAL;
+
 var _display_color : Color = Color.WHITE;
 var _transition_from : Color = Color.WHITE;
 var _transition_to : Color = Color.WHITE;
@@ -68,20 +72,56 @@ func _ready():
 	_update_speed_display();
 	_apply_light_state(light_color, _light_alpha_for(light_color));
 	if not Engine.is_editor_hint():
+		bar_black_background.visible = false;
+		bar_fill_charging.set_percentage(0.0);
+		bar_fill_boost.set_percentage(0.0);
 		EventBus.speed_updated.connect(_on_speed_updated);
-		EventBus.boost_light_changed.connect(_on_boost_light_changed);
+		EventBus.boost_state_changed.connect(_on_boost_state_changed);
+		EventBus.boost_charge_updated.connect(_on_boost_charge_updated);
+		EventBus.boost_heat_updated.connect(_on_boost_heat_updated);
 
 ## EventBus handler: pod speed in m/s + fraction of max_speed. Feeds the speed number
-## (converted to mph) and the fill-bar reveal percentage.
+## (converted to mph) and, while the pod is not charging or boosting, the uncharged bar.
 func _on_speed_updated(speed_mps : float, speed_fraction : float) -> void:
-	speed_mph = speed_mps * MPS_TO_MPH;
-	if bar_fill != null:
-		bar_fill.set_percentage(clampf(speed_fraction, 0.0, 1.0) * 100.0);
+	#speed_mph = speed_mps * MPS_TO_MPH;
+	current_speed = speed_mps
+	bar_fill_uncharged.set_percentage(clampf(speed_fraction, 0.0, 1.0) * 100.0);
+	#if _boost_state == PodController.BoostState.NORMAL or _boost_state == PodController.BoostState.OVERHEAT:
 
-## EventBus handler: BoostLight int (0=OFF, 1=GREEN, 2=YELLOW, 3=RED). Mapped locally —
-## UI never references the system enum (ADR 0001).
-func _on_boost_light_changed(light : int) -> void:
-	light_color = _boost_light_color(light);
+## EventBus handler: BoostState (NORMAL, CHARGING, READY, BOOSTING, OVERHEAT). Sets the
+## light color and drives the three stacked bars + black background.
+func _on_boost_state_changed(state : PodController.BoostState) -> void:
+	_boost_state = state;
+	light_color = _boost_light_color(state);
+	match state:
+		PodController.BoostState.NORMAL, PodController.BoostState.OVERHEAT:
+			bar_fill_charging.set_percentage(0.0);
+			bar_fill_boost.set_percentage(0.0);
+			bar_black_background.visible = false;
+		PodController.BoostState.CHARGING:
+			#bar_fill_uncharged.set_percentage(100.0);
+			bar_fill_boost.set_percentage(0.0);
+			bar_black_background.visible = false;
+		PodController.BoostState.READY:
+			#bar_fill_uncharged.set_percentage(100.0);
+			bar_fill_boost.set_percentage(0.0);
+			bar_black_background.visible = false;
+		PodController.BoostState.BOOSTING:
+			bar_fill_uncharged.set_percentage(100.0);
+			bar_fill_charging.set_percentage(0.0);
+			bar_black_background.visible = true;
+
+## EventBus handler: boost charge gauge 0-100. Fills the charging bar while charging
+## (and holds it full once READY); charge resets on boost start and normal return.
+func _on_boost_charge_updated(charge_percent : float) -> void:
+	if _boost_state == PodController.BoostState.CHARGING or _boost_state == PodController.BoostState.READY:
+		bar_fill_charging.set_percentage(charge_percent);
+
+## EventBus handler: boost heat gauge 0-100. Fills the BOOST bar only while boosting;
+## once out of BOOSTING the bar is reset by the state handler.
+func _on_boost_heat_updated(heat_pct : float) -> void:
+	if _boost_state == PodController.BoostState.BOOSTING:
+		bar_fill_boost.set_percentage(heat_pct);
 
 func _boost_light_color(state : PodController.BoostState) -> Color:
 	match state:
@@ -90,20 +130,20 @@ func _boost_light_color(state : PodController.BoostState) -> Color:
 		PodController.BoostState.CHARGING:
 			return Color.GREEN;
 		PodController.BoostState.READY:
-			return Color.MAGENTA;
-		PodController.BoostState.BOOSTING:
 			return Color.YELLOW;
+		PodController.BoostState.BOOSTING:
+			return Color.MAGENTA;
 		PodController.BoostState.OVERHEAT:
 			return Color.DARK_RED;
 	return Color.WHITE;
 
-## External speed input in mph (e.g. connected from a system signal).
-func set_speed(mph : float) -> void:
-	speed_mph = mph;
-
-## External speed input in m/s — converts to mph before updating the display.
-func set_speed_mps(mps : float) -> void:
-	speed_mph = mps * MPS_TO_MPH;
+### External speed input in mph (e.g. connected from a system signal).
+#func set_speed(mph : float) -> void:
+	#speed_mph = mph;
+#
+### External speed input in m/s — converts to mph before updating the display.
+#func set_speed_mps(mps : float) -> void:
+	#speed_mph = mps * MPS_TO_MPH;
 
 func _process(delta : float):
 	if _transition_t >= 1.0:
@@ -147,8 +187,10 @@ func _light_alpha_for(color : Color) -> float:
 func _update_speed_display() -> void:
 	if not is_inside_tree() or _speed_label == null:
 		return;
-	_speed_label.text = str(int(speed_mph));
-	_speed_label.add_theme_color_override("default_color", _speed_color(speed_mph));
+	#_speed_label.text = str(int(speed_mph));
+	_speed_label.text = str(int(current_speed));
+	#_speed_label.add_theme_color_override("default_color", _speed_color(speed_mph));
+	_speed_label.add_theme_color_override("default_color", _speed_color(current_speed));
 
 func _speed_color(mph : float) -> Color:
 	const LIGHT_GREY : Color = Color(0.8, 0.8, 0.8);

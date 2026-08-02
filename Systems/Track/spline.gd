@@ -224,7 +224,7 @@ func sample_normal(offset : float) -> Vector3:
 
 ## Surface normal at a baked offset derived from forward tangent + banked lateral, for
 ## spans where the baked up vector is not configured. lateral = forward × world_up. Local space.
-func sample_normal_banked(offset : float, forward : Vector3, bank : float) -> Vector3:
+func sample_normal_banked(_offset : float, forward : Vector3, bank : float) -> Vector3:
 	var lateral : Vector3 = forward.cross(Vector3.UP).normalized();
 	var rot : Basis = Basis(forward.normalized(), bank);
 	return (rot * lateral).cross(forward).normalized();

@@ -350,7 +350,9 @@ transform = Transform3D(1.3224053, 0, -1.9084648, 0, 6.3009024, 0, 3.3082056, 0,
 transform = Transform3D(3.2015848, 0, -0.90165156, 0, 5.159788, 0, 1.5629572, 0, 1.8469565, -111.84369, 16.528568, -218.90125)
 
 [node name="SM_rock_wall_05" parent="Rocks/outer_wall/bend8" unique_id=863921268 instance=ExtResource("6_iyl2v")]
+process_mode = 4
 transform = Transform3D(0.1023605, 4.302, -0.5980961, -2.6151414, 0.51897496, 0.046300303, 0.256071, 3.5804062, 0.7119247, 53.46753, 29.10722, -86.547485)
+visible = false
 
 [node name="bend9" type="Node3D" parent="Rocks/outer_wall" unique_id=1530688250]
 transform = Transform3D(0.57186174, 0, -0.8203501, 0, 1, 0, 0.8203501, 0, 0.57186174, -1010.6756, 0, 1764.7095)
