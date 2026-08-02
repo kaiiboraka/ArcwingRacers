@@ -54,7 +54,7 @@ Don't rule out dynamic layering. Track design needs to happen first before locki
 
 ## Custom Audio Resources
 
-Three GDScript `Resource` subclasses at `Content/Scripts/Resources/`, ported from C# originals. Class definitions live here; actual `.tres` asset files go in `Content/Resources/`.
+Three GDScript `Resource` subclasses at `addons/Custom_Nodes/Audio/`, ported from C# originals. Class definitions live here; actual `.tres` asset files go in `Content/Resources/`.
 
 ### AudioFile (`audio_file.gd`)
 Wraps a single stream with baked-in pitch/volume defaults. Subclasses `AudioStream` — assign directly to any `AudioStreamPlayer`.
