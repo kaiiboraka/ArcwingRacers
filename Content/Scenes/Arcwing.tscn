@@ -139,7 +139,6 @@ floor_max_angle = 0.87266463
 platform_floor_layers = 11
 script = ExtResource("1_u7qc7")
 hover_height = 4.0
-max_speed = 200.0
 acceleration_factor = 1.0
 brake_deceleration = 2.0
 max_bank_angle = 30.0
@@ -152,6 +151,7 @@ pitch_accel_angle = 0.5
 pitch_brake_angle = 2.0
 visual_nose_deg = 10.0
 arc_pitch_gain = 0.5
+arc_pitch_max_deg = 60.0
 wing_up_vert_travel = 2.0
 chassis_sway_travel = 4.0
 chassis_sway_speed = 2.0
@@ -184,10 +184,10 @@ transform = Transform3D(0.99998814, 1.9984014e-15, 0.004869937, 2.7755576e-16, 1
 
 [node name="Wing_Left" parent="Visuals" unique_id=506060661 instance=ExtResource("3_ye1aq")]
 unique_name_in_owner = true
-transform = Transform3D(0.9999863, 0, 0.005235964, 0, 1, 0, -0.005235964, 0, 0.9999863, -2.963, 2.157, -5.481)
+transform = Transform3D(0.9999863, 0, 0.005235964, 0, 1, 0, -0.005235964, 0, 0.9999863, -2.963, 1.832, -5.481)
 
 [node name="Wing_Left_Rig_Marker3D" type="Marker3D" parent="Visuals/Wing_Left" unique_id=880731773]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.85827565, -0.02678895, -0.07119465)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.65942574, 0.26, 0.09272528)
 
 [node name="Ring_GPUParticles3D" type="GPUParticles3D" parent="Visuals/Wing_Left" unique_id=2123462299]
 transform = Transform3D(0.9999881, 0, 0.0048699374, 0, 1, 0, -0.0048699374, 0, 0.9999881, -0.412, -0.975, 1.716)
@@ -215,10 +215,10 @@ autoplay = &"Arcwing/Idle_Open"
 
 [node name="Wing_Right" parent="Visuals" unique_id=1688076220 instance=ExtResource("3_ye1aq")]
 unique_name_in_owner = true
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, 1, 2.963, 2.157, -5.481)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, 1, 2.963, 1.832, -5.481)
 
 [node name="Wing_Right_Rig_Marker3D" type="Marker3D" parent="Visuals/Wing_Right" unique_id=1663029497]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.85827565, -0.02678895, -0.07119465)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6515603, 0.26, 0)
 
 [node name="Ring_GPUParticles3D" type="GPUParticles3D" parent="Visuals/Wing_Right" unique_id=1477544193]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4122908, -0.9749291, 1.7155793)
@@ -246,6 +246,7 @@ autoplay = &"Arcwing/Idle_Open"
 
 [node name="Wing_Right_old" parent="Visuals" unique_id=54933638 instance=ExtResource("6_ye1aq")]
 unique_name_in_owner = true
+process_mode = 4
 transform = Transform3D(0.9999863, 0, -0.005235964, 0, 1, 0, 0.005235964, 0, 0.9999863, 2.9625597, 2.157, -5.481)
 visible = false
 
@@ -332,9 +333,6 @@ collision_mask = 7
 look_at_damping = true
 look_at_damping_value = 0.1
 noise_emitter_layer = 1
-align_transform_with_view = Callable()
-align_position_with_view = Callable()
-align_rotation_with_view = Callable()
 draw_follow_line = true
 metadata/_custom_type_script = "uid://csjccrhj5wnx7"
 

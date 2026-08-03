@@ -1,9 +1,8 @@
 @tool
 extends Control
 
-## Conversion factor from m/s to mph (1 m/s = 2.23694 mph).[br]
-## Used by set_speed_mps() so the HUD can be fed pod-native units.
-#const MPS_TO_MPH : float = 2.23694;
+## Speed stats and the EventBus speed feed are authored in mph — no conversion needed
+## here; the HUD displays the fed value directly.
 
 ## Current speed in mph. Writing this (or calling set_speed / set_speed_mp"res://UI/HUD/Spedometer/bar_colored.PNG"s) updates the speed text and its gradient color.[br]
 ## Intended purpose: the displayed speed value; source of truth for the speed text + color.[br]
@@ -85,11 +84,10 @@ func _ready():
 		EventBus.boost_charge_updated.connect(_on_boost_charge_updated);
 		EventBus.boost_heat_updated.connect(_on_boost_heat_updated);
 
-## EventBus handler: pod speed in m/s + fraction of max_speed. Feeds the speed number
-## (converted to mph) and, while the pod is not charging or boosting, the uncharged bar.
-func _on_speed_updated(speed_mps : float, speed_fraction : float) -> void:
-	#speed_mph = speed_mps * MPS_TO_MPH;
-	current_speed = speed_mps
+## EventBus handler: pod speed in mph + fraction of max_speed. Feeds the speed number
+## and, while the pod is not charging or boosting, the uncharged bar.
+func _on_speed_updated(speed_mph : float, speed_fraction : float) -> void:
+	current_speed = speed_mph
 	bar_fill_uncharged.set_percentage(clampf(speed_fraction, 0.0, 1.0) * 100.0);
 	#if _boost_state == PodController.BoostState.NORMAL or _boost_state == PodController.BoostState.OVERHEAT:
 

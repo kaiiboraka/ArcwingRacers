@@ -1,0 +1,33 @@
+[gd_scene format=3 uid="uid://mdeofcf6dtj"]
+
+[ext_resource type="Shader" uid="uid://cam5lt7hsxb5d" path="res://Content/Materials/Shaders/speedlines.gdshader" id="1_f3642"]
+[ext_resource type="Script" uid="uid://dw46up5y03vv7" path="res://UI/screen_effects.gd" id="1_tfcjo"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_f3642"]
+noise_type = 5
+frequency = 0.2
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_f3642"]
+noise = SubResource("FastNoiseLite_f3642")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_tjfwu"]
+shader = ExtResource("1_f3642")
+shader_parameter/noise = SubResource("NoiseTexture2D_f3642")
+shader_parameter/line_color = Color(0.975, 0.75, 1, 0.6745098)
+shader_parameter/line_count = 2.0
+shader_parameter/line_density = 0.4890000232275
+shader_parameter/line_faloff = 1.0
+shader_parameter/mask_size = 0.0
+shader_parameter/mask_edge = 1.0
+shader_parameter/animation_speed = 20.0
+
+[node name="ScreenEffects" type="CanvasLayer" unique_id=1387048882]
+script = ExtResource("1_tfcjo")
+
+[node name="SpeedLines_ColorRect" type="ColorRect" parent="." unique_id=294003785]
+material = SubResource("ShaderMaterial_tjfwu")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2

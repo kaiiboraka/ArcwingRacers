@@ -41,6 +41,7 @@ InputCollector="*res://Systems/Input/InputCollector.gd"
 CameraRoot="*uid://btveng6akpeug"
 EventBus="*res://Systems/Events/event_bus.gd"
 Ui="*uid://dblpebgaxt1jb"
+ScreenEffects="*uid://mdeofcf6dtj"
 
 [display]
 

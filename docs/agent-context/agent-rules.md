@@ -4,6 +4,7 @@
 
 ### Always
 - When a documented process or standard exists for a category of work (asset licensing, code style, etc.), follow it exactly, every time — don't skip steps because a task feels small or low-risk.
+- **The agent does NOT test gameplay. The user tests gameplay.** The agent implements, then reports what was built and what to test/expect; the user plays and reports what feels wrong. The agent's own verification is limited to static checks (script parse via the editor, log reads, project launches for errors) — never drive the game and judge whether mechanics "work" or "feel right." Gameplay judgment belongs to the user alone.
 - When a new recurring process is established (a new tracker doc, checklist item, tagging convention), wire it into the relevant rules/checklist file in the same session — a process that isn't enforced anywhere won't get followed later.
 - Read `agent-context/context-map.md` at the start of every session before any other file.
 - **Any multi-step plan — phases, roadmaps, task lists, agreed follow-ups, or brainstormed alternatives that end in a decision — MUST be written down to a working document file on disk BEFORE any execution begins.** Working plans go in `agent-context/plans/` (`plan-<topic>.md`). Never retain a plan only in conversation memory: context is finite and plans get lost mid-session. The moment an agreement is reached on what steps to take, document it immediately, then start executing. Mark items `✅`/done as they complete and note where the changes landed.

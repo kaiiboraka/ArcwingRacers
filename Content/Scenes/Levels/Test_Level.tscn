@@ -184,6 +184,7 @@ metadata/_custom_type_script = "uid://dkyobseeo0c7n"
 [node name="StartingLine" parent="." unique_id=583602706 instance=ExtResource("2_wg3kv")]
 
 [node name="Arcwing" parent="." unique_id=612795873 instance=ExtResource("1_26u2p")]
+max_speed = 200.0
 
 [node name="Rocks" type="Node3D" parent="." unique_id=2066083512]
 
@@ -614,6 +615,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 3.6120317, 15.286816, -1.5258788
 [node name="ExtendableWall" parent="." unique_id=1149585584 instance=ExtResource("7_dy8ob")]
 transform = Transform3D(-0.6449288, -0.67231995, 0.3633905, 0, 0.47549102, 0.87972057, -0.76424265, 0.5673571, -0.30665785, -211.38463, 0.632293, -111.4559)
 size = Vector3(20, 26, 11.599998)
+
+[node name="ExtendableWall2" parent="." unique_id=1583484664 instance=ExtResource("7_dy8ob")]
+transform = Transform3D(0.99656665, -0.06686897, 0.048820276, -3.7252903e-09, 0.5896582, 0.8076529, -0.08279419, -0.80487996, 0.5876337, 109.590614, 2.3436947, 516.2051)
+size = Vector3(29.82095, 93.01047, 11.599998)
 
 [node name="WorldFloor" type="StaticBody3D" parent="." unique_id=1223787576]
 axis_lock_linear_x = true

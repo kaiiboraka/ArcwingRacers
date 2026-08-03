@@ -18,6 +18,31 @@ enum WallAngleCurve {
 
 enum BoostState { NORMAL, CHARGING, READY, BOOSTING, OVERHEAT }
 
+## mph ↔ m/s conversion factor (1 m/s = 2.23694 mph). Speed exports are authored in
+## mph; they are converted to m/s once at startup so physics stay in meters.
+const MPS_TO_MPH : float = 2.23694;
+const MPH_TO_MPS : float = 1.0 / MPS_TO_MPH;
+
+@export_category("Terrain")
+## Steepest slope (degrees) the pod still treats as floor once the hover rays touch it.[br][br]
+## Intended purpose: let the pod stick to and climb ramps; Godot's CharacterBody3D floor_max_angle
+## default is 45°, so anything steeper is treated as a wall and the pod slides off.
+## Higher = rides steeper ramps; 90 = any surface the rays touch.
+@export var floor_slope_max_deg : float = 75.0;
+## How hard the pod's up-vector aligns to the ground normal while grounded (0 = always level, 1 = full slope alignment).[br][br]
+## Intended purpose: the pod noses up/climbs ramps instead of clipping into them; also orients the hover spring and thrust along the surface normal so forward momentum carries up the slope.
+@export var ground_align : float = 1.0;
+## Per-frame lerp rate of the ground alignment while grounded, so landing on a slope
+## tilts in smoothly instead of snapping.[br][br]
+## Intended purpose: avoid a jolt when transitioning air↔ground; higher = faster settle.
+@export var ground_align_speed : float = 6.0;
+## Per-frame lerp rate that releases ground alignment back to level AFTER the pod leaves
+## the surface (airborne).[br][br]
+## Intended purpose: launching off a ramp should keep the ramp tilt briefly and blend into
+## the flight arc instead of snapping flat the instant the rays lose contact.
+## Higher = levels out quicker; lower = the ramp attitude lingers after takeoff.
+@export var ground_align_release_speed : float = 2.0;
+
 @export_category("Hover")
 ## Hover altitude in meters — the distance the pod's raycasts try to hold above ground.[br][br]
 ## Intended purpose: the pod hovers on springs toward this height above the surface.[br][br]
@@ -55,10 +80,11 @@ enum BoostState { NORMAL, CHARGING, READY, BOOSTING, OVERHEAT }
 @export var debug_hover_step : float = 0.5;
 
 @export_category("Movement")
-## Top forward speed in m/s reached when the accelerator is held at full input.[br][br]
+## Top forward speed in mph reached when the accelerator is held at full input.[br][br]
 ## Intended purpose: defines the pod's base performance ceiling; the boost charge threshold and boost top speed are both derived as fractions/sums of this value.[br][br]
-## Higher = faster pod at cruise AND a higher bar to reach before the boost gauge can charge (since the charge threshold is a fraction of max_speed); lower = slower pod, easier to charge.
-@export var max_speed : float = 30.0;
+## Higher = faster pod at cruise AND a higher bar to reach before the boost gauge can charge (since the charge threshold is a fraction of max_speed); lower = slower pod, easier to charge.[br][br]
+## Author in mph — the number shown on the HUD is this value. Converted to m/s once at startup.
+@export var max_speed : float = 450.0;
 ## Catch-up rate — how quickly current speed lerps toward the target speed each frame.[br][br]
 ## Intended purpose: sets how fast the pod recovers speed lost to turns, brakes, crashes, and standstill, and how quickly it climbs to (or past, during boost) max speed.[br][br]
 ## Higher = snappier acceleration, instant re-grip after corners; lower = floatier, sluggish pickup.
@@ -79,6 +105,10 @@ enum BoostState { NORMAL, CHARGING, READY, BOOSTING, OVERHEAT }
 ## Intended purpose: controls stopping distance and how hard braking scrubs off speed.[br][br]
 ## Higher = shorter stopping distance, strong deceleration; lower = longer glide after braking.
 @export var brake_deceleration : float = 8.0;
+## Fraction of remaining forward speed shed per second while coasting (accelerator released).[br][br]
+## Intended purpose: natural drag so the pod bleeds speed when the throttle is released instead of coasting forever; braking stays the deliberate, stronger deceleration.[br][br]
+## Higher = faster bleed (short glide); lower = longer coast.
+@export var idle_deceleration : float = 0.5;
 ## Turn-rate multiplier applied while the nose is pitched UP (pull back).[br][br]
 ## Intended purpose: reward pulling up mid-turn with sharper handling.[br][br]
 ## Higher = markedly tighter turns while nose up; 1.0 = no bonus; below 1.0 would turn it into a penalty.
@@ -133,10 +163,10 @@ enum BoostState { NORMAL, CHARGING, READY, BOOSTING, OVERHEAT }
 ## Intended purpose: guarantee the pod never tips past a sane attitude regardless of how slope and input stack.[br][br]
 ## Higher = more extreme combined pitch allowed; lower = keeps the body closer to level.
 @export var max_pitch_angle : float = 50.0;
-## m/s the cruise speed target shifts at full nose-down (+gain) / nose-up (−gain), stacked on top of max_speed and boost.[br][br]
+## mph the cruise speed target shifts at full nose-down (+gain) / nose-up (−gain), stacked on top of max_speed and boost.[br][br]
 ## Intended purpose: give the nose attitude a real speed tradeoff — diving (nose down) raises cruising speed, climbing (nose up) bleeds it, scaled by how far the nose is pitched.[br][br]
 ## Higher = nose-down is a bigger speed boost and nose-up a bigger slow-down; lower = subtler.
-@export var pitch_speed_gain : float = 15.0;
+@export var pitch_speed_gain : float = 33.6;
 ## Fractional change to the acceleration factor at full nose-down (+gain) / nose-up (−gain): nose-down accelerates harder, nose-up accelerates more sluggishly.[br][br]
 ## Intended purpose: layer the speed change onto thrust so pitch is felt as acceleration, not just a retargeted cruise speed.[br][br]
 ## Higher = stronger acceleration swing with pitch; lower = gentler.
@@ -178,22 +208,20 @@ enum BoostState { NORMAL, CHARGING, READY, BOOSTING, OVERHEAT }
 ## Higher = wings snap into position; lower = wings lag and float toward position.
 @export var wing_tilt_speed : float = 6.0;
 
-## Fraction (0–1) of the ramped turn rate (|yaw_rate / max_turn_rate|) that drives the mechanical wing open/close ladder (Closed → Squeezed → Open → Full).[br][br]
-## Intended purpose: turns open the wings (docs: open as turn rate rises, hold while the turn is held, decay back to closed on neutral).[br][br]
-## Higher = gentler turns reach deeper into the ladder (1.0 = full turn → fully open); lower = only hard turns open them.
+## Fraction (0–1) of the ramped turn rate (|yaw_rate / max_turn_rate|) that drives the turn differential: the wing on the INSIDE of the turn squeezes (→ Squeezed, never Closed), while the OUTSIDE wing opens toward Full and holds there while the turn is held, then returns to Open on release.[br][br]
+## Higher = gentler turns reach the extremes (1.0 = full turn → inside fully Squeezed, outside Full); lower = only hard turns drive them.
 @export var wing_open_turn_gain : float = 1.0;
-## Fraction (0–1) of the pitch input added to wing openness (nose UP opens more, nose DOWN closes more).[br][br]
-## Intended purpose: the new requirement — pulling the nose up spreads the wings, pushing it down tucks them, layered on top of the turn-driven openness.[br][br]
-## Higher = pitch dominates the ladder; lower = turns stay the primary driver. Negative flips the direction if in-game feel is inverted.
-@export var wing_open_pitch_gain : float = 0.4;
+## Fraction (0–1) of full nose deflection that drives wing openness when AIRBORNE only: nose UP opens BOTH wings toward Full, nose DOWN closes BOTH toward Closed. No effect while grounded.[br][br]
+## Higher = a given nose input reaches deeper into the ladder (1.0 = full nose-up → Full, full nose-down → Closed); lower = weaker pitch response.
+@export var wing_open_pitch_gain : float = 1.0;
 ## How fast wing openness (0–1) travels toward its target each second.[br][br]
 ## Intended purpose: cadence of the open/close ladder — the library cycles one state per 0.5s, so the default 2.0/3.0 crosses one state boundary (1/3 openness) every half second.[br][br]
 ## Higher = snappier ladder; lower = slower, floatier transitions.
 @export var wing_open_step_rate : float = 0.6667;
-## Resting wing openness (0–1) when turn and pitch are both neutral, snapped to the nearest ladder state.[br][br]
-## Intended purpose: choose the parked look — 0.0 = Closed, 0.5 ≈ Open, 1.0 = Full (the scene currently autoplays Idle_Open, so a slightly-open rest may match the intended look).[br][br]
-## Higher = wings rest more open.
-@export var wing_open_rest_pose : float = 0.0;
+## Resting wing openness (0–1) when turn, pitch, and tilt are all neutral, snapped to the nearest ladder state.[br][br]
+## Default 2.0/3.0 = Open — the pod's resting look (matches the scene's Idle_Open autoplay on both wing players).[br][br]
+## Higher = wings rest more open (1.0 = Full); lower = more closed (0.0 = Closed).
+@export var wing_open_rest_pose : float = 2.0 / 3.0;
 
 @export_category("Chassis Sway")
 ## Meters the chassis (Blade) body swings LATERALLY (left/right) during a turn — the chariot body swings further than the engines, which stay centered in view.[br][br]
@@ -220,14 +248,14 @@ enum BoostState { NORMAL, CHARGING, READY, BOOSTING, OVERHEAT }
 @export var camera_tilt_follow : float = 0.4;
 
 @export_category("Boost")
-## Flat speed in m/s instantly added to velocity on boost activation.[br][br]
+## Flat speed in mph instantly added to velocity on boost activation.[br][br]
 ## Intended purpose: the immediate "kick" at the moment boost starts.[br][br]
 ## Higher = bigger instant surge; lower = gentler ramp into boost.
-@export var boost_thrust : float = 15.0;
-## Speed bonus in m/s added ON TOP of max_speed as the acceleration target while boosting.[br][br]
+@export var boost_thrust : float = 33.6;
+## Speed bonus in mph added ON TOP of max_speed as the acceleration target while boosting.[br][br]
 ## Intended purpose: the boost top speed is additive (max_speed + boost_speed_bonus), so boosts stay proportionally meaningful regardless of the pod's base speed.[br][br]
 ## Higher = faster boost top speed (bigger gap over cruise); lower = boost barely exceeds normal max speed. Must be > 0 to be faster than cruising.
-@export var boost_speed_bonus : float = 50.0;
+@export var boost_speed_bonus : float = 111.8;
 ## Heat units gained per second while boosting (heat goes 0 → 1, 1 = overheat).[br][br]
 ## Intended purpose: how long a boost lasts before forcing overheat.[br][br]
 ## Higher = boost overheats faster (shorter bursts); lower = longer sustained boost.
@@ -324,9 +352,8 @@ var _wing_right_base_pos : Vector3;
 var _wing_left_lift : float = 0.0;
 var _wing_right_lift : float = 0.0;
 var _wing_nose : float = 0.0;
-var _wing_open : float = 0.0;
-var _wing_open_last_dir : int = 0;
-var _wing_cur_anim : StringName = &"";
+var _wing_open : Array[float] = [0.0, 0.0];
+var _wing_cur_anim : Array[StringName] = [&"", &""];
 var _wing_left_particles : Array[GPUParticles3D] = [];
 var _wing_right_particles : Array[GPUParticles3D] = [];
 var _blade_base_pos : Vector3;
@@ -337,6 +364,11 @@ var _ground_normal : Vector3 = Vector3.UP;
 var _camera_mount_base_rot : Vector3;
 var _camera_mount_base_pos : Vector3;
 var _hover_time : float = 0.0;
+var _max_speed_mps : float = 0.0;
+var _boost_thrust_mps : float = 0.0;
+var _boost_speed_bonus_mps : float = 0.0;
+var _pitch_speed_gain_mps : float = 0.0;
+var _ground_align : float = 0.0;
 
 func _ready():
 	if Engine.is_editor_hint():
@@ -365,14 +397,18 @@ func _ready():
 		_wing_right_particles = _get_wing_particles(wing_right);
 		if not RightWing_anim_player.has_animation_library("Arcwing"):
 			RightWing_anim_player.add_animation_library("Arcwing", ARCWING_ANIMS);
-	_wing_open = wing_open_rest_pose;
-	_apply_wing_open();
+	_apply_wing_open_rest();
 	if blade:
 		_blade_base_pos = blade.position;
 		_blade_base_rot = blade.rotation;
 	if camera_mount:
 		_camera_mount_base_rot = camera_mount.rotation;
 		_camera_mount_base_pos = camera_mount.position;
+	_max_speed_mps = max_speed * MPH_TO_MPS;
+	_boost_thrust_mps = boost_thrust * MPH_TO_MPS;
+	_boost_speed_bonus_mps = boost_speed_bonus * MPH_TO_MPS;
+	_pitch_speed_gain_mps = pitch_speed_gain * MPH_TO_MPS;
+	floor_max_angle = deg_to_rad(floor_slope_max_deg);
 	EventBus.boost_state_changed.emit(BoostState.NORMAL);
 	_last_boost_state = BoostState.NORMAL;
 
@@ -396,15 +432,16 @@ func _physics_process(delta):
 	_boost_process(delta, input);
 	_update_thruster_particles(input);
 	
+	up_direction = _ground_normal if _grounded else Vector3.UP;
 	move_and_slide();
 
 	_handle_collisions();
 
 	_current_speed = velocity.length();
-	EventBus.speed_updated.emit(_current_speed, _speed_fraction());
+	EventBus.speed_updated.emit(_current_speed * MPS_TO_MPH, _speed_fraction());
 	DebugManager.update_property("~~_ Movement _~~", "~~~~~~~~~~~~");
-	DebugManager.update_property("Current Speed", String.num(_current_speed, 2));
-	DebugManager.update_property("Speed Fraction", String.num(_current_speed / max_speed, 2));
+	DebugManager.update_property("Current Speed", String.num(_current_speed * MPS_TO_MPH, 2));
+	DebugManager.update_property("Speed Fraction", String.num(_speed_fraction(), 2));
 	DebugManager.update_property("Vertical Speed", String.num(velocity.y, 2));
 	DebugManager.update_property("Hover Height", String.num(hover_height, 2));
 	DebugManager.update_property("Heading (deg)", String.num(rad_to_deg(_yaw), 2));
@@ -470,8 +507,10 @@ func _hover(delta, input):
 		_grounded = grounded;
 	if normal_count > 0:
 		_ground_normal = (normal_sum / float(normal_count)).normalized();
-	else:
-		_ground_normal = Vector3.UP;
+
+	var align_target : float = ground_align if _grounded else 0.0;
+	var align_rate : float = ground_align_speed if _grounded else ground_align_release_speed;
+	_ground_align = lerp(_ground_align, align_target, align_rate * delta);
 
 	var eff_gravity : float = gravity;
 	if input.pitch > 0.0:
@@ -481,28 +520,26 @@ func _hover(delta, input):
 	velocity.y -= eff_gravity * delta;
 
 	if max_upward > -999.0:
-		if max_upward > velocity.y:
-			velocity.y = lerp(velocity.y, max_upward, 4.0 * delta);
+		var spring_dir : Vector3 = _ground_normal if _grounded else Vector3.UP;
+		var along : float = velocity.dot(spring_dir);
+		if max_upward > along:
+			velocity += spring_dir * (lerp(along, max_upward, 4.0 * delta) - along);
 
 func _accelerate(delta, input):
-	if input.accelerate <= 0.0:
-		return;
-
-	var target = max_speed;
-	if _boost_state == BoostState.BOOSTING:
-		target = max_speed + boost_speed_bonus;
-
-	var nose_bias : float = -input.pitch;
-	target += nose_bias * pitch_speed_gain;
-	target = maxf(target, 0.0);
-	var accel : float = acceleration_factor * (1.0 + nose_bias * pitch_accel_gain);
-
 	var forward = _flat_forward();
 	var current_forward_speed = velocity.dot(forward);
-
-	var target_forward = input.accelerate * target;
-	var new_forward_speed = lerp(current_forward_speed, target_forward, accel * delta);
-
+	var new_forward_speed : float = current_forward_speed;
+	if input.accelerate > 0.0:
+		var target = _max_speed_mps;
+		if _boost_state == BoostState.BOOSTING:
+			target = _max_speed_mps + _boost_speed_bonus_mps;
+		var nose_bias : float = -input.pitch;
+		target += nose_bias * _pitch_speed_gain_mps;
+		target = maxf(target, 0.0);
+		var accel : float = acceleration_factor * (1.0 + nose_bias * pitch_accel_gain);
+		new_forward_speed = lerp(current_forward_speed, input.accelerate * target, accel * delta);
+	else:
+		new_forward_speed = lerp(current_forward_speed, 0.0, idle_deceleration * delta);
 	velocity += forward * (new_forward_speed - current_forward_speed);
 
 func _brake(delta, input):
@@ -539,19 +576,30 @@ func _steer(delta, input):
 	velocity = forward * forward_speed + lat * (1.0 - min(1.0, traction * delta));
 
 func _build_pod_basis():
-	var pod_basis : Basis = Basis(Vector3.UP, _yaw);
+	var up : Vector3 = Vector3.UP;
+	if _ground_align > 0.001:
+		up = up.slerp(_ground_normal, _ground_align);
+	var pod_basis : Basis = _basis_from_forward_up(_flat_forward(), up);
 	pod_basis = pod_basis.rotated(pod_basis.z, _roll + _tilt_roll);
 	pod_basis = pod_basis.rotated(pod_basis.x, _pitch);
 	global_transform.basis = pod_basis;
 
+## Builds a right-handed basis whose +Y (pod up) is `up` and whose -Z (pod forward)
+## is `fwd`. `fwd` and `up` must be near-orthogonal — _flat_forward() builds its
+## forward from the same up vector, so this holds by construction.
+func _basis_from_forward_up(fwd : Vector3, up : Vector3) -> Basis:
+	var right : Vector3 = fwd.cross(up).normalized();
+	var forward : Vector3 = up.cross(right).normalized();
+	return Basis(right, up, -forward);
+
 func _tilt(delta, input):
-	var speed_frac = clampf(_current_speed / max_speed, 0.0, 1.0) if max_speed > 0.0 else 0.0;
+	var speed_frac = clampf(_current_speed / _max_speed_mps, 0.0, 1.0) if _max_speed_mps > 0.0 else 0.0;
 	var tilt_mix : float = clampf(abs(input.tilt), 0.0, 1.0);
 	var target_roll = -input.steer * deg_to_rad(max_bank_angle) * speed_frac * (1.0 - tilt_mix);
 	_roll = lerp(_roll, target_roll, bank_speed * delta);
 
 	var target_tilt_roll = 0.0;
-	if _current_speed >= tilt_min_speed_fraction * max_speed:
+	if _current_speed >= tilt_min_speed_fraction * _max_speed_mps:
 		target_tilt_roll = -input.tilt * deg_to_rad(tilt_max_angle);
 	_tilt_roll = lerp(_tilt_roll, target_tilt_roll, tilt_speed * delta);
 
@@ -569,10 +617,6 @@ func _tilt(delta, input):
 func _pitch_attitude_target() -> float:
 	var max_arc : float = deg_to_rad(arc_pitch_max_deg);
 	if _grounded:
-		var local_n : Vector3 = global_transform.basis.inverse() * _ground_normal;
-		local_n = local_n.normalized();
-		if local_n.length() > 0.001:
-			return clampf(atan2(local_n.z, local_n.y) * terrain_pitch_align, -max_arc, max_arc);
 		return 0.0;
 	return clampf(velocity.y * deg_to_rad(arc_pitch_gain), -max_arc, max_arc);
 
@@ -679,57 +723,101 @@ const WING_OPEN_IDLE_ANIMS : Array[StringName] = [
 	&"Arcwing/Idle_Full",
 ];
 const WING_OPEN_SNAP_EPS : float = 0.04;
+const WING_OPEN_STATE_CLOSED : float = 0.0;
+const WING_OPEN_STATE_SQUEEZED : float = 1.0 / 3.0;
+const WING_OPEN_STATE_OPEN : float = 2.0 / 3.0;
+const WING_OPEN_STATE_FULL : float = 1.0;
 
-func _wing_open_anim(delta, input):
+func _apply_wing_open_rest() -> void:
+	var rest_state : int = clampi(roundi(wing_open_rest_pose * 3.0), 0, 3);
+	var rest : float = rest_state / 3.0;
+	_wing_open = [rest, rest];
+	_wing_cur_anim = [&"", &""];
+	if LeftWing_anim_player:
+		LeftWing_anim_player.play(WING_OPEN_IDLE_ANIMS[rest_state]);
+	if RightWing_anim_player:
+		RightWing_anim_player.play(WING_OPEN_IDLE_ANIMS[rest_state]);
+	_wing_cur_anim = [WING_OPEN_IDLE_ANIMS[rest_state], WING_OPEN_IDLE_ANIMS[rest_state]];
+
+func _wing_open_anim(delta, input) -> void:
 	if not LeftWing_anim_player or not RightWing_anim_player:
 		return;
 	var turn_frac : float = 0.0;
 	if max_turn_rate > 0.0:
 		turn_frac = clampf(_yaw_rate / max_turn_rate, -1.0, 1.0);
-	var target : float = clampf(absf(turn_frac) * wing_open_turn_gain + input.pitch * wing_open_pitch_gain, 0.0, 1.0);
-	_wing_open = move_toward(_wing_open, target, wing_open_step_rate * delta);
-	var dir : int = 0;
-	if target > _wing_open + 0.0001:
-		dir = 1;
-	elif target < _wing_open - 0.0001:
-		dir = -1;
-	if dir != _wing_open_last_dir:
-		_wing_open_last_dir = dir;
-		_wing_cur_anim = &"";
-	_apply_wing_open();
+	var turn_mag : float = clampf(absf(turn_frac) * wing_open_turn_gain, 0.0, 1.0);
+	var pitch : float = input.pitch if not _grounded else 0.0;
+	var grounded_nose_down : float = 0.0;
+	if _grounded and input.pitch < 0.0:
+		grounded_nose_down = minf(-input.pitch, 1.0);
+	var boost_open : float = -1.0;
+	match _boost_state:
+		BoostState.CHARGING, BoostState.READY:
+			boost_open = WING_OPEN_STATE_SQUEEZED;
+		BoostState.BOOSTING:
+			boost_open = WING_OPEN_STATE_FULL;
+	var tilt_frac : float = 0.0;
+	if tilt_max_angle > 0.0:
+		tilt_frac = clampf(absf(_tilt_roll) / deg_to_rad(tilt_max_angle), 0.0, 1.0);
+	var left_inside : bool = turn_frac > 0.0;
+	var left_air_side : bool = input.tilt > 0.0;
+	var left_target : float = _wing_open_target(left_inside, left_air_side, pitch, turn_mag, tilt_frac, grounded_nose_down, boost_open);
+	var right_target : float = _wing_open_target(not left_inside, not left_air_side, pitch, turn_mag, tilt_frac, grounded_nose_down, boost_open);
+	_drive_wing_open(0, LeftWing_anim_player, left_target, delta);
+	_drive_wing_open(1, RightWing_anim_player, right_target, delta);
 
-func _apply_wing_open():
-	var state : int = clampi(roundi(_wing_open * 3.0), 0, 3);
-	if _wing_open_last_dir == 0:
-		if absf(_wing_open - state / 3.0) <= WING_OPEN_SNAP_EPS:
-			_wing_open = state / 3.0;
-			_play_both_wing_anims(WING_OPEN_IDLE_ANIMS[state]);
+func _wing_open_target(is_inside : bool, is_air_side : bool, pitch : float, turn_mag : float, tilt_frac : float, grounded_nose_down : float = 0.0, boost_open : float = -1.0) -> float:
+	if boost_open >= 0.0:
+		return boost_open;
+	var target : float = wing_open_rest_pose;
+	if pitch > 0.0:
+		target = lerp(target, WING_OPEN_STATE_FULL, minf(pitch * wing_open_pitch_gain, 1.0));
+	elif pitch < 0.0:
+		target = lerp(target, WING_OPEN_STATE_CLOSED, minf(-pitch * wing_open_pitch_gain, 1.0));
+	if grounded_nose_down > 0.0:
+		target = minf(target, lerp(wing_open_rest_pose, WING_OPEN_STATE_SQUEEZED, grounded_nose_down));
+	if turn_mag > 0.0:
+		if is_inside:
+			target = minf(target, lerp(wing_open_rest_pose, WING_OPEN_STATE_SQUEEZED, turn_mag));
 		else:
-			if _wing_cur_anim.is_empty():
-				_play_both_wing_anims(&"Arcwing/Opening");
-			_seek_both_wing_anims(_wing_open * 1.5);
+			target = maxf(target, lerp(wing_open_rest_pose, WING_OPEN_STATE_FULL, turn_mag));
+	if tilt_frac > 0.0:
+		if is_air_side:
+			target = maxf(target, lerp(wing_open_rest_pose, WING_OPEN_STATE_FULL, tilt_frac));
+		else:
+			target = minf(target, lerp(wing_open_rest_pose, WING_OPEN_STATE_CLOSED, tilt_frac));
+	return clampf(target, 0.0, 1.0);
+
+func _drive_wing_open(idx : int, player : AnimationPlayer, target : float, delta : float) -> void:
+	if not player:
 		return;
-	if _wing_open_last_dir > 0:
-		_play_both_wing_anims(&"Arcwing/Opening");
-		_seek_both_wing_anims(_wing_open * 1.5);
+	var dir : int = 0;
+	if target > _wing_open[idx] + 0.0001:
+		dir = 1;
+	elif target < _wing_open[idx] - 0.0001:
+		dir = -1;
+	_wing_open[idx] = move_toward(_wing_open[idx], target, wing_open_step_rate * delta);
+	var cur : float = _wing_open[idx];
+	var state : int = clampi(roundi(cur * 3.0), 0, 3);
+	var opening : bool = dir > 0;
+	if dir == 0:
+		if absf(cur - state / 3.0) <= WING_OPEN_SNAP_EPS:
+			_wing_open[idx] = state / 3.0;
+			_play_wing_anim(player, idx, WING_OPEN_IDLE_ANIMS[state]);
+			return;
+		opening = true;
+	if opening:
+		_play_wing_anim(player, idx, &"Arcwing/Opening");
+		player.seek(cur * 1.5, true);
 	else:
-		_play_both_wing_anims(&"Arcwing/Closing");
-		_seek_both_wing_anims((1.0 - _wing_open) * 1.5);
+		_play_wing_anim(player, idx, &"Arcwing/Closing");
+		player.seek((1.0 - cur) * 1.5, true);
 
-func _play_both_wing_anims(anim : StringName):
-	if anim == _wing_cur_anim:
+func _play_wing_anim(player : AnimationPlayer, idx : int, anim : StringName) -> void:
+	if anim == _wing_cur_anim[idx]:
 		return;
-	_wing_cur_anim = anim;
-	if LeftWing_anim_player:
-		LeftWing_anim_player.play(anim);
-	if RightWing_anim_player:
-		RightWing_anim_player.play(anim);
-
-func _seek_both_wing_anims(time : float):
-	if LeftWing_anim_player:
-		LeftWing_anim_player.seek(time, true);
-	if RightWing_anim_player:
-		RightWing_anim_player.seek(time, true);
+	_wing_cur_anim[idx] = anim;
+	player.play(anim);
 
 func _boost_process(delta, input):
 	match _boost_state:
@@ -747,10 +835,15 @@ func _boost_process(delta, input):
 			_cool_after_overheat(delta);
 
 func _speed_fraction() -> float:
-	return _current_speed / max_speed if max_speed > 0 else 0.0;
+	return _current_speed / _max_speed_mps if _max_speed_mps > 0 else 0.0;
 
 func _flat_forward() -> Vector3:
-	return Vector3(-sin(_yaw), 0.0, -cos(_yaw));
+	var fwd : Vector3 = Vector3(-sin(_yaw), 0.0, -cos(_yaw));
+	if _ground_align > 0.001:
+		var up : Vector3 = Vector3.UP.slerp(_ground_normal, _ground_align);
+		var right : Vector3 = fwd.cross(up).normalized();
+		fwd = up.cross(right).normalized();
+	return fwd;
 
 func _flat_right() -> Vector3:
 	return Vector3(cos(_yaw), 0.0, -sin(_yaw));
@@ -801,7 +894,7 @@ func _reset_charge_level():
 func _start_boost():
 	_change_boost_state(BoostState.BOOSTING);
 	_reset_charge_level();
-	velocity += _flat_forward() * boost_thrust;
+	velocity += _flat_forward() * _boost_thrust_mps;
 
 func _boost_update(delta, input):
 	_heat += heat_rate * delta;
@@ -812,7 +905,7 @@ func _boost_update(delta, input):
 	if not input.accelerate or input.brake > 0.0:
 		_end_boost();
 		return;
-	if _current_speed < max_speed * boost_end_speed_fraction:
+	if _current_speed < _max_speed_mps * boost_end_speed_fraction:
 		_end_boost();
 
 func _overheat():
@@ -885,7 +978,7 @@ func _handle_collisions():
 		var head_on : float = clampf(_flat_forward().dot(normal), 0.0, 1.0);
 		var angle_frac : float = 1.0 - acos(head_on) / deg_to_rad(90.0);
 		var angle_factor : float = _curve_angle(angle_frac);
-		var speed_frac : float = clampf(speed / max_speed, 0.0, 1.0);
+		var speed_frac : float = clampf(speed / _max_speed_mps, 0.0, 1.0);
 		var penalty : float = lerp(wall_impact_loss, wall_brute_force_loss, speed_frac);
 		velocity *= 1.0 - (penalty * angle_factor * into_frac);
 

@@ -1,28 +1,22 @@
 [gd_resource type="StandardMaterial3D" format=3 uid="uid://da2vnkdxlmtun"]
 
-[ext_resource type="Shader" uid="uid://blskc02bu0atp" path="res://Content/Materials/Shaders/scifi_shield.gdshader" id="1_8qij5"]
+[ext_resource type="Material" uid="uid://cpxhtrlwby40o" path="res://Content/Materials/M_sci-fi_shield.tres" id="1_pbjmb"]
+[ext_resource type="Shader" uid="uid://ddsjgbss604wb" path="res://Content/Materials/Shaders/hexagons.gdshader" id="2_jghp7"]
 
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_me8r6"]
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_ws02n"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_jqsw7"]
 render_priority = 0
-shader = ExtResource("1_8qij5")
-shader_parameter/shield_color = Color(0.21568628, 0.78431374, 1, 1)
-shader_parameter/noise_texture = SubResource("NoiseTexture2D_me8r6")
-shader_parameter/wave_height = 0.050000002375
-shader_parameter/wave_speed = Vector2(0.1, 0.05)
-shader_parameter/fresnel_power = 10.0
-shader_parameter/center_visibility = 1.0
-shader_parameter/hit_position = Vector3(0, 0, 0)
-shader_parameter/hit_progress = 0.0
-shader_parameter/hit_color = Color(1, 1, 1, 1)
-shader_parameter/hit_radius = 1.535
-shader_parameter/hit_ring_width = 0.40000000596048
-shader_parameter/hit_push_force = 0.67
+next_pass = ExtResource("1_pbjmb")
+shader = ExtResource("2_jghp7")
+shader_parameter/scale = 8.0
+shader_parameter/radius = 1.0
+shader_parameter/offset = -0.092
+shader_parameter/power = 1.77
+shader_parameter/hide_incomplete = false
+shader_parameter/color = Color(0, 0.6, 1, 1)
 
 [resource]
 resource_name = "M_glowy_pink"
-next_pass = SubResource("ShaderMaterial_ws02n")
+next_pass = SubResource("ShaderMaterial_jqsw7")
 transparency = 1
 cull_mode = 2
 albedo_color = Color(1, 1, 1, 0.003921569)

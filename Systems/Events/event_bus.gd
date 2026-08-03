@@ -9,8 +9,8 @@ extends Node
 ## boost_charge_updated comes from ADR 0002.
 
 # Pod → HUD / systems
-## Current pod speed in m/s plus its fraction of max_speed (0..1, may exceed 1 during boost).
-signal speed_updated(speed_mps: float, speed_fraction: float)
+## Current pod speed in mph plus its fraction of max_speed (0..1, may exceed 1 during boost).
+signal speed_updated(speed_mph: float, speed_fraction: float)
 
 ## Pod boost state (BoostState enum). Emitted on every state change.
 signal boost_state_changed(state : PodController.BoostState)
