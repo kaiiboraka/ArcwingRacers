@@ -56,7 +56,8 @@ extends Control
 @onready var bar_fill_uncharged: BarFill = $bar/bar_fill_uncharged
 @onready var bar_fill_charging: BarFill = $bar/bar_fill_charging
 @onready var bar_fill_boost: BarFill = $bar/bar_fill_BOOST
-@onready var bar_black_background: TextureRect = $bar/bar_Background_Black
+@onready var bar_black_background_1: BarBackground = $bar/bar_Background_Black1
+@onready var bar_black_background_2: BarBackground = $bar/bar_Background_Black2
 
 var _boost_state : PodController.BoostState = PodController.BoostState.NORMAL;
 
@@ -72,7 +73,11 @@ func _ready():
 	_update_speed_display();
 	_apply_light_state(light_color, _light_alpha_for(light_color));
 	if not Engine.is_editor_hint():
-		bar_black_background.visible = false;
+		bar_fill_uncharged.visible = true;
+		bar_black_background_1.visible = false;
+		bar_fill_charging.visible = true;
+		bar_black_background_2.visible = false;
+		bar_fill_boost.visible = true;
 		bar_fill_charging.set_percentage(0.0);
 		bar_fill_boost.set_percentage(0.0);
 		EventBus.speed_updated.connect(_on_speed_updated);
@@ -97,19 +102,21 @@ func _on_boost_state_changed(state : PodController.BoostState) -> void:
 		PodController.BoostState.NORMAL, PodController.BoostState.OVERHEAT:
 			bar_fill_charging.set_percentage(0.0);
 			bar_fill_boost.set_percentage(0.0);
-			bar_black_background.visible = false;
+			bar_black_background_1.visible = false;
+			bar_black_background_2.visible = false;
 		PodController.BoostState.CHARGING:
-			#bar_fill_uncharged.set_percentage(100.0);
 			bar_fill_boost.set_percentage(0.0);
-			bar_black_background.visible = false;
+			bar_black_background_1.visible = true;
+			bar_black_background_2.visible = false;
 		PodController.BoostState.READY:
-			#bar_fill_uncharged.set_percentage(100.0);
 			bar_fill_boost.set_percentage(0.0);
-			bar_black_background.visible = false;
+			bar_black_background_1.visible = true;
+			bar_black_background_2.visible = false;
 		PodController.BoostState.BOOSTING:
 			bar_fill_uncharged.set_percentage(100.0);
-			bar_fill_charging.set_percentage(0.0);
-			bar_black_background.visible = true;
+			bar_fill_charging.set_percentage(100.0);
+			bar_black_background_1.visible = true;
+			bar_black_background_2.visible = true;
 
 ## EventBus handler: boost charge gauge 0-100. Fills the charging bar while charging
 ## (and holds it full once READY); charge resets on boost start and normal return.

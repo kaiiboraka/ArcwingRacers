@@ -2,13 +2,14 @@
 
 [ext_resource type="Script" uid="uid://dle5po3ynm52x" path="res://Systems/Pod/PodController.gd" id="1_u7qc7"]
 [ext_resource type="PackedScene" uid="uid://bp3uugks55bqc" path="res://Content/Models/SM_blade_chassis.glb" id="2_n3i6r"]
-[ext_resource type="PackedScene" uid="uid://cb5f2o34h6kep" path="res://Content/Models/SM_Wing_Left.glb" id="3_88bc5"]
-[ext_resource type="PackedScene" uid="uid://0bkf4l28oghc" path="res://Content/Models/SM_Wing_Right.glb" id="4_oi37l"]
+[ext_resource type="PackedScene" uid="uid://m2hxigeogptj" path="res://Content/Models/SM_Wing_Left.fbx" id="3_ye1aq"]
 [ext_resource type="Shader" uid="uid://blskc02bu0atp" path="res://Content/Materials/Shaders/scifi_shield.gdshader" id="4_yluh8"]
 [ext_resource type="Script" uid="uid://csjccrhj5wnx7" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="5_88bc5"]
 [ext_resource type="Texture2D" uid="uid://bqjcfy3r4wu7n" path="res://Content/Textures/sparkle-64.png" id="5_s6lsw"]
+[ext_resource type="AnimationLibrary" uid="uid://cgtuava0eboh0" path="res://Content/Animations/Arcwing.res" id="6_hbc1n"]
 [ext_resource type="Material" uid="uid://duxq3pnf3teob" path="res://Content/Materials/M_energy_beam.tres" id="6_kfdho"]
 [ext_resource type="Script" uid="uid://8umksf8e80fw" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="6_oi37l"]
+[ext_resource type="PackedScene" uid="uid://dpsx2ifg3gxsk" path="res://Content/Models/SM_Wing_Right.fbx" id="6_ye1aq"]
 [ext_resource type="Script" uid="uid://b8hhnqsugykly" path="res://addons/phantom_camera/scripts/resources/camera_3d_resource.gd" id="7_oi37l"]
 [ext_resource type="Script" uid="uid://ccmiitq0sdh7j" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_noise_emitter_3d.gd" id="8_r5cq2"]
 [ext_resource type="Script" uid="uid://cuffvge5ad4aa" path="res://addons/phantom_camera/scripts/resources/phantom_camera_noise_3d.gd" id="9_jtdhu"]
@@ -181,15 +182,15 @@ transform = Transform3D(0.99998814, 0, 0.004869938, 0, 1, 0, -0.004869938, 0, 0.
 [node name="Blade_Right_Rig_Marker3D" type="Marker3D" parent="Visuals/Blade" unique_id=1797028546]
 transform = Transform3D(0.99998814, 1.9984014e-15, 0.004869937, 2.7755576e-16, 1, -7.1054274e-15, -0.004869937, 0, 0.99998814, 1.5839, 1.5253999, 0.1524)
 
-[node name="Wing_Left" parent="Visuals" unique_id=1985836831 instance=ExtResource("3_88bc5")]
+[node name="Wing_Left" parent="Visuals" unique_id=506060661 instance=ExtResource("3_ye1aq")]
 unique_name_in_owner = true
-transform = Transform3D(0.99998814, 0, 0.004869938, 0, 1, 0, -0.004869938, 0, 0.99998814, -3.383, 3, -3.341)
+transform = Transform3D(0.9999863, 0, 0.005235964, 0, 1, 0, -0.005235964, 0, 0.9999863, -2.963, 2.157, -5.481)
 
 [node name="Wing_Left_Rig_Marker3D" type="Marker3D" parent="Visuals/Wing_Left" unique_id=880731773]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.233, -0.88039994, -2.2221)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.85827565, -0.02678895, -0.07119465)
 
 [node name="Ring_GPUParticles3D" type="GPUParticles3D" parent="Visuals/Wing_Left" unique_id=2123462299]
-transform = Transform3D(0.99999994, 0, 0, 0, 1, 0, 0, 0, 0.99999994, 0, -1.817929, -0.4244988)
+transform = Transform3D(0.9999881, 0, 0.0048699374, 0, 1, 0, -0.0048699374, 0, 0.9999881, -0.412, -0.975, 1.716)
 amount = 4
 lifetime = 0.5
 preprocess = 0.1
@@ -199,7 +200,7 @@ process_material = SubResource("ParticleProcessMaterial_wj5hs")
 draw_pass_1 = SubResource("TorusMesh_js2ye")
 
 [node name="Dots_GPUParticles3D" type="GPUParticles3D" parent="Visuals/Wing_Left" unique_id=1908679443]
-transform = Transform3D(0.99999994, 0, 4.656613e-10, 0, 1, 0, -4.656613e-10, 0, 0.99999994, 0, -1.817929, -0.4244988)
+transform = Transform3D(0.9999881, 0, 0.004869938, 0, 1, 0, -0.004869938, 0, 0.9999881, -0.412, -0.975, 1.716)
 amount = 128
 lifetime = 2.0
 preprocess = 0.05
@@ -208,15 +209,19 @@ transform_align = 3
 process_material = SubResource("ParticleProcessMaterial_ye1aq")
 draw_pass_1 = SubResource("QuadMesh_yluh8")
 
-[node name="Wing_Right" parent="Visuals" unique_id=1921984725 instance=ExtResource("4_oi37l")]
+[node name="AnimationPlayer2" type="AnimationPlayer" parent="Visuals/Wing_Left" unique_id=2113279145]
+libraries/Arcwing = ExtResource("6_hbc1n")
+autoplay = &"Arcwing/Idle_Open"
+
+[node name="Wing_Right" parent="Visuals" unique_id=1688076220 instance=ExtResource("3_ye1aq")]
 unique_name_in_owner = true
-transform = Transform3D(0.9998157, 1.3357019e-08, 0.019197434, -1.2336771e-08, 1, -5.3263534e-08, -0.019197434, 5.3016883e-08, 0.9998157, 3.383, 3, -3.341)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, 1, 2.963, 2.157, -5.481)
 
-[node name="Wing_Right_Rig_Marker3D" type="Marker3D" parent="Visuals/Wing_Right" unique_id=1142002588]
-transform = Transform3D(0.99989736, -1.2336767e-08, -0.014328167, 1.3098673e-08, 1, 5.3081298e-08, 0.014328167, -5.3263534e-08, 0.99989736, -1.2329998, -0.8804, -2.2220998)
+[node name="Wing_Right_Rig_Marker3D" type="Marker3D" parent="Visuals/Wing_Right" unique_id=1663029497]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.85827565, -0.02678895, -0.07119465)
 
-[node name="Ring_GPUParticles3D" type="GPUParticles3D" parent="Visuals/Wing_Right" unique_id=932579097]
-transform = Transform3D(0.99999994, 0, 0, 0, 1, 0, 0, 0, 0.99999994, 0, -1.817929, -0.4244988)
+[node name="Ring_GPUParticles3D" type="GPUParticles3D" parent="Visuals/Wing_Right" unique_id=1477544193]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4122908, -0.9749291, 1.7155793)
 amount = 4
 lifetime = 0.5
 preprocess = 0.1
@@ -225,8 +230,39 @@ local_coords = true
 process_material = SubResource("ParticleProcessMaterial_wj5hs")
 draw_pass_1 = SubResource("TorusMesh_js2ye")
 
-[node name="Dots_GPUParticles3D" type="GPUParticles3D" parent="Visuals/Wing_Right" unique_id=1545177457]
-transform = Transform3D(0.99999994, 0, 4.656613e-10, 0, 1, 0, -4.656613e-10, 0, 0.99999994, 0, -1.817929, -0.4244988)
+[node name="Dots_GPUParticles3D" type="GPUParticles3D" parent="Visuals/Wing_Right" unique_id=1706038116]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4122908, -0.9749291, 1.7155793)
+amount = 128
+lifetime = 2.0
+preprocess = 0.05
+fixed_fps = 120
+transform_align = 3
+process_material = SubResource("ParticleProcessMaterial_ye1aq")
+draw_pass_1 = SubResource("QuadMesh_yluh8")
+
+[node name="AnimationPlayer2" type="AnimationPlayer" parent="Visuals/Wing_Right" unique_id=1001003511]
+libraries/Arcwing = ExtResource("6_hbc1n")
+
+[node name="Wing_Right_old" parent="Visuals" unique_id=54933638 instance=ExtResource("6_ye1aq")]
+unique_name_in_owner = true
+transform = Transform3D(0.9999863, 0, -0.005235964, 0, 1, 0, 0.005235964, 0, 0.9999863, 2.9625597, 2.157, -5.481)
+visible = false
+
+[node name="Wing_Right_Rig_Marker3D" type="Marker3D" parent="Visuals/Wing_Right_old" unique_id=1142002588]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.85499096, -0.037400007, -0.058019638)
+
+[node name="Ring_GPUParticles3D" type="GPUParticles3D" parent="Visuals/Wing_Right_old" unique_id=932579097]
+transform = Transform3D(0.99999994, 0, 0, 0, 1, 0, 0, 0, 0.99999994, 0.4122908, -0.9749291, 1.7155793)
+amount = 4
+lifetime = 0.5
+preprocess = 0.1
+randomness = 0.25
+local_coords = true
+process_material = SubResource("ParticleProcessMaterial_wj5hs")
+draw_pass_1 = SubResource("TorusMesh_js2ye")
+
+[node name="Dots_GPUParticles3D" type="GPUParticles3D" parent="Visuals/Wing_Right_old" unique_id=1545177457]
+transform = Transform3D(0.99999994, 0, 0, 0, 1, 0, 0, 0, 0.99999994, 0.4122908, -0.9749291, 1.7155793)
 amount = 128
 lifetime = 2.0
 preprocess = 0.05
@@ -250,7 +286,7 @@ mesh = SubResource("QuadMesh_wj5hs")
 [node name="Beam_Right" type="Node3D" parent="Visuals/Rigs" unique_id=703320893 node_paths=PackedStringArray("point_a", "point_b")]
 script = ExtResource("10_beam3d")
 point_a = NodePath("../../Blade/Blade_Right_Rig_Marker3D")
-point_b = NodePath("../../Wing_Right/Wing_Right_Rig_Marker3D")
+point_b = NodePath("../../Wing_Right_old/Wing_Right_Rig_Marker3D")
 
 [node name="BeamMesh" type="MeshInstance3D" parent="Visuals/Rigs/Beam_Right" unique_id=1138210408]
 transform = Transform3D(-0.094108276, 0.99556196, 0, -0.10579244, -0.010000327, 0.994338, 0.9899251, 0.09357543, 0.10626405, 1.907, 1.846, -2.733)

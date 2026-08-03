@@ -23,6 +23,8 @@
 [ext_resource type="Texture2D" uid="uid://v5xomu8we2cr" path="res://UI/HUD/Spedometer/Light/glowy bits/glass tubes.PNG" id="13_idu3f"]
 [ext_resource type="Script" uid="uid://cnsm6aoqauks8" path="res://UI/HUD/Spedometer/bar_fill.gd" id="14_05qfl"]
 [ext_resource type="Texture2D" uid="uid://ib6q27hiabd5" path="res://UI/HUD/Spedometer/Light/glowy bits/Light.PNG" id="14_rfeee"]
+[ext_resource type="Script" uid="uid://b24agln62a6pu" path="res://UI/HUD/Spedometer/bar_background.gd" id="16_3lkq3"]
+[ext_resource type="Texture2D" uid="uid://di4xty8it7yth" path="res://UI/HUD/Spedometer/bar_warm.PNG" id="16_idu3f"]
 [ext_resource type="Texture2D" uid="uid://c57q3n8e0o51l" path="res://UI/HUD/Spedometer/bar_temp.png" id="16_rfeee"]
 [ext_resource type="Texture2D" uid="uid://ddo43tir6dqsb" path="res://UI/HUD/Spedometer/Light/glowy bits/Light_Blend.png" id="18_w1j0j"]
 
@@ -66,7 +68,7 @@ shader_parameter/mask = SubResource("ViewportTexture_rfeee")
 layout_mode = 3
 anchors_preset = 0
 script = ExtResource("1_8fiw5")
-speed_mph = 9.0
+current_speed = null
 light_transition_duration = 0.25
 
 [node name="Number Frame" type="Control" parent="." unique_id=136675151]
@@ -199,6 +201,7 @@ texture = ExtResource("7_qw2y1")
 stretch_mode = 4
 
 [node name="bar_backdrop" type="TextureRect" parent="bar" unique_id=2053949708]
+modulate = Color(0.2281442, 0.6958279, 0.74142987, 1)
 texture_filter = 1
 layout_mode = 0
 offset_top = -5.0
@@ -207,6 +210,7 @@ offset_bottom = 221.0
 texture = ExtResource("10_8fiw5")
 
 [node name="bar_fill_uncharged" type="TextureRect" parent="bar" unique_id=2062978745 node_paths=PackedStringArray("_viewport", "_fill_1", "_fill_2", "_fill_3") groups=["borders"]]
+visible = false
 texture_filter = 1
 texture_repeat = 1
 material = SubResource("ShaderMaterial_ekksg")
@@ -251,8 +255,8 @@ texture_filter = 1
 texture_repeat = 1
 offset_left = 137.0
 offset_top = 110.0
-offset_right = 236.99997
-offset_bottom = 310.00024
+offset_right = 236.99992
+offset_bottom = 309.99994
 rotation = 0.7853982
 texture = SubResource("CanvasTexture_3xeic")
 
@@ -263,12 +267,24 @@ texture_filter = 1
 texture_repeat = 1
 offset_left = 48.0
 offset_top = 22.0
-offset_right = 123.000275
-offset_bottom = 222.00008
+offset_right = 123.00026
+offset_bottom = 222.0
 rotation = -0.7853982
 texture = SubResource("CanvasTexture_3xeic")
 
-[node name="bar_fill_charging" type="TextureRect" parent="bar" unique_id=1813769123 node_paths=PackedStringArray("_viewport", "_fill_1", "_fill_2", "_fill_3") groups=["borders"]]
+[node name="bar_Background_Black1" type="TextureRect" parent="bar" unique_id=515344680]
+visible = false
+modulate = Color(0, 0, 0, 1)
+texture_filter = 1
+layout_mode = 0
+offset_top = -5.0
+offset_right = 180.0
+offset_bottom = 221.0
+texture = ExtResource("11_aisgu")
+script = ExtResource("16_3lkq3")
+
+[node name="bar_fill_charging" type="TextureRect" parent="bar" unique_id=1813769123 node_paths=PackedStringArray("_viewport", "_fill_1", "_fill_2", "_fill_3", "_background") groups=["borders"]]
+visible = false
 texture_filter = 1
 texture_repeat = 1
 material = SubResource("ShaderMaterial_qw2y1")
@@ -276,7 +292,7 @@ layout_mode = 0
 offset_top = -5.0
 offset_right = 180.0
 offset_bottom = 221.0
-texture = ExtResource("12_qw2y1")
+texture = ExtResource("16_idu3f")
 expand_mode = 1
 stretch_mode = 4
 script = ExtResource("14_05qfl")
@@ -284,7 +300,7 @@ _viewport = NodePath("Charging_MaskViewport")
 _fill_1 = NodePath("Charging_MaskViewport/ch_fill1")
 _fill_2 = NodePath("Charging_MaskViewport/ch_fill2")
 _fill_3 = NodePath("Charging_MaskViewport/ch_fill3")
-current_percentage = 100.0
+_background = NodePath("../bar_Background_Black1")
 
 [node name="Charging_MaskViewport" type="SubViewport" parent="bar/bar_fill_charging" unique_id=1172241175]
 transparent_bg = true
@@ -299,38 +315,38 @@ self_modulate = Color(0, 1, 1, 1)
 show_behind_parent = true
 texture_filter = 1
 texture_repeat = 1
-offset_left = -26.0
+offset_left = -75.0
 offset_top = 189.0
-offset_right = 49.0
 offset_bottom = 314.0
-rotation = -0.34906584
 texture = SubResource("CanvasTexture_3xeic")
 
 [node name="ch_fill2" type="TextureRect" parent="bar/bar_fill_charging/Charging_MaskViewport" unique_id=1269925067 groups=["borders"]]
+visible = false
 self_modulate = Color(1, 1, 0, 1)
+show_behind_parent = true
+texture_filter = 1
+texture_repeat = 1
+offset_left = 53.0
+offset_top = 193.0
+offset_right = 152.99988
+offset_bottom = 393.0001
+rotation = 1.2217305
+texture = SubResource("CanvasTexture_3xeic")
+
+[node name="ch_fill3" type="TextureRect" parent="bar/bar_fill_charging/Charging_MaskViewport" unique_id=1986069604 groups=["borders"]]
+visible = false
+self_modulate = Color(1, 0, 1, 1)
 show_behind_parent = true
 texture_filter = 1
 texture_repeat = 1
 offset_left = 137.0
 offset_top = 110.0
-offset_right = 237.00021
-offset_bottom = 309.99982
+offset_right = 212.0
+offset_bottom = 310.0
 rotation = 0.7853982
 texture = SubResource("CanvasTexture_3xeic")
 
-[node name="ch_fill3" type="TextureRect" parent="bar/bar_fill_charging/Charging_MaskViewport" unique_id=1986069604 groups=["borders"]]
-self_modulate = Color(1, 0, 1, 1)
-show_behind_parent = true
-texture_filter = 1
-texture_repeat = 1
-offset_left = 48.0
-offset_top = 22.0
-offset_right = 123.000244
-offset_bottom = 222.00021
-rotation = -0.7853982
-texture = SubResource("CanvasTexture_3xeic")
-
-[node name="bar_Background_Black" type="TextureRect" parent="bar" unique_id=834492428]
+[node name="bar_Background_Black2" type="TextureRect" parent="bar" unique_id=834492428]
 visible = false
 modulate = Color(0, 0, 0, 1)
 texture_filter = 1
@@ -339,8 +355,10 @@ offset_top = -5.0
 offset_right = 180.0
 offset_bottom = 221.0
 texture = ExtResource("11_aisgu")
+script = ExtResource("16_3lkq3")
 
-[node name="bar_fill_BOOST" type="TextureRect" parent="bar" unique_id=2036702803 node_paths=PackedStringArray("_viewport", "_fill_1", "_fill_2", "_fill_3") groups=["borders"]]
+[node name="bar_fill_BOOST" type="TextureRect" parent="bar" unique_id=2036702803 node_paths=PackedStringArray("_viewport", "_fill_1", "_fill_2", "_fill_3", "_background") groups=["borders"]]
+visible = false
 texture_filter = 1
 texture_repeat = 1
 material = SubResource("ShaderMaterial_idu3f")
@@ -356,7 +374,8 @@ _viewport = NodePath("Boost_MaskViewport")
 _fill_1 = NodePath("Boost_MaskViewport/bs_fill1")
 _fill_2 = NodePath("Boost_MaskViewport/bs_fill2")
 _fill_3 = NodePath("Boost_MaskViewport/bs_fill3")
-current_percentage = 100.0
+_background = NodePath("../bar_Background_Black2")
+bg_darken_rate = 2.0
 
 [node name="Boost_MaskViewport" type="SubViewport" parent="bar/bar_fill_BOOST" unique_id=1917081234]
 transparent_bg = true
@@ -371,35 +390,35 @@ self_modulate = Color(0, 1, 1, 1)
 show_behind_parent = true
 texture_filter = 1
 texture_repeat = 1
-offset_left = -26.0
+offset_left = -75.0
 offset_top = 189.0
-offset_right = 49.0
 offset_bottom = 314.0
-rotation = -0.34906584
 texture = SubResource("CanvasTexture_3xeic")
 
 [node name="bs_fill2" type="TextureRect" parent="bar/bar_fill_BOOST/Boost_MaskViewport" unique_id=1683886368 groups=["borders"]]
+visible = false
 self_modulate = Color(1, 1, 0, 1)
+show_behind_parent = true
+texture_filter = 1
+texture_repeat = 1
+offset_left = 53.0
+offset_top = 193.0
+offset_right = 152.99951
+offset_bottom = 392.99884
+rotation = 1.2217305
+texture = SubResource("CanvasTexture_3xeic")
+
+[node name="bs_fill3" type="TextureRect" parent="bar/bar_fill_BOOST/Boost_MaskViewport" unique_id=1542973341 groups=["borders"]]
+visible = false
+self_modulate = Color(1, 0, 1, 1)
 show_behind_parent = true
 texture_filter = 1
 texture_repeat = 1
 offset_left = 137.0
 offset_top = 110.0
-offset_right = 236.99948
-offset_bottom = 309.99884
+offset_right = 211.99998
+offset_bottom = 309.99976
 rotation = 0.7853982
-texture = SubResource("CanvasTexture_3xeic")
-
-[node name="bs_fill3" type="TextureRect" parent="bar/bar_fill_BOOST/Boost_MaskViewport" unique_id=1542973341 groups=["borders"]]
-self_modulate = Color(1, 0, 1, 1)
-show_behind_parent = true
-texture_filter = 1
-texture_repeat = 1
-offset_left = 48.0
-offset_top = 22.0
-offset_right = 122.99991
-offset_bottom = 221.99966
-rotation = -0.7853982
 texture = SubResource("CanvasTexture_3xeic")
 
 [node name="old backup bar fill2" type="TextureRect" parent="bar" unique_id=702500798 groups=["borders"]]

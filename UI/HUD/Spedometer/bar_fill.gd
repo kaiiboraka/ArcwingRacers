@@ -12,6 +12,8 @@ const PIXEL_RANGE : float = 260.0;
 @export var _fill_1 : TextureRect;
 @export var _fill_2 : TextureRect;
 @export var _fill_3 : TextureRect;
+@export var _background : BarBackground;
+@export var bg_darken_rate : float = 1;
 
 @export_range(0, 100, 0.01) var current_percentage : float = 0.0:
 	set(value):
@@ -22,6 +24,11 @@ const PIXEL_RANGE : float = 260.0;
 ## External input in percent (0-100) — call from a system signal.
 func set_percentage(pct : float) -> void:
 	current_percentage = pct;
+	if (_background):
+		#print("bar name:", get_path())
+		#print("current percentage:", current_percentage)
+		#print("bg mod:", _background.modulate)
+		_background._set_percentage(current_percentage * bg_darken_rate);
 
 func _ready():
 	
