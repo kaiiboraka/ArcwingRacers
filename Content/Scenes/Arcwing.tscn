@@ -209,7 +209,7 @@ transform_align = 3
 process_material = SubResource("ParticleProcessMaterial_ye1aq")
 draw_pass_1 = SubResource("QuadMesh_yluh8")
 
-[node name="AnimationPlayer2" type="AnimationPlayer" parent="Visuals/Wing_Left" unique_id=2113279145]
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Visuals/Wing_Left" unique_id=2113279145]
 libraries/Arcwing = ExtResource("6_hbc1n")
 autoplay = &"Arcwing/Idle_Open"
 
@@ -240,8 +240,9 @@ transform_align = 3
 process_material = SubResource("ParticleProcessMaterial_ye1aq")
 draw_pass_1 = SubResource("QuadMesh_yluh8")
 
-[node name="AnimationPlayer2" type="AnimationPlayer" parent="Visuals/Wing_Right" unique_id=1001003511]
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Visuals/Wing_Right" unique_id=1001003511]
 libraries/Arcwing = ExtResource("6_hbc1n")
+autoplay = &"Arcwing/Idle_Open"
 
 [node name="Wing_Right_old" parent="Visuals" unique_id=54933638 instance=ExtResource("6_ye1aq")]
 unique_name_in_owner = true
@@ -331,6 +332,9 @@ collision_mask = 7
 look_at_damping = true
 look_at_damping_value = 0.1
 noise_emitter_layer = 1
+align_transform_with_view = Callable()
+align_position_with_view = Callable()
+align_rotation_with_view = Callable()
 draw_follow_line = true
 metadata/_custom_type_script = "uid://csjccrhj5wnx7"
 

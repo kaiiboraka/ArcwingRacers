@@ -46,3 +46,5 @@ Tasks explicitly deferred to a later session — not urgent, not forgotten. Remo
 
 - **Spedometer 3-bar fill (bar_fill_uncharged / bar_fill_charging / bar_fill_BOOST + bar_Background_Black).** 🔄 In progress — scene structure + onready refs are in `spedometer.tscn`/`spedometer.gd`; the driving logic (replace the dead single `bar_fill` call, drive each bar from boost state, toggle black bg during BOOSTING, reset appropriately) is the current task. Spec in the bar-fill-v2 section of `agent-context/plans/plan-spedometer-eventbus-hookup.md`. Also fixed the stale signal name: the bus declares `boost_state_changed`, not `boost_light_changed` (PodController:348 + spedometer `_ready()` connect updated).
 
+- **Wing open/close animations (state ladder + turn/pitch drive).** 🔄 In progress — drive the 4-idle + 2-transition library (`Arcwing.res`) from `|turn_frac|` and nose pitch (nose-up opens more, nose-down closes), one state per 0.5s, rendered through the transition animations. Plan: `agent-context/plans/plan-wing-open-animations.md`.
+

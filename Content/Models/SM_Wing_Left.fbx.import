@@ -56,6 +56,11 @@ _subresources={
 "use_external/fallback_path": "res://Content/Materials/M_sail.tres",
 "use_external/path": "uid://da2vnkdxlmtun"
 }
+},
+"nodes": {
+"PATH:AnimationPlayer": {
+"import/skip_import": true
+}
 }
 }
 fbx/importer=0

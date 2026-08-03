@@ -16,6 +16,8 @@ enum WallAngleCurve {
 	SMOOTHSTEP,
 }
 
+enum BoostState { NORMAL, CHARGING, READY, BOOSTING, OVERHEAT }
+
 @export_category("Hover")
 ## Hover altitude in meters — the distance the pod's raycasts try to hold above ground.[br][br]
 ## Intended purpose: the pod hovers on springs toward this height above the surface.[br][br]
@@ -176,6 +178,23 @@ enum WallAngleCurve {
 ## Higher = wings snap into position; lower = wings lag and float toward position.
 @export var wing_tilt_speed : float = 6.0;
 
+## Fraction (0–1) of the ramped turn rate (|yaw_rate / max_turn_rate|) that drives the mechanical wing open/close ladder (Closed → Squeezed → Open → Full).[br][br]
+## Intended purpose: turns open the wings (docs: open as turn rate rises, hold while the turn is held, decay back to closed on neutral).[br][br]
+## Higher = gentler turns reach deeper into the ladder (1.0 = full turn → fully open); lower = only hard turns open them.
+@export var wing_open_turn_gain : float = 1.0;
+## Fraction (0–1) of the pitch input added to wing openness (nose UP opens more, nose DOWN closes more).[br][br]
+## Intended purpose: the new requirement — pulling the nose up spreads the wings, pushing it down tucks them, layered on top of the turn-driven openness.[br][br]
+## Higher = pitch dominates the ladder; lower = turns stay the primary driver. Negative flips the direction if in-game feel is inverted.
+@export var wing_open_pitch_gain : float = 0.4;
+## How fast wing openness (0–1) travels toward its target each second.[br][br]
+## Intended purpose: cadence of the open/close ladder — the library cycles one state per 0.5s, so the default 2.0/3.0 crosses one state boundary (1/3 openness) every half second.[br][br]
+## Higher = snappier ladder; lower = slower, floatier transitions.
+@export var wing_open_step_rate : float = 0.6667;
+## Resting wing openness (0–1) when turn and pitch are both neutral, snapped to the nearest ladder state.[br][br]
+## Intended purpose: choose the parked look — 0.0 = Closed, 0.5 ≈ Open, 1.0 = Full (the scene currently autoplays Idle_Open, so a slightly-open rest may match the intended look).[br][br]
+## Higher = wings rest more open.
+@export var wing_open_rest_pose : float = 0.0;
+
 @export_category("Chassis Sway")
 ## Meters the chassis (Blade) body swings LATERALLY (left/right) during a turn — the chariot body swings further than the engines, which stay centered in view.[br][br]
 ## Intended purpose: sell the weight-shift of the body against the turn while the engines hold station; applied to the Blade visual node only. While the pod is tilted, the same turn-driven shift redirects to the pod's up/down axis (read as left/right in world once rolled over) so the chassis moves with the tilt turn instead of fighting it.[br][br]
@@ -281,9 +300,9 @@ enum WallAngleCurve {
 @onready var blade : Node3D = $Visuals/Blade;
 @onready var pcam_noise_emitter : PhantomCameraNoiseEmitter3D = $CameraMount/PhantomCameraNoiseEmitter3D;
 @onready var hover_raycasts_root : Node3D = %HoverRaycasts;
-
-enum BoostState { NORMAL, CHARGING, READY, BOOSTING, OVERHEAT }
-#enum BoostLight -{ OFF, CHARGING, YELLOW, RED }
+@onready var LeftWing_anim_player: AnimationPlayer = $Visuals/Wing_Left/AnimationPlayer
+@onready var RightWing_anim_player: AnimationPlayer = $Visuals/Wing_Right/AnimationPlayer
+const ARCWING_ANIMS : AnimationLibrary = preload("uid://cgtuava0eboh0")
 
 var _boost_state : BoostState = BoostState.NORMAL;
 var _charge : float = 0.0;
@@ -305,6 +324,9 @@ var _wing_right_base_pos : Vector3;
 var _wing_left_lift : float = 0.0;
 var _wing_right_lift : float = 0.0;
 var _wing_nose : float = 0.0;
+var _wing_open : float = 0.0;
+var _wing_open_last_dir : int = 0;
+var _wing_cur_anim : StringName = &"";
 var _wing_left_particles : Array[GPUParticles3D] = [];
 var _wing_right_particles : Array[GPUParticles3D] = [];
 var _blade_base_pos : Vector3;
@@ -335,10 +357,16 @@ func _ready():
 		_wing_left_base_rot = wing_left.rotation;
 		_wing_left_base_pos = wing_left.position;
 		_wing_left_particles = _get_wing_particles(wing_left);
+		if not LeftWing_anim_player.has_animation_library("Arcwing"):
+			LeftWing_anim_player.add_animation_library("Arcwing", ARCWING_ANIMS);
 	if wing_right:
 		_wing_right_base_rot = wing_right.rotation;
 		_wing_right_base_pos = wing_right.position;
 		_wing_right_particles = _get_wing_particles(wing_right);
+		if not RightWing_anim_player.has_animation_library("Arcwing"):
+			RightWing_anim_player.add_animation_library("Arcwing", ARCWING_ANIMS);
+	_wing_open = wing_open_rest_pose;
+	_apply_wing_open();
 	if blade:
 		_blade_base_pos = blade.position;
 		_blade_base_rot = blade.rotation;
@@ -360,6 +388,7 @@ func _physics_process(delta):
 	_steer(delta, input);
 	_tilt(delta, input);
 	_wing_tilt(delta, input);
+	_wing_open_anim(delta, input);
 	_chassis_sway(delta, input);
 	_debug_hover_tuning();
 	_build_pod_basis();
@@ -643,31 +672,64 @@ func _update_thruster_particles(input):
 		particles.amount_ratio = _speed_fraction();
 		particles.emitting = emitting;
 
-# TODO(mechanical-opening): Provisional per-wing mechanical opening infrastructure.
-# When turn rate rises, fins/vents/wings open; they hold while the turn is held and decay
-# back to closed when the stick returns to neutral. Each part tracks its own openness.
-# Independent of the wing vertical shift above. Uncomment when the visual parts exist.
-#
-# Future exports:
-#   @export var wing_left_open: Node3D
-#   @export var wing_right_open: Node3D
-#   @export var open_angle: float = 12.0
-#   @export var open_rate: float = 4.0
-#   @export var close_rate: float = 4.0
-#
-# Future per-part state:
-#   var _open_l: float = 0.0
-#   var _open_r: float = 0.0
-#
-# Hook point (call from _physics_process next to _wing_tilt):
-#   func _mechanical_open(delta, input):
-#       var target = clampf(abs(input.steer), 0.0, 1.0)
-#       var rate_l = open_rate if target > _open_l else close_rate
-#       var rate_r = open_rate if target > _open_r else close_rate
-#       _open_l = lerp(_open_l, target, rate_l * delta)
-#       _open_r = lerp(_open_r, target, rate_r * delta)
-#       if wing_left_open: wing_left_open.rotation.z = _open_l * deg_to_rad(open_angle)
-#       if wing_right_open: wing_right_open.rotation.z = _open_r * deg_to_rad(open_angle)
+const WING_OPEN_IDLE_ANIMS : Array[StringName] = [
+	&"Arcwing/Idle_Closed",
+	&"Arcwing/Idle_Squeezed",
+	&"Arcwing/Idle_Open",
+	&"Arcwing/Idle_Full",
+];
+const WING_OPEN_SNAP_EPS : float = 0.04;
+
+func _wing_open_anim(delta, input):
+	if not LeftWing_anim_player or not RightWing_anim_player:
+		return;
+	var turn_frac : float = 0.0;
+	if max_turn_rate > 0.0:
+		turn_frac = clampf(_yaw_rate / max_turn_rate, -1.0, 1.0);
+	var target : float = clampf(absf(turn_frac) * wing_open_turn_gain + input.pitch * wing_open_pitch_gain, 0.0, 1.0);
+	_wing_open = move_toward(_wing_open, target, wing_open_step_rate * delta);
+	var dir : int = 0;
+	if target > _wing_open + 0.0001:
+		dir = 1;
+	elif target < _wing_open - 0.0001:
+		dir = -1;
+	if dir != _wing_open_last_dir:
+		_wing_open_last_dir = dir;
+		_wing_cur_anim = &"";
+	_apply_wing_open();
+
+func _apply_wing_open():
+	var state : int = clampi(roundi(_wing_open * 3.0), 0, 3);
+	if _wing_open_last_dir == 0:
+		if absf(_wing_open - state / 3.0) <= WING_OPEN_SNAP_EPS:
+			_wing_open = state / 3.0;
+			_play_both_wing_anims(WING_OPEN_IDLE_ANIMS[state]);
+		else:
+			if _wing_cur_anim.is_empty():
+				_play_both_wing_anims(&"Arcwing/Opening");
+			_seek_both_wing_anims(_wing_open * 1.5);
+		return;
+	if _wing_open_last_dir > 0:
+		_play_both_wing_anims(&"Arcwing/Opening");
+		_seek_both_wing_anims(_wing_open * 1.5);
+	else:
+		_play_both_wing_anims(&"Arcwing/Closing");
+		_seek_both_wing_anims((1.0 - _wing_open) * 1.5);
+
+func _play_both_wing_anims(anim : StringName):
+	if anim == _wing_cur_anim:
+		return;
+	_wing_cur_anim = anim;
+	if LeftWing_anim_player:
+		LeftWing_anim_player.play(anim);
+	if RightWing_anim_player:
+		RightWing_anim_player.play(anim);
+
+func _seek_both_wing_anims(time : float):
+	if LeftWing_anim_player:
+		LeftWing_anim_player.seek(time, true);
+	if RightWing_anim_player:
+		RightWing_anim_player.seek(time, true);
 
 func _boost_process(delta, input):
 	match _boost_state:
