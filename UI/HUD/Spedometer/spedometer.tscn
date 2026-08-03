@@ -30,31 +30,31 @@
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_wj5hs"]
 
-[sub_resource type="ViewportTexture" id="ViewportTexture_ekksg"]
+[sub_resource type="ViewportTexture" id="ViewportTexture_rfeee"]
 viewport_path = NodePath("bar/bar_fill_uncharged/Uncharged_MaskViewport")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ekksg"]
 resource_local_to_scene = true
 shader = ExtResource("13_ccgid")
-shader_parameter/mask = SubResource("ViewportTexture_ekksg")
+shader_parameter/mask = SubResource("ViewportTexture_rfeee")
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_3xeic"]
 
-[sub_resource type="ViewportTexture" id="ViewportTexture_idu3f"]
+[sub_resource type="ViewportTexture" id="ViewportTexture_3lkq3"]
 viewport_path = NodePath("bar/bar_fill_charging/Charging_MaskViewport")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_qw2y1"]
 resource_local_to_scene = true
 shader = ExtResource("13_ccgid")
-shader_parameter/mask = SubResource("ViewportTexture_idu3f")
+shader_parameter/mask = SubResource("ViewportTexture_3lkq3")
 
-[sub_resource type="ViewportTexture" id="ViewportTexture_rfeee"]
+[sub_resource type="ViewportTexture" id="ViewportTexture_5imyu"]
 viewport_path = NodePath("bar/bar_fill_BOOST/Boost_MaskViewport")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_idu3f"]
 resource_local_to_scene = true
 shader = ExtResource("13_ccgid")
-shader_parameter/mask = SubResource("ViewportTexture_rfeee")
+shader_parameter/mask = SubResource("ViewportTexture_5imyu")
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_6bhdk"]
 
@@ -68,7 +68,6 @@ shader_parameter/mask = SubResource("ViewportTexture_rfeee")
 layout_mode = 3
 anchors_preset = 0
 script = ExtResource("1_8fiw5")
-current_speed = null
 light_transition_duration = 0.25
 
 [node name="Number Frame" type="Control" parent="." unique_id=136675151]
@@ -130,7 +129,7 @@ theme_override_fonts/normal_font = ExtResource("4_w1j0j")
 theme_override_fonts/bold_font = ExtResource("5_8fiw5")
 theme_override_fonts/italics_font = ExtResource("6_qw2y1")
 theme_override_font_sizes/normal_font_size = 64
-text = "9"
+text = "0"
 fit_content = true
 scroll_active = false
 autowrap_mode = 0

@@ -185,6 +185,7 @@ metadata/_custom_type_script = "uid://dkyobseeo0c7n"
 
 [node name="Arcwing" parent="." unique_id=612795873 instance=ExtResource("1_26u2p")]
 max_speed = 200.0
+repair_tick_rate = 0.1
 
 [node name="Rocks" type="Node3D" parent="." unique_id=2066083512]
 

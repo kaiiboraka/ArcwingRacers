@@ -27,3 +27,9 @@ signal boost_started()
 signal boost_ended()
 signal overheat_started()
 signal overheat_ended()
+
+# Repair
+## Hold-to-repair entered / exited. Repair is NOT a boost state (it can overlap with
+## OVERHEAT, so it gets its own channel) — HUD subscribes to tint the light.
+signal repair_started()
+signal repair_ended()

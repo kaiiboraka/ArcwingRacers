@@ -18,6 +18,11 @@ enum WallAngleCurve {
 
 enum BoostState { NORMAL, CHARGING, READY, BOOSTING, OVERHEAT }
 
+## Physical parts of the pod that repair cycles through, most-damaged first. Health is a
+## 0..1 fraction per part; damage is not implemented yet, so parts start at full health and
+## only an active overheat engages repair today.
+const POD_PART_NAMES : Array[String] = ["Left Wing", "Right Wing", "Chassis", "Engines"];
+
 ## mph ↔ m/s conversion factor (1 m/s = 2.23694 mph). Speed exports are authored in
 ## mph; they are converted to m/s once at startup so physics stay in meters.
 const MPS_TO_MPH : float = 2.23694;
@@ -287,6 +292,30 @@ const MPH_TO_MPS : float = 1.0 / MPS_TO_MPH;
 ## Higher = more forgiving (charge while the stick is up to that many degrees off straight-forward); lower = stricter (only near-perfect full-forward counts — recommended so turning out of the charge window).
 @export var charge_pitch_deadzone_deg : float = 10.0;
 
+@export_category("Repair")
+## Speed cap as a fraction of base max speed while actively repairing — the pod is slowed
+## massively to focus on the repair, and cannot charge or boost until it stops.[br][br]
+## Intended purpose: repairing is a committed, high-priority action with a real cost (EP1R hold-R).
+## Higher = less of a slowdown; lower = more punishing.
+@export var repair_speed_cap_fraction : float = 0.75;
+## How hard active repair bleeds forward speed down to the speed cap each second.[br][br]
+## Intended purpose: the "slows you massively" feel — higher scrubs speed faster on entering repair.
+@export var repair_deceleration : float = 3.0;
+## Fraction of a part's max health restored per second while repairing the most-damaged part.[br][br]
+## Intended purpose: how long each part takes to bring back over the done threshold. Maps to the
+## Repair Rate stat slot eventually (0.10–1.00 per pod-stats.md).
+@export var repair_tick_rate : float = 0.5;
+## Minimum health fraction a part must reach before repair stops targeting it and moves on.[br][br]
+## Intended purpose: repair restores parts to a drivable state, not to 100% (EP1R yellow-only restoration).
+@export var repair_done_threshold : float = 0.8;
+## Total repair effort required to clear an overheat — an amount that needs working down to
+## zero, reduced a bit at a time by each second of holding Player_Repair. Progress is kept
+## between presses; releasing mid-way doesn't reset it, only more holding chips at it.[br][br]
+## Intended purpose: since damage is not implemented yet, overheat is the only repairable
+## condition — working the repair effort down to 0 extinguishes it (parts otherwise stay at
+## full health).
+@export var repair_overheat_time : float = 3.0;
+
 @export_category("Gravity")
 ## Base downward acceleration in m/s² applied every physics frame; the hover springs lift against it.[br][br]
 ## Intended purpose: the reference gravity that sets how hard the springs must push to hold hover height.[br][br]
@@ -369,6 +398,9 @@ var _boost_thrust_mps : float = 0.0;
 var _boost_speed_bonus_mps : float = 0.0;
 var _pitch_speed_gain_mps : float = 0.0;
 var _ground_align : float = 0.0;
+var _part_health : Array[float] = [];
+var _repairing : bool = false;
+var _overheat_repair_remaining : float = 0.0;
 
 func _ready():
 	if Engine.is_editor_hint():
@@ -409,6 +441,9 @@ func _ready():
 	_boost_speed_bonus_mps = boost_speed_bonus * MPH_TO_MPS;
 	_pitch_speed_gain_mps = pitch_speed_gain * MPH_TO_MPS;
 	floor_max_angle = deg_to_rad(floor_slope_max_deg);
+	_part_health.resize(POD_PART_NAMES.size());
+	for i in _part_health.size():
+		_part_health[i] = 1.0;
 	EventBus.boost_state_changed.emit(BoostState.NORMAL);
 	_last_boost_state = BoostState.NORMAL;
 
@@ -429,6 +464,7 @@ func _physics_process(delta):
 	_debug_hover_tuning();
 	_build_pod_basis();
 	_counter_rotate_camera(delta);
+	_repair_process(delta, input);
 	_boost_process(delta, input);
 	_update_thruster_particles(input);
 	
@@ -529,7 +565,15 @@ func _accelerate(delta, input):
 	var forward = _flat_forward();
 	var current_forward_speed = velocity.dot(forward);
 	var new_forward_speed : float = current_forward_speed;
-	if input.accelerate > 0.0:
+	if _repairing:
+		var cap : float = _max_speed_mps * repair_speed_cap_fraction;
+		if current_forward_speed > cap:
+			new_forward_speed = lerp(current_forward_speed, cap, repair_deceleration * delta);
+		elif input.accelerate > 0.0:
+			new_forward_speed = lerp(current_forward_speed, cap, acceleration_factor * delta);
+		else:
+			new_forward_speed = lerp(current_forward_speed, 0.0, idle_deceleration * delta);
+	elif input.accelerate > 0.0:
 		var target = _max_speed_mps;
 		if _boost_state == BoostState.BOOSTING:
 			target = _max_speed_mps + _boost_speed_bonus_mps;
@@ -849,11 +893,15 @@ func _flat_right() -> Vector3:
 	return Vector3(cos(_yaw), 0.0, -sin(_yaw));
 
 func _normal_boost(delta, input):
+	if _repairing:
+		return;
 	_cool_heat(delta);
 	if _charging_input(input) and _speed_fraction() >= min_charge_speed_fraction:
 		_change_boost_state(BoostState.CHARGING);
 
 func _charge_boost(delta, input):
+	if _repairing:
+		return;
 	if not _charging_input(input) or _speed_fraction() < min_charge_speed_fraction:
 		_charge = 0.0;
 		_emit_charge_if_changed();
@@ -878,6 +926,8 @@ func _cool_heat(delta):
 	_emit_heat_if_changed();
 
 func _ready_boost(delta, input):
+	if _repairing:
+		return;
 	if not _charging_input(input) or _speed_fraction() < min_charge_speed_fraction:
 		_charge = 0.0;
 		_emit_charge_if_changed();
@@ -909,6 +959,7 @@ func _boost_update(delta, input):
 		_end_boost();
 
 func _overheat():
+	_overheat_repair_remaining = repair_overheat_time;
 	_change_boost_state(BoostState.OVERHEAT);
 
 func _end_boost():
@@ -922,6 +973,7 @@ func _cool_after_overheat(delta):
 	_heat = max(_heat, 0.0);
 	_emit_heat_if_changed();
 	if _heat <= 0.0:
+		_overheat_repair_remaining = repair_overheat_time;
 		_change_boost_state(BoostState.NORMAL);
 		_reset_charge_level();
 
@@ -957,6 +1009,86 @@ func _emit_heat_if_changed() -> void:
 	if pct != _last_heat_pct:
 		_last_heat_pct = pct;
 		EventBus.boost_heat_updated.emit(float(pct));
+
+## --- Repair (provisional — damage is not implemented yet) ---
+
+## Hold-to-repair driver. Only enters active repair when there is actually something to
+## repair (an active overheat, or any part below repair_done_threshold); pressing the
+## button otherwise does nothing, and releasing always drops out of repair.
+## Flipped via _set_repairing so the EventBus repair_started/repair_ended pair fires
+## exactly once per repair session.
+func _set_repairing(active : bool) -> void:
+	if _repairing == active:
+		return;
+	_repairing = active;
+	if active:
+		EventBus.repair_started.emit();
+	else:
+		EventBus.repair_ended.emit();
+
+func _repair_process(delta, input) -> void:
+	if not input.repair_held:
+		if _repairing:
+			_set_repairing(false);
+		return;
+	if _repairing:
+		_apply_repair(delta);
+		return;
+	if _can_repair():
+		if _boost_state == BoostState.CHARGING or _boost_state == BoostState.READY:
+			_change_boost_state(BoostState.NORMAL);
+			_reset_charge_level();
+		elif _boost_state == BoostState.BOOSTING:
+			_end_boost();
+		_set_repairing(true);
+		_apply_repair(delta);
+
+func _can_repair() -> bool:
+	if _boost_state == BoostState.OVERHEAT:
+		return true;
+	return _most_damaged_part() >= 0;
+
+## Index of the lowest-health part still below repair_done_threshold, or -1 if all are done.
+func _most_damaged_part() -> int:
+	var worst : int = -1;
+	var lowest : float = repair_done_threshold;
+	for i in _part_health.size():
+		var f : float = _part_health[i];
+		if f < lowest:
+			lowest = f;
+			worst = i;
+	return worst;
+
+## Applies one frame of repair: works the overheat-repair effort down (each second of
+## holding reduces the remaining amount a bit) until it hits zero and the overheat clears,
+## otherwise repairs the most-damaged part one at a time. Auto-stops when nothing is
+## repairable anymore.
+func _apply_repair(delta) -> void:
+	var did_work : bool = false;
+	if _boost_state == BoostState.OVERHEAT:
+		_overheat_repair_remaining = maxf(_overheat_repair_remaining - delta, 0.0);
+		if _overheat_repair_remaining <= 0.0:
+			_overheat_repair_remaining = repair_overheat_time;
+			_heat = 0.0;
+			_change_boost_state(BoostState.NORMAL);
+			_reset_charge_level();
+			_emit_heat_if_changed();
+		did_work = true;
+	else:
+		var idx : int = _most_damaged_part();
+		if idx >= 0:
+			_part_health[idx] = minf(_part_health[idx] + repair_tick_rate * delta, 1.0);
+			did_work = true;
+	if not did_work:
+		_set_repairing(false);
+		_overheat_repair_remaining = repair_overheat_time;
+
+## Public hook for the future damage system: reduce a part's health by `fraction` of max
+## (0..1). When any part drops below repair_done_threshold, holding Player_Repair engages.
+func apply_part_damage(part_index : int, fraction : float) -> void:
+	if part_index < 0 or part_index >= _part_health.size():
+		return;
+	_part_health[part_index] = clampf(_part_health[part_index] - fraction, 0.0, 1.0);
 
 func _handle_collisions():
 	for i in get_slide_collision_count():

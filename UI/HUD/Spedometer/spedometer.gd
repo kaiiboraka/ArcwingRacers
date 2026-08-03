@@ -31,7 +31,7 @@ extends Control
 		_update_speed_display();
 
 ## Source-of-truth light color driven by external input (boost state, etc.).[br]
-## Drives LightTexture + GlassTubes self_modulate, PointLight2D color alpha (fades toward 0 as the color approaches white, with a dip on each change), and LargeIcon_ALPHA self-modulate alpha (same white-falloff curve).[br]
+## Drives LightTexture + GlassTubes self_modulate (tint plus the same white-falloff alpha as the point light, so the texture smoothly fades out as the color approaches white and back in with any real light), PointLight2D color alpha (fades toward 0 as the color approaches white, with a dip on each change), and LargeIcon_ALPHA self-modulate alpha (same white-falloff curve).[br]
 ## PointLight2D's color dims proportionally to how far the color is from white — pure white = fully off, saturated/dark colors = near full strength. Energy is left to the scene (does not get touched).<br>
 ## Tool-editable: tweak in the inspector to preview the whole light reaction.
 @export var light_color : Color = Color.WHITE:
@@ -46,6 +46,15 @@ extends Control
 	set(v):
 		light_transition_duration = v;
 
+## Light color shown while the pod is actively repairing. Repair is its own channel
+## (not a boost state — it can overlap with OVERHEAT), so this overrides the boost light
+## for as long as repair is held and reverts to the boost-state color on release.
+@export var repair_light_color : Color = Color(1.0, 0.55, 0.0):
+	set(v):
+		repair_light_color = v;
+		if _repairing:
+			light_color = v;
+
 @onready var _speed_label : RichTextLabel = %SpeedText_RichTextLabel;
 @onready var _light_texture : TextureRect = %LightTexture;
 @onready var _glass_tubes : TextureRect = %LightTexture/GlassTubes;
@@ -59,6 +68,7 @@ extends Control
 @onready var bar_black_background_2: BarBackground = $bar/bar_Background_Black2
 
 var _boost_state : PodController.BoostState = PodController.BoostState.NORMAL;
+var _repairing : bool = false;
 
 var _display_color : Color = Color.WHITE;
 var _transition_from : Color = Color.WHITE;
@@ -83,6 +93,8 @@ func _ready():
 		EventBus.boost_state_changed.connect(_on_boost_state_changed);
 		EventBus.boost_charge_updated.connect(_on_boost_charge_updated);
 		EventBus.boost_heat_updated.connect(_on_boost_heat_updated);
+		EventBus.repair_started.connect(_on_repair_started);
+		EventBus.repair_ended.connect(_on_repair_ended);
 
 ## EventBus handler: pod speed in mph + fraction of max_speed. Feeds the speed number
 ## and, while the pod is not charging or boosting, the uncharged bar.
@@ -92,10 +104,11 @@ func _on_speed_updated(speed_mph : float, speed_fraction : float) -> void:
 	#if _boost_state == PodController.BoostState.NORMAL or _boost_state == PodController.BoostState.OVERHEAT:
 
 ## EventBus handler: BoostState (NORMAL, CHARGING, READY, BOOSTING, OVERHEAT). Sets the
-## light color and drives the three stacked bars + black background.
+## light color (unless repair is overriding it) and drives the three stacked bars + black background.
 func _on_boost_state_changed(state : PodController.BoostState) -> void:
 	_boost_state = state;
-	light_color = _boost_light_color(state);
+	if not _repairing:
+		light_color = _boost_light_color(state);
 	match state:
 		PodController.BoostState.NORMAL, PodController.BoostState.OVERHEAT:
 			bar_fill_charging.set_percentage(0.0);
@@ -128,6 +141,17 @@ func _on_boost_heat_updated(heat_pct : float) -> void:
 	if _boost_state == PodController.BoostState.BOOSTING:
 		bar_fill_boost.set_percentage(heat_pct);
 
+## EventBus handler: repair engaged — the repair light color takes over the boost light
+## and stays put even if boost state changes meanwhile.
+func _on_repair_started() -> void:
+	_repairing = true;
+	light_color = repair_light_color;
+
+## EventBus handler: repair released/auto-stopped — restore the boost-state light color.
+func _on_repair_ended() -> void:
+	_repairing = false;
+	light_color = _boost_light_color(_boost_state);
+
 func _boost_light_color(state : PodController.BoostState) -> Color:
 	match state:
 		PodController.BoostState.NORMAL:
@@ -139,7 +163,7 @@ func _boost_light_color(state : PodController.BoostState) -> Color:
 		PodController.BoostState.BOOSTING:
 			return Color.MAGENTA;
 		PodController.BoostState.OVERHEAT:
-			return Color.DARK_RED;
+			return Color.RED;
 	return Color.WHITE;
 
 ### External speed input in mph (e.g. connected from a system signal).
@@ -175,7 +199,7 @@ func _begin_light_transition(target : Color) -> void:
 	set_process(true);
 
 func _apply_light_state(color : Color, alpha : float) -> void:
-	_light_texture.self_modulate = Color(color, 1.0);
+	_light_texture.self_modulate = Color(color, alpha);
 	_glass_tubes.self_modulate = Color(color, 1.0);
 	_point_light.color = Color(color, alpha);
 	_large_icon_alpha.self_modulate = Color(1.0, 1.0, 1.0, alpha);
