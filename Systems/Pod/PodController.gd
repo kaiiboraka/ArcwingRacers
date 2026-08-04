@@ -778,10 +778,9 @@ func _apply_wing_open_rest() -> void:
 	_wing_open = [rest, rest];
 	_wing_cur_anim = [&"", &""];
 	if LeftWing_anim_player:
-		LeftWing_anim_player.play(WING_OPEN_IDLE_ANIMS[rest_state]);
+		_play_wing_anim(LeftWing_anim_player, 0, WING_OPEN_IDLE_ANIMS[rest_state]);
 	if RightWing_anim_player:
-		RightWing_anim_player.play(WING_OPEN_IDLE_ANIMS[rest_state]);
-	_wing_cur_anim = [WING_OPEN_IDLE_ANIMS[rest_state], WING_OPEN_IDLE_ANIMS[rest_state]];
+		_play_wing_anim(RightWing_anim_player, 1, WING_OPEN_IDLE_ANIMS[rest_state]);
 
 func _wing_open_anim(delta, input) -> void:
 	if not LeftWing_anim_player or not RightWing_anim_player:
@@ -857,7 +856,17 @@ func _drive_wing_open(idx : int, player : AnimationPlayer, target : float, delta
 		_play_wing_anim(player, idx, &"Arcwing/Closing");
 		player.seek((1.0 - cur) * 1.5, true);
 
+## The right wing plays the "_flipped" twin of every left-authored clip (baked by
+## Content/Animations/mirror_animations.gd) so its sail animation is a true mirror
+## of the left wing instead of the same key values retargeted onto its R_* bones.
+func _flipped_anim_name(anim : StringName) -> StringName:
+	return StringName(String(anim) + "_flipped");
+
 func _play_wing_anim(player : AnimationPlayer, idx : int, anim : StringName) -> void:
+	if idx == 1:
+		var flipped : StringName = _flipped_anim_name(anim);
+		if player.has_animation(flipped):
+			anim = flipped;
 	if anim == _wing_cur_anim[idx]:
 		return;
 	_wing_cur_anim[idx] = anim;

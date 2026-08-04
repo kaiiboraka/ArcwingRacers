@@ -60,6 +60,17 @@ _subresources={
 "nodes": {
 "PATH:AnimationPlayer": {
 "import/skip_import": true
+},
+"PATH:Skeleton3D": {
+"retarget/bone_map": Resource("uid://c2pwfam6gmt0", "res://Content/Animations/pod_L-wing_bone-map.tres"),
+"retarget/bone_renamer/unique_node/make_unique": false,
+"retarget/bone_renamer/unique_node/skeleton_name": ""
+},
+"PATH:Wings": {
+"import/skip_import": true
+},
+"PATH:Wings/Wing_L": {
+"import/skip_import": true
 }
 }
 }

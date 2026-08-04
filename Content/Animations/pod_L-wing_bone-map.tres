@@ -1,0 +1,42 @@
+[gd_resource type="BoneMap" format=3 uid="uid://c2pwfam6gmt0"]
+
+[ext_resource type="SkeletonProfile" uid="uid://du6er7u2nj7sj" path="res://Content/Animations/pod_wing_skeleton-profile.tres" id="1_g321j"]
+
+[resource]
+profile = ExtResource("1_g321j")
+bonemap = null
+bone_map/wing_root = &"L_wing_root"
+bone_map/sail_root = &"L_sail_root"
+bone_map/sail_bot_2 = &"L_sail_bot_2"
+bone_map/sail_bot_3 = &"L_sail_bot_3"
+bone_map/sail_bot_4 = &"L_sail_bot_4"
+bone_map/sail_bot_5_tip = &"L_sail_bot_5_tip"
+bone_map/arm_root = &"L_arm_root"
+bone_map/arm_0 = &"L_arm_0"
+bone_map/arm_1 = &"L_arm_1"
+bone_map/arm_2 = &"L_arm_2"
+bone_map/arm_3 = &"L_arm_3"
+bone_map/arm_4 = &"L_arm_4"
+bone_map/arm_5 = &"L_arm_5"
+bone_map/arm_6 = &"L_arm_6"
+bone_map/arm_tip = &"L_arm_tip"
+bone_map/sail_top_5_tip = &"L_sail_top_5_tip"
+bone_map/sail_top_4 = &"L_sail_top_4"
+bone_map/sail_top_3 = &"L_sail_top_3"
+bone_map/sail_top_2 = &"L_sail_top_2"
+bone_map/sail_top_1 = &"L_sail_top_1"
+bone_map/sail_row2_1 = &"L_sail_row2_1"
+bone_map/sail_row2_2 = &"L_sail_row2_2"
+bone_map/sail_row2_3 = &"L_sail_row2_3"
+bone_map/sail_row2_4 = &"L_sail_row2_4"
+bone_map/sail_row2_5_tip = &"L_sail_row2_5_tip"
+bone_map/sail_row3_1 = &"L_sail_row3_1"
+bone_map/sail_row3_2 = &"L_sail_row3_2"
+bone_map/sail_row3_3 = &"L_sail_row3_3"
+bone_map/sail_row3_4 = &"L_sail_row3_4"
+bone_map/sail_row3_5_tip = &"L_sail_row3_5_tip"
+bone_map/sail_row4_1 = &"L_sail_row4_1"
+bone_map/sail_row4_2 = &"L_sail_row4_2"
+bone_map/sail_row4_3 = &"L_sail_row4_3"
+bone_map/sail_row4_4 = &"L_sail_row4_4"
+bone_map/sail_row4_5_tip = &"L_sail_row4_5_tip"

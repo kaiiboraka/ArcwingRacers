@@ -56,6 +56,20 @@ _subresources={
 "use_external/fallback_path": "res://Content/Materials/M_sail.tres",
 "use_external/path": "uid://da2vnkdxlmtun"
 }
+},
+"nodes": {
+"PATH:AnimationPlayer": {
+"import/skip_import": true
+},
+"PATH:Skeleton3D": {
+"retarget/bone_map": Resource("uid://dinfewjwek2xi", "res://Content/Animations/pod_R-wing_bone-map.tres"),
+"retarget/bone_renamer/unique_node/make_unique": false,
+"retarget/bone_renamer/unique_node/skeleton_name": "",
+"retarget/rest_fixer/original_skeleton_name": "Skeleton3D"
+},
+"PATH:Wings": {
+"import/skip_import": true
+}
 }
 }
 fbx/importer=0
