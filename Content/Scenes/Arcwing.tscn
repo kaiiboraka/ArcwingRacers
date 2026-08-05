@@ -1,8 +1,10 @@
 [gd_scene format=3 uid="uid://dylywca7tvxrp"]
 
 [ext_resource type="Script" uid="uid://dle5po3ynm52x" path="res://Systems/Pod/PodController.gd" id="1_u7qc7"]
-[ext_resource type="PackedScene" uid="uid://bp3uugks55bqc" path="res://Content/Models/SM_blade_chassis.glb" id="2_n3i6r"]
+[ext_resource type="PackedScene" uid="uid://chnqjt3pwtvgn" path="res://Content/Models/SM_blade_chassis.glb" id="2_n3i6r"]
 [ext_resource type="PackedScene" uid="uid://m2hxigeogptj" path="res://Content/Models/SM_Wing_Left.fbx" id="3_ye1aq"]
+[ext_resource type="Material" uid="uid://dkkifw0on5tng" path="res://Content/Materials/M_invisible.tres" id="4_hbc1n"]
+[ext_resource type="ArrayMesh" uid="uid://bqisjxghq6h1c" path="res://Content/Models/Arcwing_Joint.res" id="4_ye1aq"]
 [ext_resource type="Shader" uid="uid://blskc02bu0atp" path="res://Content/Materials/Shaders/scifi_shield.gdshader" id="4_yluh8"]
 [ext_resource type="Script" uid="uid://csjccrhj5wnx7" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="5_88bc5"]
 [ext_resource type="Texture2D" uid="uid://bqjcfy3r4wu7n" path="res://Content/Textures/sparkle-64.png" id="5_s6lsw"]
@@ -13,6 +15,121 @@
 [ext_resource type="Script" uid="uid://ccmiitq0sdh7j" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_noise_emitter_3d.gd" id="8_r5cq2"]
 [ext_resource type="Script" uid="uid://cuffvge5ad4aa" path="res://addons/phantom_camera/scripts/resources/phantom_camera_noise_3d.gd" id="9_jtdhu"]
 [ext_resource type="Script" uid="uid://dgsohew8gk77l" path="res://Systems/Pod/Beam3D.gd" id="10_beam3d"]
+
+[sub_resource type="Skin" id="Skin_otgja"]
+resource_name = "Skin3"
+bind_count = 37
+bind/0/name = &"L_wing_root"
+bind/0/bone = -1
+bind/0/pose = Transform3D(-0.11065763, -0.90344375, 0.414179, -0.8463566, -0.13279843, -0.51579565, 0.5209947, -0.40761983, -0.7499404, 50.546432, 5.566936, 12.04186)
+bind/1/name = &"L_arm_root"
+bind/1/bone = -1
+bind/1/pose = Transform3D(-0.11065763, -0.90344375, 0.414179, -0.8463566, -0.13279843, -0.51579565, 0.5209947, -0.40761983, -0.7499404, 60.340187, 31.898588, 5.7189684)
+bind/2/name = &"L_arm_0"
+bind/2/bone = -1
+bind/2/pose = Transform3D(-0.11065763, -0.90344375, 0.414179, -0.8463566, -0.13279843, -0.51579565, 0.5209947, -0.40761983, -0.7499404, 62.41472, -10.655549, -18.179705)
+bind/3/name = &"L_arm_1_no_sail"
+bind/3/bone = -1
+bind/3/pose = Transform3D(-0.11065763, -0.90344375, 0.414179, -0.8463566, -0.13279843, -0.51579565, 0.5209947, -0.40761983, -0.7499404, 60.972843, -38.35386, -40.090202)
+bind/4/name = &"L_arm_2"
+bind/4/bone = -1
+bind/4/pose = Transform3D(-0.11065763, -0.90344375, 0.414179, -0.8463566, -0.13279843, -0.51579565, 0.5209947, -0.40761983, -0.7499404, 63.301678, -59.848423, -49.486477)
+bind/5/name = &"L_arm_3"
+bind/5/bone = -1
+bind/5/pose = Transform3D(0.3293506, -0.1366985, -0.93425995, 0.04766171, -0.9857962, 0.16104111, -0.943004, -0.09756742, -0.3181573, -119.3155, 42.335957, -82.75491)
+bind/6/name = &"L_arm_4"
+bind/6/bone = -1
+bind/6/pose = Transform3D(0.54934394, -0.12831824, -0.82568496, -0.028785987, -0.9904582, 0.13477348, -0.83510035, -0.050268833, -0.54779595, -169.47589, 36.33487, -181.4763)
+bind/7/name = &"L_arm_5"
+bind/7/bone = -1
+bind/7/pose = Transform3D(0.21877252, -0.1712553, -0.9606301, -0.08125215, 0.977862, -0.19283155, 0.9723871, 0.1202395, 0.20001446, -346.53427, -56.767326, 135.37042)
+bind/8/name = &"L_arm_6"
+bind/8/bone = -1
+bind/8/pose = Transform3D(0.37935233, -0.30868712, -0.87224084, -0.64659286, -0.762752, -0.011275326, -0.66182286, 0.568262, -0.48894662, -389.45514, -50.562477, -220.67874)
+bind/9/name = &"L_arm_7"
+bind/9/bone = -1
+bind/9/pose = Transform3D(0.5304689, -0.012752117, -0.84760845, -0.7625319, 0.4296403, -0.48368827, 0.3703348, 0.90291005, 0.21818691, -449.23618, -235.40964, 156.80424)
+bind/10/name = &"L_arm_8_tip"
+bind/10/bone = -1
+bind/10/pose = Transform3D(0.5304689, -0.012752117, -0.84760845, -0.7625319, 0.4296403, -0.48368827, 0.3703348, 0.90291005, 0.21818691, -568.18933, -224.9134, 168.01207)
+bind/11/name = &"L_sail_top_5_tip"
+bind/11/bone = -1
+bind/11/pose = Transform3D(0.54934394, -0.12831824, -0.82568496, 0.014934035, -0.986473, 0.16324191, -0.83546287, -0.10200676, -0.5399967, -564.7004, 43.97969, -275.31543)
+bind/12/name = &"L_sail_top_4"
+bind/12/bone = -1
+bind/12/pose = Transform3D(0.54934394, -0.12831824, -0.82568496, 0.014934035, -0.986473, 0.16324191, -0.83546287, -0.10200676, -0.5399967, -440.4305, 43.240257, -274.05157)
+bind/13/name = &"L_sail_top_3"
+bind/13/bone = -1
+bind/13/pose = Transform3D(0.37186384, -0.14607005, -0.9167229, 0.014787941, -0.9864847, 0.16318451, -0.9281695, -0.07423887, -0.36467794, -401.81808, 43.581226, -179.44102)
+bind/14/name = &"L_sail_top_2"
+bind/14/bone = -1
+bind/14/pose = Transform3D(0.32347292, -0.14970632, -0.9343197, 0.04799869, -0.983538, 0.17421031, -0.94501925, -0.10119844, -0.3109622, -326.19836, 49.592552, -159.81383)
+bind/15/name = &"L_sail_top_1"
+bind/15/bone = -1
+bind/15/pose = Transform3D(-0.011429844, -0.17494075, -0.9845126, 0.04799869, -0.983538, 0.17421031, -0.998782, -0.045264117, 0.019638613, -229.88078, 49.979404, -41.08489)
+bind/16/name = &"L_sail_row2_1"
+bind/16/bone = -1
+bind/16/pose = Transform3D(-0.1544602, -0.15216228, -0.97621137, -0.30089632, 0.9483767, -0.10021462, 0.9410651, 0.27825922, -0.19227153, -143.87952, -44.04789, -3.65776)
+bind/17/name = &"L_sail_row2_2"
+bind/17/bone = -1
+bind/17/pose = Transform3D(0.45696932, -0.1384768, -0.87863714, 0.014941631, -0.9864727, 0.16324311, -0.889357, -0.08772537, -0.4487187, -224.37321, 52.439808, -107.1182)
+bind/18/name = &"L_sail_row2_3"
+bind/18/bone = -1
+bind/18/pose = Transform3D(0.5065391, -0.13329586, -0.8518511, 0.014903576, -0.9864765, 0.1632239, -0.86208814, -0.09537493, -0.49770236, -318.09012, 52.37539, -129.61183)
+bind/19/name = &"L_sail_row2_4"
+bind/19/bone = -1
+bind/19/pose = Transform3D(0.5636613, -0.12654522, -0.81625503, 0.014876598, -0.98647946, 0.16320834, -0.82587206, -0.10413732, -0.5541577, -421.5741, 52.304775, -163.33662)
+bind/20/name = &"L_sail_row2_5_tip"
+bind/20/bone = -1
+bind/20/pose = Transform3D(0.5636613, -0.12654522, -0.81625503, 0.014876598, -0.98647946, 0.16320834, -0.82587206, -0.10413732, -0.5541577, -540.52234, 52.236866, -168.41579)
+bind/21/name = &"L_sail_row3_1"
+bind/21/bone = -1
+bind/21/pose = Transform3D(-0.4485928, -0.23348829, -0.8626979, -0.8878924, 0.2266325, 0.40035582, 0.10203699, 0.94557965, -0.3089782, -75.75374, 25.10128, -61.47196)
+bind/22/name = &"L_sail_row3_2"
+bind/22/bone = -1
+bind/22/pose = Transform3D(0.49035174, -0.13505661, -0.8609964, 0.015149107, -0.9864497, 0.16336298, -0.87139297, -0.09314865, -0.48166135, -214.96515, 48.65996, -52.754295)
+bind/23/name = &"L_sail_row3_3"
+bind/23/bone = -1
+bind/23/pose = Transform3D(0.53974587, -0.12948202, -0.8318106, 0.01489039, -0.9864773, 0.16321997, -0.8416963, -0.10048328, -0.530519, -314.536, 52.391582, -74.01634)
+bind/24/name = &"L_sail_row3_4"
+bind/24/bone = -1
+bind/24/pose = Transform3D(0.55414474, -0.1277352, -0.82256144, 0.014848627, -0.9864823, 0.16319364, -0.8322879, -0.102646805, -0.5447573, -439.51248, 52.31475, -86.98996)
+bind/25/name = &"L_sail_row3_5_tip"
+bind/25/bone = -1
+bind/25/pose = Transform3D(0.55414474, -0.1277352, -0.82256144, 0.014848627, -0.9864823, 0.16319364, -0.8322879, -0.102646805, -0.5447573, -562.6637, 52.243904, -92.248566)
+bind/26/name = &"L_sail_row4_1"
+bind/26/bone = -1
+bind/26/pose = Transform3D(-0.45981294, -0.40917024, -0.78813183, 0.059856065, 0.8712208, -0.48722842, 0.8859962, -0.2712084, -0.3761073, 7.979381, -75.94273, -21.273588)
+bind/27/name = &"L_sail_row4_2"
+bind/27/bone = -1
+bind/27/pose = Transform3D(0.5487069, -0.1283987, -0.82609594, 0.012049484, -0.9868183, 0.16138297, -0.83592796, -0.09850598, -0.5399269, -214.3233, 45.64501, -2.992761)
+bind/28/name = &"L_sail_row4_3"
+bind/28/bone = -1
+bind/28/pose = Transform3D(0.5933646, -0.12266919, -0.79553175, 0.014866715, -0.9864807, 0.16320175, -0.8047965, -0.10866508, -0.58351904, -315.39792, 52.408245, -24.574995)
+bind/29/name = &"L_sail_row4_4"
+bind/29/bone = -1
+bind/29/pose = Transform3D(0.58294404, -0.124054715, -0.8029861, 0.014573853, -0.9865202, 0.1629894, -0.81238157, -0.106716305, -0.5732781, -423.66922, 52.336937, -23.744974)
+bind/30/name = &"L_sail_row4_5_tip"
+bind/30/bone = -1
+bind/30/pose = Transform3D(0.58294404, -0.124054715, -0.8029861, 0.014573853, -0.9865202, 0.1629894, -0.81238157, -0.106716305, -0.5732781, -528.4168, 52.276077, -28.21778)
+bind/31/name = &"L_sail_bot_1_root"
+bind/31/bone = -1
+bind/31/pose = Transform3D(0.66215134, -0.25966793, -0.7029425, -0.64541745, -0.6742659, -0.35888967, -0.38077804, 0.6913307, -0.6140603, -35.41844, 73.248116, -42.530094)
+bind/32/name = &"L_sail_bot_2"
+bind/32/bone = -1
+bind/32/pose = Transform3D(0.5521915, -0.1279728, -0.8238371, -0.7618718, 0.3238399, -0.5609626, 0.33857927, 0.93741703, 0.08132277, -197.24127, 36.057724, -69.53249)
+bind/33/name = &"L_sail_bot_3"
+bind/33/bone = -1
+bind/33/pose = Transform3D(0.63571584, -0.11664801, -0.7630587, 0.014953419, -0.98647, 0.1632586, -0.7717783, -0.115196414, -0.6253703, -324.16916, 52.421654, 29.018862)
+bind/34/name = &"L_sail_bot_4"
+bind/34/bone = -1
+bind/34/pose = Transform3D(0.6169299, -0.119402565, -0.7779078, 0.015341766, -0.98641187, 0.16357325, -0.7868686, -0.11284771, -0.60671514, -431.4378, 52.35072, 34.842915)
+bind/35/name = &"L_sail_bot_5_tip"
+bind/35/bone = -1
+bind/35/pose = Transform3D(0.6169299, -0.119402565, -0.7779078, 0.015341766, -0.98641187, 0.16357325, -0.7868686, -0.11284771, -0.60671514, -527.2901, 52.300064, 30.749947)
+bind/36/name = &"L_joint"
+bind/36/bone = -1
+bind/36/pose = Transform3D(-0.11065763, -0.90344375, 0.414179, -0.8463566, -0.13279843, -0.51579565, 0.5209947, -0.40761983, -0.7499404, 0.0020210235, 0.0017816622, -0.0010105232)
 
 [sub_resource type="Curve" id="Curve_yluh8"]
 _data = [Vector2(0, 0.27247196), 0.0, -0.037097216, 0, 0, Vector2(1, 0.80056185), 1.630084, 0.0, 0, 0]
@@ -131,7 +248,7 @@ positional_multiplier_y = 0.3
 positional_multiplier_z = 0.0
 metadata/_custom_type_script = "uid://cuffvge5ad4aa"
 
-[node name="Arcwing" type="CharacterBody3D" unique_id=612795873 node_paths=PackedStringArray("camera_mount")]
+[node name="Arcwing" type="CharacterBody3D" unique_id=612795873 node_paths=PackedStringArray("hover_raycasts", "camera_mount")]
 collision_layer = 16
 collision_mask = 451
 floor_max_angle = 0.87266463
@@ -168,6 +285,7 @@ charge_pitch_deadzone_deg = 15.0
 gravity = 50.0
 gravity_nose_up = 25.0
 gravity_nose_down = 80.0
+hover_raycasts = [NodePath("HoverRaycasts/front_left"), NodePath("HoverRaycasts/front_right"), NodePath("HoverRaycasts/mid_right"), NodePath("HoverRaycasts/mid_left"), NodePath("HoverRaycasts/back_left"), NodePath("HoverRaycasts/back_right")]
 camera_mount = NodePath("CameraMount")
 
 [node name="Visuals" type="Node3D" parent="." unique_id=1416543842]
@@ -185,8 +303,24 @@ transform = Transform3D(0.99998814, 1.9984014e-15, 0.004869937, 2.7755576e-16, 1
 unique_name_in_owner = true
 transform = Transform3D(0.9999863, 0, 0.005235964, 0, 1, 0, -0.005235964, 0, 0.9999863, -2.963, 1.832, -5.481)
 
-[node name="Wing_Left_Rig_Marker3D" type="Marker3D" parent="Visuals/Wing_Left" unique_id=880731773]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.65942574, 0.26, 0.09272528)
+[node name="Skeleton3D" parent="Visuals/Wing_Left" index="0" unique_id=958516206]
+bones/10/rotation = Quaternion(-1.0408341e-17, -3.081488e-33, 0, 1)
+bones/20/rotation = Quaternion(1.3010426e-18, 8.6736174e-19, -2.7755576e-17, 1)
+bones/25/rotation = Quaternion(-4.3368087e-19, 0, 1.3877788e-17, 1)
+bones/30/rotation = Quaternion(2.6020852e-18, 3.469447e-18, 0, 1)
+bones/32/position = Vector3(159.17075, 7.1054274e-14, -5.684342e-14)
+bones/35/rotation = Quaternion(0, -3.469447e-18, 0, 1)
+
+[node name="Joint" parent="Visuals/Wing_Left/Skeleton3D" index="2" unique_id=1495842872]
+process_mode = 4
+visible = false
+surface_material_override/0 = ExtResource("4_hbc1n")
+
+[node name="_MeshInstance3D_79713" type="MeshInstance3D" parent="Visuals/Wing_Left/Skeleton3D" index="3" unique_id=649904955]
+transform = Transform3D(-0.0011513535, -0.008974891, 0.0042574285, -0.008475039, -0.0013481108, -0.0051338333, 0.0051815053, -0.0041992743, -0.007451045, 0.5056734, 0.054783702, 0.122442245)
+mesh = ExtResource("4_ye1aq")
+skin = SubResource("Skin_otgja")
+skeleton = NodePath("..")
 
 [node name="Ring_GPUParticles3D" type="GPUParticles3D" parent="Visuals/Wing_Left" unique_id=2123462299]
 transform = Transform3D(0.9999881, 0, 0.0048699374, 0, 1, 0, -0.0048699374, 0, 0.9999881, -0.412, -0.975, 1.716)
@@ -212,15 +346,34 @@ draw_pass_1 = SubResource("QuadMesh_yluh8")
 libraries/Arcwing = ExtResource("6_s6lsw")
 autoplay = &"Arcwing/Idle_Open"
 
-[node name="Wing_Right" parent="Visuals" unique_id=592524468 instance=ExtResource("3_ye1aq")]
+[node name="Wing_Left_Rig_Marker3D" type="Marker3D" parent="Visuals/Wing_Left" unique_id=880731773]
+transform = Transform3D(0.14782777, 0.8714398, 0.4676951, 0.8510835, 0.12879556, -0.5089886, -0.5037905, 0.47328958, -0.7226288, 0.5009675, 0.047375202, 0.11469555)
+
+[node name="Wing_Right" parent="Visuals" unique_id=41664555 instance=ExtResource("3_ye1aq")]
 unique_name_in_owner = true
 transform = Transform3D(-0.9999863, 0, 0.005235964, 0, 1, 0, 0.005235964, 0, 0.9999863, 2.963, 1.832, -5.481)
 
-[node name="Wing_Left_Rig_Marker3D" type="Marker3D" parent="Visuals/Wing_Right" unique_id=2056637150]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.65942574, 0.26, 0.09272528)
+[node name="Skeleton3D" parent="Visuals/Wing_Right" index="0" unique_id=958516206]
+bones/10/rotation = Quaternion(-1.0408341e-17, -3.081488e-33, 0, 1)
+bones/20/rotation = Quaternion(1.3010426e-18, 8.6736174e-19, -2.7755576e-17, 1)
+bones/25/rotation = Quaternion(-4.3368087e-19, 0, 1.3877788e-17, 1)
+bones/30/rotation = Quaternion(2.6020852e-18, 3.469447e-18, 0, 1)
+bones/32/position = Vector3(159.17075, 7.1054274e-14, -5.684342e-14)
+bones/35/rotation = Quaternion(0, -3.469447e-18, 0, 1)
 
-[node name="Ring_GPUParticles3D" type="GPUParticles3D" parent="Visuals/Wing_Right" unique_id=483723066]
-transform = Transform3D(0.9999881, 0, 0.0048699374, 0, 1, 0, -0.0048699374, 0, 0.9999881, -0.412, -0.975, 1.716)
+[node name="Joint" parent="Visuals/Wing_Right/Skeleton3D" index="2" unique_id=1495842872]
+process_mode = 4
+visible = false
+surface_material_override/0 = ExtResource("4_hbc1n")
+
+[node name="_MeshInstance3D_79713" type="MeshInstance3D" parent="Visuals/Wing_Right/Skeleton3D" index="3" unique_id=1936323023]
+transform = Transform3D(0.0011513537, 0.008974892, -0.0042574285, 0.008475043, 0.0013481112, 0.005133833, -0.005181508, 0.004199275, 0.007451044, 0.5056734, 0.054783702, 0.122442245)
+mesh = ExtResource("4_ye1aq")
+skin = SubResource("Skin_otgja")
+skeleton = NodePath("..")
+
+[node name="Ring_GPUParticles3D" type="GPUParticles3D" parent="Visuals/Wing_Right" unique_id=1578044489]
+transform = Transform3D(-0.99998814, 0, 0.0048699374, 0, 1, 0, 0.004869938, 0, 0.9999881, -0.412, -0.975, 1.716)
 amount = 4
 lifetime = 0.5
 preprocess = 0.1
@@ -229,8 +382,8 @@ local_coords = true
 process_material = SubResource("ParticleProcessMaterial_wj5hs")
 draw_pass_1 = SubResource("TorusMesh_js2ye")
 
-[node name="Dots_GPUParticles3D" type="GPUParticles3D" parent="Visuals/Wing_Right" unique_id=1232088239]
-transform = Transform3D(0.9999881, 0, 0.004869938, 0, 1, 0, -0.004869938, 0, 0.9999881, -0.412, -0.975, 1.716)
+[node name="Dots_GPUParticles3D" type="GPUParticles3D" parent="Visuals/Wing_Right" unique_id=600736538]
+transform = Transform3D(-0.99998814, 0, 0.004869938, 0, 1, 0, 0.0048699384, 0, 0.9999881, -0.412, -0.975, 1.716)
 amount = 128
 lifetime = 2.0
 preprocess = 0.05
@@ -239,9 +392,12 @@ transform_align = 3
 process_material = SubResource("ParticleProcessMaterial_ye1aq")
 draw_pass_1 = SubResource("QuadMesh_yluh8")
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="Visuals/Wing_Right" unique_id=667251396]
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Visuals/Wing_Right" unique_id=1796563451]
 libraries/Arcwing = ExtResource("6_s6lsw")
 autoplay = &"Arcwing/Idle_Open"
+
+[node name="Wing_Right_Rig_Marker3D" type="Marker3D" parent="Visuals/Wing_Right" unique_id=1162538272]
+transform = Transform3D(-0.14782771, 0.87143975, 0.46769518, -0.8510831, 0.12879556, -0.5089886, 0.5037902, 0.47328964, -0.7226287, 0.5009675, 0.047375202, 0.11469555)
 
 [node name="Rigs" type="Node3D" parent="Visuals" unique_id=1024871487]
 
@@ -255,9 +411,10 @@ transform = Transform3D(-0.09488696, -0.99548805, -4.3693923e-08, 0.106412336, -
 cast_shadow = 2
 mesh = SubResource("QuadMesh_wj5hs")
 
-[node name="Beam_Right" type="Node3D" parent="Visuals/Rigs" unique_id=703320893 node_paths=PackedStringArray("point_a")]
+[node name="Beam_Right" type="Node3D" parent="Visuals/Rigs" unique_id=703320893 node_paths=PackedStringArray("point_a", "point_b")]
 script = ExtResource("10_beam3d")
 point_a = NodePath("../../Blade/Blade_Right_Rig_Marker3D")
+point_b = NodePath("../../Wing_Right/Wing_Right_Rig_Marker3D")
 
 [node name="BeamMesh" type="MeshInstance3D" parent="Visuals/Rigs/Beam_Right" unique_id=1138210408]
 transform = Transform3D(-0.094108276, 0.99556196, 0, -0.10579244, -0.010000327, 0.994338, 0.9899251, 0.09357543, 0.10626405, 1.907, 1.846, -2.733)
@@ -357,3 +514,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.271, 1, 2.755)
 target_position = Vector3(0, -6, 0)
 collision_mask = 7
 hit_from_inside = true
+
+[editable path="Visuals/Wing_Left"]
+[editable path="Visuals/Wing_Right"]

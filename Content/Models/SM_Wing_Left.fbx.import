@@ -18,8 +18,8 @@ nodes/root_name=""
 nodes/root_script=null
 mesh_library/use_node_names_as_mesh_names=false
 array_mesh/deduplicate_surfaces=true
-nodes/apply_root_scale=true
-nodes/root_scale=1.0
+nodes/apply_root_scale=false
+nodes/root_scale=100.0
 nodes/import_as_skeleton_bones=false
 nodes/use_name_suffixes=true
 nodes/use_node_type_suffixes=true
@@ -62,8 +62,49 @@ _subresources={
 "use_external/path": "uid://da2vnkdxlmtun"
 }
 },
+"meshes": {
+"Frame": {
+"generate/lightmap_uv": 0,
+"generate/lods": 0,
+"generate/shadow_meshes": 0,
+"lods/normal_merge_angle": 20.0,
+"save_to_file/enabled": true,
+"save_to_file/fallback_path": "res://Content/Models/Arcwing_Frame.res",
+"save_to_file/path": "uid://cmto7xup0fg6m"
+},
+"Joint": {
+"generate/lightmap_uv": 0,
+"generate/lods": 0,
+"generate/shadow_meshes": 0,
+"lods/normal_merge_angle": 20.0,
+"save_to_file/enabled": false,
+"save_to_file/fallback_path": "res://Content/Models/Arcwing_Joint.res",
+"save_to_file/path": "res://Content/Models/Arcwing_Joint.res"
+},
+"Joint_centered": {
+"generate/lightmap_uv": 0,
+"generate/lods": 0,
+"generate/shadow_meshes": 0,
+"lods/normal_merge_angle": 20.0,
+"save_to_file/enabled": true,
+"save_to_file/fallback_path": "res://Content/Models/Arcwing_Joint.res",
+"save_to_file/path": "uid://bqisjxghq6h1c"
+},
+"Sail": {
+"generate/lightmap_uv": 0,
+"generate/lods": 0,
+"generate/shadow_meshes": 0,
+"lods/normal_merge_angle": 20.0,
+"save_to_file/enabled": true,
+"save_to_file/fallback_path": "res://Content/Models/Arcwing_Sail.res",
+"save_to_file/path": "uid://cfofu6stx7n1c"
+}
+},
 "nodes": {
 "PATH:AnimationPlayer": {
+"import/skip_import": true
+},
+"PATH:Joint_centered": {
 "import/skip_import": true
 },
 "PATH:Skeleton3D": {
