@@ -1,0 +1,9 @@
+[gd_resource type="ShaderMaterial" format=3 uid="uid://mhjmrm3fyyew"]
+
+[ext_resource type="Material" uid="uid://beleae0dgxex6" path="res://Content/Materials/M_joint.tres" id="1_xp0mu"]
+[ext_resource type="Shader" uid="uid://drys3s27km7gk" path="res://Content/Materials/reverse_normals.gdshader" id="2_ixf4g"]
+
+[resource]
+render_priority = 0
+next_pass = ExtResource("1_xp0mu")
+shader = ExtResource("2_ixf4g")

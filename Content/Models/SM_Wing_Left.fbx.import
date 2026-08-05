@@ -51,6 +51,11 @@ _subresources={
 "use_external/fallback_path": "res://Content/Materials/M_metal_body.tres",
 "use_external/path": "uid://k3a43suuk2ph"
 },
+"M_metal_white": {
+"use_external/enabled": true,
+"use_external/fallback_path": "res://Content/Materials/M_metal_white.tres",
+"use_external/path": "uid://c8ogplbmvj82w"
+},
 "M_sail": {
 "use_external/enabled": true,
 "use_external/fallback_path": "res://Content/Materials/M_sail.tres",
@@ -62,14 +67,17 @@ _subresources={
 "import/skip_import": true
 },
 "PATH:Skeleton3D": {
-"retarget/bone_map": Resource("uid://c2pwfam6gmt0", "res://Content/Animations/pod_L-wing_bone-map.tres"),
+"retarget/bone_map": null,
 "retarget/bone_renamer/unique_node/make_unique": false,
 "retarget/bone_renamer/unique_node/skeleton_name": ""
 },
 "PATH:Wings": {
 "import/skip_import": true
 },
-"PATH:Wings/Wing_L": {
+"PATH:Wings/Wing_1": {
+"import/skip_import": true
+},
+"PATH:Wings/Wing_1/Wing_Rig": {
 "import/skip_import": true
 }
 }

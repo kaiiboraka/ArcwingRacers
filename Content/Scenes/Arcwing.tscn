@@ -6,10 +6,9 @@
 [ext_resource type="Shader" uid="uid://blskc02bu0atp" path="res://Content/Materials/Shaders/scifi_shield.gdshader" id="4_yluh8"]
 [ext_resource type="Script" uid="uid://csjccrhj5wnx7" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="5_88bc5"]
 [ext_resource type="Texture2D" uid="uid://bqjcfy3r4wu7n" path="res://Content/Textures/sparkle-64.png" id="5_s6lsw"]
-[ext_resource type="AnimationLibrary" uid="uid://cgtuava0eboh0" path="res://Content/Animations/Arcwing.res" id="6_hbc1n"]
 [ext_resource type="Material" uid="uid://duxq3pnf3teob" path="res://Content/Materials/M_energy_beam.tres" id="6_kfdho"]
 [ext_resource type="Script" uid="uid://8umksf8e80fw" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="6_oi37l"]
-[ext_resource type="PackedScene" uid="uid://dpsx2ifg3gxsk" path="res://Content/Models/SM_Wing_Right.fbx" id="6_ye1aq"]
+[ext_resource type="AnimationLibrary" uid="uid://dd1bfcg2wimfn" path="res://Content/Animations/Arcwing.tres" id="6_s6lsw"]
 [ext_resource type="Script" uid="uid://b8hhnqsugykly" path="res://addons/phantom_camera/scripts/resources/camera_3d_resource.gd" id="7_oi37l"]
 [ext_resource type="Script" uid="uid://ccmiitq0sdh7j" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_noise_emitter_3d.gd" id="8_r5cq2"]
 [ext_resource type="Script" uid="uid://cuffvge5ad4aa" path="res://addons/phantom_camera/scripts/resources/phantom_camera_noise_3d.gd" id="9_jtdhu"]
@@ -210,17 +209,17 @@ process_material = SubResource("ParticleProcessMaterial_ye1aq")
 draw_pass_1 = SubResource("QuadMesh_yluh8")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="Visuals/Wing_Left" unique_id=2113279145]
-libraries/Arcwing = ExtResource("6_hbc1n")
+libraries/Arcwing = ExtResource("6_s6lsw")
 autoplay = &"Arcwing/Idle_Open"
 
-[node name="Wing_Right" parent="Visuals" unique_id=2056123335 instance=ExtResource("6_ye1aq")]
+[node name="Wing_Right" parent="Visuals" unique_id=592524468 instance=ExtResource("3_ye1aq")]
 unique_name_in_owner = true
-transform = Transform3D(0.9999863, 0, -0.005235964, 0, 1, 0, 0.005235964, 0, 0.9999863, 2.963, 1.832, -5.481)
+transform = Transform3D(-0.9999863, 0, 0.005235964, 0, 1, 0, 0.005235964, 0, 0.9999863, 2.963, 1.832, -5.481)
 
-[node name="Wing_Right_Rig_Marker3D" type="Marker3D" parent="Visuals/Wing_Right" unique_id=1160767272]
+[node name="Wing_Left_Rig_Marker3D" type="Marker3D" parent="Visuals/Wing_Right" unique_id=2056637150]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.65942574, 0.26, 0.09272528)
 
-[node name="Ring_GPUParticles3D" type="GPUParticles3D" parent="Visuals/Wing_Right" unique_id=1022734852]
+[node name="Ring_GPUParticles3D" type="GPUParticles3D" parent="Visuals/Wing_Right" unique_id=483723066]
 transform = Transform3D(0.9999881, 0, 0.0048699374, 0, 1, 0, -0.0048699374, 0, 0.9999881, -0.412, -0.975, 1.716)
 amount = 4
 lifetime = 0.5
@@ -230,7 +229,7 @@ local_coords = true
 process_material = SubResource("ParticleProcessMaterial_wj5hs")
 draw_pass_1 = SubResource("TorusMesh_js2ye")
 
-[node name="Dots_GPUParticles3D" type="GPUParticles3D" parent="Visuals/Wing_Right" unique_id=771447674]
+[node name="Dots_GPUParticles3D" type="GPUParticles3D" parent="Visuals/Wing_Right" unique_id=1232088239]
 transform = Transform3D(0.9999881, 0, 0.004869938, 0, 1, 0, -0.004869938, 0, 0.9999881, -0.412, -0.975, 1.716)
 amount = 128
 lifetime = 2.0
@@ -240,9 +239,9 @@ transform_align = 3
 process_material = SubResource("ParticleProcessMaterial_ye1aq")
 draw_pass_1 = SubResource("QuadMesh_yluh8")
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="Visuals/Wing_Right" unique_id=1025762664]
-libraries/Arcwing = ExtResource("6_hbc1n")
-autoplay = &"Arcwing/Idle_Open_flipped"
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Visuals/Wing_Right" unique_id=667251396]
+libraries/Arcwing = ExtResource("6_s6lsw")
+autoplay = &"Arcwing/Idle_Open"
 
 [node name="Rigs" type="Node3D" parent="Visuals" unique_id=1024871487]
 

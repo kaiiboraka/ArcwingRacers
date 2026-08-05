@@ -1,0 +1,703 @@
+{
+    "deformerWeight": {
+        "headerInfo": {
+            "fileName": "C:/Projects/ArcwingRacers/Content/Models/skin-weights_Sail1.json",
+            "worldMatrix": [
+                -1.0,
+                0.0,
+                -1.2246467991473533e-16,
+                0.0,
+                0.0,
+                1.0,
+                0.0,
+                0.0,
+                1.2246467991473533e-16,
+                0.0,
+                -1.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                1.0
+            ]
+        },
+        "shapes": [
+            {
+                "name": "SailShape",
+                "group": 0,
+                "stride": 3,
+                "size": 25,
+                "max": 25,
+                "points": [
+                    {
+                        "index": 0,
+                        "value": [
+                            342.4093017578125,
+                            175.5550079345703,
+                            369.494873046875
+                        ]
+                    },
+                    {
+                        "index": 1,
+                        "value": [
+                            339.8006286621094,
+                            206.80836486816407,
+                            370.89666748046877
+                        ]
+                    },
+                    {
+                        "index": 2,
+                        "value": [
+                            333.1512756347656,
+                            266.8623352050781,
+                            334.28021240234377
+                        ]
+                    },
+                    {
+                        "index": 3,
+                        "value": [
+                            338.8895568847656,
+                            317.6231689453125,
+                            304.117919921875
+                        ]
+                    },
+                    {
+                        "index": 4,
+                        "value": [
+                            363.0729675292969,
+                            149.55320739746095,
+                            213.82778930664063
+                        ]
+                    },
+                    {
+                        "index": 5,
+                        "value": [
+                            368.5528869628906,
+                            214.9167022705078,
+                            195.91053771972657
+                        ]
+                    },
+                    {
+                        "index": 6,
+                        "value": [
+                            372.92730712890627,
+                            279.32171630859377,
+                            199.4071807861328
+                        ]
+                    },
+                    {
+                        "index": 7,
+                        "value": [
+                            379.2583312988281,
+                            342.1098937988281,
+                            198.98341369628907
+                        ]
+                    },
+                    {
+                        "index": 8,
+                        "value": [
+                            393.6889343261719,
+                            448.1771240234375,
+                            134.1059112548828
+                        ]
+                    },
+                    {
+                        "index": 9,
+                        "value": [
+                            402.5121154785156,
+                            145.84173583984376,
+                            98.16890716552735
+                        ]
+                    },
+                    {
+                        "index": 10,
+                        "value": [
+                            404.4385681152344,
+                            217.0578155517578,
+                            100.16842651367188
+                        ]
+                    },
+                    {
+                        "index": 11,
+                        "value": [
+                            406.4139099121094,
+                            287.0478210449219,
+                            101.85929870605469
+                        ]
+                    },
+                    {
+                        "index": 12,
+                        "value": [
+                            408.32958984375,
+                            354.9154052734375,
+                            103.49887084960938
+                        ]
+                    },
+                    {
+                        "index": 13,
+                        "value": [
+                            417.6863098144531,
+                            464.513671875,
+                            54.85810470581055
+                        ]
+                    },
+                    {
+                        "index": 14,
+                        "value": [
+                            433.1203918457031,
+                            136.4869842529297,
+                            -5.065005302429199
+                        ]
+                    },
+                    {
+                        "index": 15,
+                        "value": [
+                            435.3190002441406,
+                            213.49575805664063,
+                            -3.291064500808716
+                        ]
+                    },
+                    {
+                        "index": 16,
+                        "value": [
+                            442.8500671386719,
+                            291.107421875,
+                            -19.23575210571289
+                        ]
+                    },
+                    {
+                        "index": 17,
+                        "value": [
+                            441.1416320800781,
+                            362.98382568359377,
+                            -5.027926445007324
+                        ]
+                    },
+                    {
+                        "index": 18,
+                        "value": [
+                            441.6836853027344,
+                            480.85015869140627,
+                            -24.389698028564454
+                        ]
+                    },
+                    {
+                        "index": 19,
+                        "value": [
+                            460.4134216308594,
+                            130.48789978027345,
+                            -96.84475708007813
+                        ]
+                    },
+                    {
+                        "index": 20,
+                        "value": [
+                            465.3436279296875,
+                            211.3886260986328,
+                            -103.72085571289063
+                        ]
+                    },
+                    {
+                        "index": 21,
+                        "value": [
+                            478.2926940917969,
+                            292.9437561035156,
+                            -137.27947998046876
+                        ]
+                    },
+                    {
+                        "index": 22,
+                        "value": [
+                            475.3341369628906,
+                            363.39178466796877,
+                            -119.06820678710938
+                        ]
+                    },
+                    {
+                        "index": 23,
+                        "value": [
+                            478.0866394042969,
+                            479.351806640625,
+                            -143.20770263671876
+                        ]
+                    },
+                    {
+                        "index": 24,
+                        "value": [
+                            361.5697326660156,
+                            377.05242919921877,
+                            239.3137664794922
+                        ]
+                    }
+                ]
+            }
+        ],
+        "weights": [
+            {
+                "deformer": "skinCluster_Sail1",
+                "source": "L_wing_root",
+                "shape": "SailShape",
+                "layer": 0,
+                "defaultValue": 0.0,
+                "points": [],
+                "size": 0,
+                "max": 0
+            },
+            {
+                "deformer": "skinCluster_Sail1",
+                "source": "L_sail_root",
+                "shape": "SailShape",
+                "layer": 1,
+                "defaultValue": 0.0,
+                "points": [
+                    {
+                        "index": 0,
+                        "value": 1.0
+                    }
+                ],
+                "size": 1,
+                "max": 0
+            },
+            {
+                "deformer": "skinCluster_Sail1",
+                "source": "L_sail_bot_2",
+                "shape": "SailShape",
+                "layer": 2,
+                "defaultValue": 0.0,
+                "points": [
+                    {
+                        "index": 4,
+                        "value": 1.0
+                    }
+                ],
+                "size": 1,
+                "max": 4
+            },
+            {
+                "deformer": "skinCluster_Sail1",
+                "source": "L_sail_bot_3",
+                "shape": "SailShape",
+                "layer": 3,
+                "defaultValue": 0.0,
+                "points": [
+                    {
+                        "index": 9,
+                        "value": 1.0
+                    }
+                ],
+                "size": 1,
+                "max": 9
+            },
+            {
+                "deformer": "skinCluster_Sail1",
+                "source": "L_sail_bot_4",
+                "shape": "SailShape",
+                "layer": 4,
+                "defaultValue": 0.0,
+                "points": [
+                    {
+                        "index": 14,
+                        "value": 1.0
+                    }
+                ],
+                "size": 1,
+                "max": 14
+            },
+            {
+                "deformer": "skinCluster_Sail1",
+                "source": "L_sail_bot_5_tip",
+                "shape": "SailShape",
+                "layer": 5,
+                "defaultValue": 0.0,
+                "points": [
+                    {
+                        "index": 19,
+                        "value": 1.0
+                    }
+                ],
+                "size": 1,
+                "max": 19
+            },
+            {
+                "deformer": "skinCluster_Sail1",
+                "source": "L_arm_root",
+                "shape": "SailShape",
+                "layer": 6,
+                "defaultValue": 0.0,
+                "points": [],
+                "size": 0,
+                "max": 0
+            },
+            {
+                "deformer": "skinCluster_Sail1",
+                "source": "L_arm_1",
+                "shape": "SailShape",
+                "layer": 7,
+                "defaultValue": 0.0,
+                "points": [],
+                "size": 0,
+                "max": 0
+            },
+            {
+                "deformer": "skinCluster_Sail1",
+                "source": "L_arm_2",
+                "shape": "SailShape",
+                "layer": 8,
+                "defaultValue": 0.0,
+                "points": [],
+                "size": 0,
+                "max": 0
+            },
+            {
+                "deformer": "skinCluster_Sail1",
+                "source": "L_arm_3",
+                "shape": "SailShape",
+                "layer": 9,
+                "defaultValue": 0.0,
+                "points": [],
+                "size": 0,
+                "max": 0
+            },
+            {
+                "deformer": "skinCluster_Sail1",
+                "source": "L_arm_4",
+                "shape": "SailShape",
+                "layer": 10,
+                "defaultValue": 0.0,
+                "points": [],
+                "size": 0,
+                "max": 0
+            },
+            {
+                "deformer": "skinCluster_Sail1",
+                "source": "L_arm_5",
+                "shape": "SailShape",
+                "layer": 11,
+                "defaultValue": 0.0,
+                "points": [],
+                "size": 0,
+                "max": 0
+            },
+            {
+                "deformer": "skinCluster_Sail1",
+                "source": "L_arm_6",
+                "shape": "SailShape",
+                "layer": 12,
+                "defaultValue": 0.0,
+                "points": [],
+                "size": 0,
+                "max": 0
+            },
+            {
+                "deformer": "skinCluster_Sail1",
+                "source": "L_arm_tip",
+                "shape": "SailShape",
+                "layer": 13,
+                "defaultValue": 0.0,
+                "points": [],
+                "size": 0,
+                "max": 0
+            },
+            {
+                "deformer": "skinCluster_Sail1",
+                "source": "L_sail_top_5_tip",
+                "shape": "SailShape",
+                "layer": 14,
+                "defaultValue": 0.0,
+                "points": [
+                    {
+                        "index": 23,
+                        "value": 1.0
+                    }
+                ],
+                "size": 1,
+                "max": 23
+            },
+            {
+                "deformer": "skinCluster_Sail1",
+                "source": "L_sail_top_4",
+                "shape": "SailShape",
+                "layer": 15,
+                "defaultValue": 0.0,
+                "points": [
+                    {
+                        "index": 18,
+                        "value": 1.0
+                    }
+                ],
+                "size": 1,
+                "max": 18
+            },
+            {
+                "deformer": "skinCluster_Sail1",
+                "source": "L_sail_top_3",
+                "shape": "SailShape",
+                "layer": 16,
+                "defaultValue": 0.0,
+                "points": [
+                    {
+                        "index": 13,
+                        "value": 1.0
+                    }
+                ],
+                "size": 1,
+                "max": 13
+            },
+            {
+                "deformer": "skinCluster_Sail1",
+                "source": "L_sail_top_2",
+                "shape": "SailShape",
+                "layer": 17,
+                "defaultValue": 0.0,
+                "points": [
+                    {
+                        "index": 8,
+                        "value": 1.0
+                    }
+                ],
+                "size": 1,
+                "max": 8
+            },
+            {
+                "deformer": "skinCluster_Sail1",
+                "source": "L_sail_top_1",
+                "shape": "SailShape",
+                "layer": 18,
+                "defaultValue": 0.0,
+                "points": [
+                    {
+                        "index": 24,
+                        "value": 1.0
+                    }
+                ],
+                "size": 1,
+                "max": 24
+            },
+            {
+                "deformer": "skinCluster_Sail1",
+                "source": "L_sail_row2_1",
+                "shape": "SailShape",
+                "layer": 19,
+                "defaultValue": 0.0,
+                "points": [
+                    {
+                        "index": 3,
+                        "value": 1.0
+                    }
+                ],
+                "size": 1,
+                "max": 3
+            },
+            {
+                "deformer": "skinCluster_Sail1",
+                "source": "L_sail_row2_2",
+                "shape": "SailShape",
+                "layer": 20,
+                "defaultValue": 0.0,
+                "points": [
+                    {
+                        "index": 7,
+                        "value": 1.0
+                    }
+                ],
+                "size": 1,
+                "max": 7
+            },
+            {
+                "deformer": "skinCluster_Sail1",
+                "source": "L_sail_row2_3",
+                "shape": "SailShape",
+                "layer": 21,
+                "defaultValue": 0.0,
+                "points": [
+                    {
+                        "index": 12,
+                        "value": 1.0
+                    }
+                ],
+                "size": 1,
+                "max": 12
+            },
+            {
+                "deformer": "skinCluster_Sail1",
+                "source": "L_sail_row2_4",
+                "shape": "SailShape",
+                "layer": 22,
+                "defaultValue": 0.0,
+                "points": [
+                    {
+                        "index": 17,
+                        "value": 1.0
+                    }
+                ],
+                "size": 1,
+                "max": 17
+            },
+            {
+                "deformer": "skinCluster_Sail1",
+                "source": "L_sail_row2_5_tip",
+                "shape": "SailShape",
+                "layer": 23,
+                "defaultValue": 0.0,
+                "points": [
+                    {
+                        "index": 22,
+                        "value": 1.0
+                    }
+                ],
+                "size": 1,
+                "max": 22
+            },
+            {
+                "deformer": "skinCluster_Sail1",
+                "source": "L_sail_row3_1",
+                "shape": "SailShape",
+                "layer": 24,
+                "defaultValue": 0.0,
+                "points": [
+                    {
+                        "index": 2,
+                        "value": 1.0
+                    }
+                ],
+                "size": 1,
+                "max": 2
+            },
+            {
+                "deformer": "skinCluster_Sail1",
+                "source": "L_sail_row3_2",
+                "shape": "SailShape",
+                "layer": 25,
+                "defaultValue": 0.0,
+                "points": [
+                    {
+                        "index": 6,
+                        "value": 1.0
+                    }
+                ],
+                "size": 1,
+                "max": 6
+            },
+            {
+                "deformer": "skinCluster_Sail1",
+                "source": "L_sail_row3_3",
+                "shape": "SailShape",
+                "layer": 26,
+                "defaultValue": 0.0,
+                "points": [
+                    {
+                        "index": 11,
+                        "value": 1.0
+                    }
+                ],
+                "size": 1,
+                "max": 11
+            },
+            {
+                "deformer": "skinCluster_Sail1",
+                "source": "L_sail_row3_4",
+                "shape": "SailShape",
+                "layer": 27,
+                "defaultValue": 0.0,
+                "points": [
+                    {
+                        "index": 16,
+                        "value": 1.0
+                    }
+                ],
+                "size": 1,
+                "max": 16
+            },
+            {
+                "deformer": "skinCluster_Sail1",
+                "source": "L_sail_row3_5_tip",
+                "shape": "SailShape",
+                "layer": 28,
+                "defaultValue": 0.0,
+                "points": [
+                    {
+                        "index": 21,
+                        "value": 1.0
+                    }
+                ],
+                "size": 1,
+                "max": 21
+            },
+            {
+                "deformer": "skinCluster_Sail1",
+                "source": "L_sail_row4_1",
+                "shape": "SailShape",
+                "layer": 29,
+                "defaultValue": 0.0,
+                "points": [
+                    {
+                        "index": 1,
+                        "value": 1.0
+                    }
+                ],
+                "size": 1,
+                "max": 1
+            },
+            {
+                "deformer": "skinCluster_Sail1",
+                "source": "L_sail_row4_2",
+                "shape": "SailShape",
+                "layer": 30,
+                "defaultValue": 0.0,
+                "points": [
+                    {
+                        "index": 5,
+                        "value": 1.0
+                    }
+                ],
+                "size": 1,
+                "max": 5
+            },
+            {
+                "deformer": "skinCluster_Sail1",
+                "source": "L_sail_row4_3",
+                "shape": "SailShape",
+                "layer": 31,
+                "defaultValue": 0.0,
+                "points": [
+                    {
+                        "index": 10,
+                        "value": 1.0
+                    }
+                ],
+                "size": 1,
+                "max": 10
+            },
+            {
+                "deformer": "skinCluster_Sail1",
+                "source": "L_sail_row4_4",
+                "shape": "SailShape",
+                "layer": 32,
+                "defaultValue": 0.0,
+                "points": [
+                    {
+                        "index": 15,
+                        "value": 1.0
+                    }
+                ],
+                "size": 1,
+                "max": 15
+            },
+            {
+                "deformer": "skinCluster_Sail1",
+                "source": "L_sail_row4_5_tip",
+                "shape": "SailShape",
+                "layer": 33,
+                "defaultValue": 0.0,
+                "points": [
+                    {
+                        "index": 20,
+                        "value": 1.0
+                    }
+                ],
+                "size": 1,
+                "max": 20
+            }
+        ]
+    }
+}
