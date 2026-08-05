@@ -303,7 +303,7 @@ transform = Transform3D(0.99998814, 1.9984014e-15, 0.004869937, 2.7755576e-16, 1
 unique_name_in_owner = true
 transform = Transform3D(0.9999863, 0, 0.005235964, 0, 1, 0, -0.005235964, 0, 0.9999863, -2.963, 1.832, -5.481)
 
-[node name="Skeleton3D" parent="Visuals/Wing_Left" index="0" unique_id=958516206]
+[node name="Skeleton3D" parent="Visuals/Wing_Left" index="0" unique_id=871938099]
 bones/10/rotation = Quaternion(-1.0408341e-17, -3.081488e-33, 0, 1)
 bones/20/rotation = Quaternion(1.3010426e-18, 8.6736174e-19, -2.7755576e-17, 1)
 bones/25/rotation = Quaternion(-4.3368087e-19, 0, 1.3877788e-17, 1)
@@ -311,7 +311,7 @@ bones/30/rotation = Quaternion(2.6020852e-18, 3.469447e-18, 0, 1)
 bones/32/position = Vector3(159.17075, 7.1054274e-14, -5.684342e-14)
 bones/35/rotation = Quaternion(0, -3.469447e-18, 0, 1)
 
-[node name="Joint" parent="Visuals/Wing_Left/Skeleton3D" index="2" unique_id=1495842872]
+[node name="Joint" parent="Visuals/Wing_Left/Skeleton3D" index="2" unique_id=727416379]
 process_mode = 4
 visible = false
 surface_material_override/0 = ExtResource("4_hbc1n")
@@ -353,7 +353,7 @@ transform = Transform3D(0.14782777, 0.8714398, 0.4676951, 0.8510835, 0.12879556,
 unique_name_in_owner = true
 transform = Transform3D(-0.9999863, 0, 0.005235964, 0, 1, 0, 0.005235964, 0, 0.9999863, 2.963, 1.832, -5.481)
 
-[node name="Skeleton3D" parent="Visuals/Wing_Right" index="0" unique_id=958516206]
+[node name="Skeleton3D" parent="Visuals/Wing_Right" index="0" unique_id=871938099]
 bones/10/rotation = Quaternion(-1.0408341e-17, -3.081488e-33, 0, 1)
 bones/20/rotation = Quaternion(1.3010426e-18, 8.6736174e-19, -2.7755576e-17, 1)
 bones/25/rotation = Quaternion(-4.3368087e-19, 0, 1.3877788e-17, 1)
@@ -361,7 +361,7 @@ bones/30/rotation = Quaternion(2.6020852e-18, 3.469447e-18, 0, 1)
 bones/32/position = Vector3(159.17075, 7.1054274e-14, -5.684342e-14)
 bones/35/rotation = Quaternion(0, -3.469447e-18, 0, 1)
 
-[node name="Joint" parent="Visuals/Wing_Right/Skeleton3D" index="2" unique_id=1495842872]
+[node name="Joint" parent="Visuals/Wing_Right/Skeleton3D" index="2" unique_id=727416379]
 process_mode = 4
 visible = false
 surface_material_override/0 = ExtResource("4_hbc1n")
