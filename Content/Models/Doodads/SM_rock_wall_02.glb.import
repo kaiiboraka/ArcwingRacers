@@ -43,8 +43,8 @@ _subresources={
 "materials": {
 "stone": {
 "use_external/enabled": true,
-"use_external/fallback_path": "res://Content/Materials/stone.tres",
-"use_external/path": "uid://bk5ua8nwtyg7c"
+"use_external/fallback_path": "res://Content/Materials/M_stone.tres",
+"use_external/path": "uid://pp1tiy2adn3l"
 }
 },
 "nodes": {

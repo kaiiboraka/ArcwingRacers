@@ -8,35 +8,25 @@
 [ext_resource type="PackedScene" uid="uid://bdnuklyimpace" path="res://Content/Models/Doodads/SM_rock_wall_03.glb" id="6_iyl2v"]
 [ext_resource type="PackedScene" uid="uid://xskqf03ju65p" path="res://addons/Custom_Nodes/ExtendableWall/ExtendableWall.tscn" id="7_dy8ob"]
 [ext_resource type="Script" uid="uid://3l243a44cncc" path="res://Systems/Track/spline_point_data.gd" id="8_10ci5"]
+[ext_resource type="Material" uid="uid://b3accgfymm6r2" path="res://Content/Materials/M_dirt_big.tres" id="8_ufwmt"]
 [ext_resource type="Script" uid="uid://dkyobseeo0c7n" path="res://Systems/Track/spline.gd" id="9_f4ioe"]
 [ext_resource type="Script" uid="uid://ch5pjmp7ic5lh" path="res://Systems/Track/track_spline.gd" id="10_mgmc7"]
 [ext_resource type="PackedScene" uid="uid://52mr8is85mi3" path="res://Content/Scenes/Skyboxes/skybox_afternoon_sky_hills.tscn" id="11_10ci5"]
 [ext_resource type="Resource" uid="uid://wyc56bwl0pt3" path="res://Content/Test_Level_TrackSplineData.tres" id="11_ufwmt"]
+[ext_resource type="Texture2D" uid="uid://dtfr4b5vidf20" path="res://Content/Textures/HDRI/golden_gate_hills_4k.exr" id="14_b4edc"]
 
 [sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_wj5hs"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_iyl2v"]
-albedo_color = Color(0.45, 0.369, 0.369, 1)
-metallic_specular = 0.0
-emission = Color(18.892157, 9.806819, 4.6655025, 1)
-emission_energy_multiplier = 16.0
-
 [sub_resource type="PlaneMesh" id="PlaneMesh_wj5hs"]
-material = SubResource("StandardMaterial3D_iyl2v")
+material = ExtResource("8_ufwmt")
 size = Vector2(20000, 20000)
-
-[sub_resource type="Resource" id="Resource_10ci5"]
-resource_local_to_scene = true
-script = ExtResource("8_10ci5")
-flags = 1
-
-[sub_resource type="Resource" id="Resource_ufwmt"]
-resource_local_to_scene = true
-script = ExtResource("8_10ci5")
+subdivide_width = 200
+subdivide_depth = 200
 
 [sub_resource type="Resource" id="Resource_b4edc"]
 resource_local_to_scene = true
 script = ExtResource("8_10ci5")
+flags = 1
 
 [sub_resource type="Resource" id="Resource_f1f0g"]
 resource_local_to_scene = true
@@ -166,7 +156,15 @@ script = ExtResource("8_10ci5")
 resource_local_to_scene = true
 script = ExtResource("8_10ci5")
 
-[sub_resource type="Curve3D" id="Curve3D_plkha"]
+[sub_resource type="Resource" id="Resource_plkha"]
+resource_local_to_scene = true
+script = ExtResource("8_10ci5")
+
+[sub_resource type="Resource" id="Resource_lagfg"]
+resource_local_to_scene = true
+script = ExtResource("8_10ci5")
+
+[sub_resource type="Curve3D" id="Curve3D_88tit"]
 resource_name = "Main_Spline"
 closed = true
 bake_interval = 0.25
@@ -176,15 +174,36 @@ _data = {
 }
 point_count = 35
 script = ExtResource("9_f4ioe")
-point_data = Array[ExtResource("8_10ci5")]([SubResource("Resource_10ci5"), SubResource("Resource_ufwmt"), SubResource("Resource_b4edc"), SubResource("Resource_f1f0g"), SubResource("Resource_ydmu4"), SubResource("Resource_tks8d"), SubResource("Resource_0vxxn"), SubResource("Resource_n70bg"), SubResource("Resource_7wscn"), SubResource("Resource_o72uh"), SubResource("Resource_j84e5"), SubResource("Resource_0lxio"), SubResource("Resource_nvica"), SubResource("Resource_hmtux"), SubResource("Resource_f8qj4"), SubResource("Resource_qeawq"), SubResource("Resource_ndfhm"), SubResource("Resource_4005e"), SubResource("Resource_wo3q2"), SubResource("Resource_1w3gd"), SubResource("Resource_fe5xm"), SubResource("Resource_4kx2u"), SubResource("Resource_awjn4"), SubResource("Resource_tw28w"), SubResource("Resource_7mxe8"), SubResource("Resource_8mrgg"), SubResource("Resource_knjn7"), SubResource("Resource_nx86o"), SubResource("Resource_862fn"), SubResource("Resource_f8hg3"), SubResource("Resource_htu76"), SubResource("Resource_pkgtq"), SubResource("Resource_fmqs3"), SubResource("Resource_nst2s"), SubResource("Resource_0ys6a")])
+point_data = Array[ExtResource("8_10ci5")]([SubResource("Resource_b4edc"), SubResource("Resource_f1f0g"), SubResource("Resource_ydmu4"), SubResource("Resource_tks8d"), SubResource("Resource_0vxxn"), SubResource("Resource_n70bg"), SubResource("Resource_7wscn"), SubResource("Resource_o72uh"), SubResource("Resource_j84e5"), SubResource("Resource_0lxio"), SubResource("Resource_nvica"), SubResource("Resource_hmtux"), SubResource("Resource_f8qj4"), SubResource("Resource_qeawq"), SubResource("Resource_ndfhm"), SubResource("Resource_4005e"), SubResource("Resource_wo3q2"), SubResource("Resource_1w3gd"), SubResource("Resource_fe5xm"), SubResource("Resource_4kx2u"), SubResource("Resource_awjn4"), SubResource("Resource_tw28w"), SubResource("Resource_7mxe8"), SubResource("Resource_8mrgg"), SubResource("Resource_knjn7"), SubResource("Resource_nx86o"), SubResource("Resource_862fn"), SubResource("Resource_f8hg3"), SubResource("Resource_htu76"), SubResource("Resource_pkgtq"), SubResource("Resource_fmqs3"), SubResource("Resource_nst2s"), SubResource("Resource_0ys6a"), SubResource("Resource_plkha"), SubResource("Resource_lagfg")])
 metadata/_custom_type_script = "uid://dkyobseeo0c7n"
+
+[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_0irts"]
+panorama = ExtResource("14_b4edc")
+
+[sub_resource type="Sky" id="Sky_nd3ke"]
+sky_material = SubResource("PanoramaSkyMaterial_0irts")
+radiance_size = 4
+
+[sub_resource type="Environment" id="Environment_duirk"]
+background_mode = 2
+sky = SubResource("Sky_nd3ke")
+sky_rotation = Vector3(0, 2.0577433, 0)
+ssao_enabled = true
+glow_enabled = true
+fog_enabled = true
+fog_mode = 1
+fog_density = 1.0
+fog_aerial_perspective = 1.0
+fog_sky_affect = 0.0
+fog_depth_curve = 2.0000012
+fog_depth_begin = 5.0
+fog_depth_end = 600.0
 
 [node name="Test_Level" type="Node3D" unique_id=421134206]
 
 [node name="StartingLine" parent="." unique_id=583602706 instance=ExtResource("2_wg3kv")]
 
 [node name="Arcwing" parent="." unique_id=612795873 instance=ExtResource("1_26u2p")]
-max_speed = 200.0
 repair_tick_rate = 0.1
 
 [node name="Rocks" type="Node3D" parent="." unique_id=2066083512]
@@ -640,10 +659,15 @@ mesh = SubResource("PlaneMesh_wj5hs")
 metadata/_edit_lock_ = true
 
 [node name="TrackSpline" type="Path3D" parent="." unique_id=888770020]
-curve = SubResource("Curve3D_plkha")
+curve = SubResource("Curve3D_88tit")
 script = ExtResource("10_mgmc7")
 data = ExtResource("11_ufwmt")
 metadata/_custom_type_script = "uid://ch5pjmp7ic5lh"
 
 [node name="Skybox_AfternoonSky" parent="." unique_id=886949906 instance=ExtResource("11_10ci5")]
 transform = Transform3D(0.4679298, 0, -0.8837656, 0, 1, 0, 0.8837656, 0, 0.4679298, 0, 0, 0)
+
+[node name="WorldEnvironment" parent="Skybox_AfternoonSky" index="1" unique_id=31880974]
+environment = SubResource("Environment_duirk")
+
+[editable path="Skybox_AfternoonSky"]
