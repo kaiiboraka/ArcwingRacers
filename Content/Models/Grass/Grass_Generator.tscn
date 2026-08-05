@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://dpvw2ss5oeguq"]
+
+[ext_resource type="Script" uid="uid://fcbovbcwsaw1" path="res://Content/Models/Grass/grass_generator.gd" id="1_yisdq"]
+[ext_resource type="PackedScene" uid="uid://druf3fny7sqq6" path="res://Content/Models/Grass/grass_chunk.tscn" id="2_u1mwn"]
+
+[node name="Grass_Generator" type="Node3D" unique_id=437054596]
+script = ExtResource("1_yisdq")
+blade_width = Vector2(0.1, 0.2)
+chunk_scene = ExtResource("2_u1mwn")

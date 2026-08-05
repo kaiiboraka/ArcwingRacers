@@ -95,6 +95,15 @@ pitch drive when no turn/tilt is active (a plain airborne nose-up opens BOTH win
 - `wing_open_pitch_gain : float = 1.0` — fraction of full nose deflection toward
   Full/Closed (airborne only). 1.0 = full nose-up → Full, full nose-down → Closed.
 - `wing_open_step_rate : float = 0.6667` — openness units/sec (1 state per 0.5s at default).
+- `wing_open_tilt_speed_mult : float = 4.0` — playback-speed multiplier on the ladder travel
+  while tilting (added 2026-08): ramps with `tilt_frac` to this multiple at full roll so the
+  air-side wing snaps to Full and the ground-side wing snaps to Closed.
+- `wing_open_boost_speed_mult : float = 4.0` — playback-speed multiplier while a boost-state
+  override is active (added 2026-08): CHARGING/READY → both Squeezed, BOOSTING → both Full snap
+  into place at this multiple.
+  Both are computed per frame in `_wing_open_speed_mult(tilt_frac, boost_open)` (future
+  circumstances plug in there); passed to `_drive_wing_open` which scales
+  `wing_open_step_rate * speed_mult * delta`.
 - `wing_open_rest_pose : float = 2.0 / 3.0` — neutral openness (default Open; the pod's
   parked look).
 

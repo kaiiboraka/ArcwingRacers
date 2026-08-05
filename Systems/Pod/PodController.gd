@@ -223,6 +223,19 @@ const MPH_TO_MPS : float = 1.0 / MPS_TO_MPH;
 ## Intended purpose: cadence of the open/close ladder — the library cycles one state per 0.5s, so the default 2.0/3.0 crosses one state boundary (1/3 openness) every half second.[br][br]
 ## Higher = snappier ladder; lower = slower, floatier transitions.
 @export var wing_open_step_rate : float = 0.6667;
+## Playback-speed multiplier applied to the wing open/close travel while the pod is
+## tilting (ship-tilt roll in progress). The ladder normally cycles one state per 0.5s;
+## a tilt is a committed roll that reads better when the air-side wing snaps to Full and
+## the ground-side wing snaps to Closed, so tilt ramps travel up to this multiple at full
+## roll (lerped with tilt_frac, 1.0 when not tilting).[br][br]
+## Higher = wings slam to Full/Closed the moment the pod rolls over; 1.0 = tilt uses the normal cadence.
+@export var wing_open_tilt_speed_mult : float = 4.0;
+## Playback-speed multiplier applied to the wing open/close travel while a boost-state
+## override is active (CHARGING/READY → both wings Squeezed, BOOSTING → both Full). Those are
+## discrete command states that read better when the wings snap, not float, into place.[br][br]
+## Higher = wings slam to Squeezed/Full the instant the boost state enters; 1.0 = boost
+## overrides use the normal cadence.
+@export var wing_open_boost_speed_mult : float = 4.0;
 ## Resting wing openness (0–1) when turn, pitch, and tilt are all neutral, snapped to the nearest ladder state.[br][br]
 ## Default 2.0/3.0 = Open — the pod's resting look (matches the scene's Idle_Open autoplay on both wing players).[br][br]
 ## Higher = wings rest more open (1.0 = Full); lower = more closed (0.0 = Closed).
@@ -802,12 +815,26 @@ func _wing_open_anim(delta, input) -> void:
 	var tilt_frac : float = 0.0;
 	if tilt_max_angle > 0.0:
 		tilt_frac = clampf(absf(_tilt_roll) / deg_to_rad(tilt_max_angle), 0.0, 1.0);
+	var speed_mult : float = _wing_open_speed_mult(tilt_frac, boost_open);
 	var left_inside : bool = turn_frac > 0.0;
 	var left_air_side : bool = input.tilt > 0.0;
 	var left_target : float = _wing_open_target(left_inside, left_air_side, pitch, turn_mag, tilt_frac, grounded_nose_down, boost_open);
 	var right_target : float = _wing_open_target(not left_inside, not left_air_side, pitch, turn_mag, tilt_frac, grounded_nose_down, boost_open);
-	_drive_wing_open(0, LeftWing_anim_player, left_target, delta);
-	_drive_wing_open(1, RightWing_anim_player, right_target, delta);
+	_drive_wing_open(0, LeftWing_anim_player, left_target, delta, speed_mult);
+	_drive_wing_open(1, RightWing_anim_player, right_target, delta, speed_mult);
+
+## Playback-speed multiplier for the wing open/close ladder this frame. Circumstance-driven:
+## tilting ramps travel toward wing_open_tilt_speed_mult as the roll deepens (both wings — the
+## air side snaps to Full, the ground side snaps to Closed); a boost-state override
+## (boost_open >= 0, i.e. CHARGING/READY/BOOSTING) snaps both wings at wing_open_boost_speed_mult.
+## Future circumstances plug in here.
+func _wing_open_speed_mult(tilt_frac : float, boost_open : float) -> float:
+	var mult : float = 1.0;
+	if tilt_frac > 0.0:
+		mult = maxf(mult, 1.0 + (wing_open_tilt_speed_mult - 1.0) * tilt_frac);
+	if boost_open >= 0.0:
+		mult = maxf(mult, wing_open_boost_speed_mult);
+	return mult;
 
 func _wing_open_target(is_inside : bool, is_air_side : bool, pitch : float, turn_mag : float, tilt_frac : float, grounded_nose_down : float = 0.0, boost_open : float = -1.0) -> float:
 	if boost_open >= 0.0:
@@ -831,7 +858,7 @@ func _wing_open_target(is_inside : bool, is_air_side : bool, pitch : float, turn
 			target = minf(target, lerp(wing_open_rest_pose, WING_OPEN_STATE_CLOSED, tilt_frac));
 	return clampf(target, 0.0, 1.0);
 
-func _drive_wing_open(idx : int, player : AnimationPlayer, target : float, delta : float) -> void:
+func _drive_wing_open(idx : int, player : AnimationPlayer, target : float, delta : float, speed_mult : float = 1.0) -> void:
 	if not player:
 		return;
 	var dir : int = 0;
@@ -839,7 +866,7 @@ func _drive_wing_open(idx : int, player : AnimationPlayer, target : float, delta
 		dir = 1;
 	elif target < _wing_open[idx] - 0.0001:
 		dir = -1;
-	_wing_open[idx] = move_toward(_wing_open[idx], target, wing_open_step_rate * delta);
+	_wing_open[idx] = move_toward(_wing_open[idx], target, wing_open_step_rate * speed_mult * delta);
 	var cur : float = _wing_open[idx];
 	var state : int = clampi(roundi(cur * 3.0), 0, 3);
 	var opening : bool = dir > 0;
