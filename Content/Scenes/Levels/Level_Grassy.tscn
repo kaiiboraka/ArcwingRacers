@@ -24,14 +24,10 @@ size = Vector2(2000, 2000)
 subdivide_width = 200
 subdivide_depth = 200
 
-[sub_resource type="Resource" id="Resource_46tuv"]
-resource_local_to_scene = true
-script = ExtResource("9_hc4ah")
-flags = 1
-
 [sub_resource type="Resource" id="Resource_g8spr"]
 resource_local_to_scene = true
 script = ExtResource("9_hc4ah")
+flags = 1
 
 [sub_resource type="Resource" id="Resource_dw44t"]
 resource_local_to_scene = true
@@ -165,7 +161,11 @@ script = ExtResource("9_hc4ah")
 resource_local_to_scene = true
 script = ExtResource("9_hc4ah")
 
-[sub_resource type="Curve3D" id="Curve3D_ej7iq"]
+[sub_resource type="Resource" id="Resource_ej7iq"]
+resource_local_to_scene = true
+script = ExtResource("9_hc4ah")
+
+[sub_resource type="Curve3D" id="Curve3D_aunuw"]
 resource_name = "Main_Spline"
 closed = true
 bake_interval = 0.25
@@ -175,7 +175,7 @@ _data = {
 }
 point_count = 35
 script = ExtResource("10_h4f0x")
-point_data = Array[ExtResource("9_hc4ah")]([SubResource("Resource_46tuv"), SubResource("Resource_g8spr"), SubResource("Resource_dw44t"), SubResource("Resource_uqm16"), SubResource("Resource_2y3fe"), SubResource("Resource_qaeqv"), SubResource("Resource_njj3u"), SubResource("Resource_rcdk6"), SubResource("Resource_30ukf"), SubResource("Resource_vtupm"), SubResource("Resource_hc4ah"), SubResource("Resource_h4f0x"), SubResource("Resource_fqvlm"), SubResource("Resource_pr13g"), SubResource("Resource_o8oxc"), SubResource("Resource_15o6q"), SubResource("Resource_53l28"), SubResource("Resource_lxsag"), SubResource("Resource_xbsqa"), SubResource("Resource_62pwj"), SubResource("Resource_id8mg"), SubResource("Resource_nrs7i"), SubResource("Resource_oyolg"), SubResource("Resource_tv5n8"), SubResource("Resource_y1l3m"), SubResource("Resource_yx1i1"), SubResource("Resource_nknd4"), SubResource("Resource_imvlc"), SubResource("Resource_ygxrv"), SubResource("Resource_wteer"), SubResource("Resource_1fayh"), SubResource("Resource_cel4s"), SubResource("Resource_rsqbr"), SubResource("Resource_12p8y"), SubResource("Resource_d2eht")])
+point_data = Array[ExtResource("9_hc4ah")]([SubResource("Resource_g8spr"), SubResource("Resource_dw44t"), SubResource("Resource_uqm16"), SubResource("Resource_2y3fe"), SubResource("Resource_qaeqv"), SubResource("Resource_njj3u"), SubResource("Resource_rcdk6"), SubResource("Resource_30ukf"), SubResource("Resource_vtupm"), SubResource("Resource_hc4ah"), SubResource("Resource_h4f0x"), SubResource("Resource_fqvlm"), SubResource("Resource_pr13g"), SubResource("Resource_o8oxc"), SubResource("Resource_15o6q"), SubResource("Resource_53l28"), SubResource("Resource_lxsag"), SubResource("Resource_xbsqa"), SubResource("Resource_62pwj"), SubResource("Resource_id8mg"), SubResource("Resource_nrs7i"), SubResource("Resource_oyolg"), SubResource("Resource_tv5n8"), SubResource("Resource_y1l3m"), SubResource("Resource_yx1i1"), SubResource("Resource_nknd4"), SubResource("Resource_imvlc"), SubResource("Resource_ygxrv"), SubResource("Resource_wteer"), SubResource("Resource_1fayh"), SubResource("Resource_cel4s"), SubResource("Resource_rsqbr"), SubResource("Resource_12p8y"), SubResource("Resource_d2eht"), SubResource("Resource_ej7iq")])
 metadata/_custom_type_script = "uid://dkyobseeo0c7n"
 
 [node name="Level_Grassy" type="Node3D" unique_id=421134206]
@@ -636,8 +636,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.035, 468.926)
 mesh = SubResource("PlaneMesh_wj5hs")
 metadata/_edit_lock_ = true
 
+[node name="Grass" type="Node3D" parent="." unique_id=2090523011]
+transform = Transform3D(1, 0, 5.5879354e-09, -3.7252903e-09, 1, 0, 5.5879354e-09, 0, 1, 0, -9.536743e-06, 0)
+
 [node name="TrackSpline" type="Path3D" parent="." unique_id=888770020]
-curve = SubResource("Curve3D_ej7iq")
+curve = SubResource("Curve3D_aunuw")
 script = ExtResource("11_fqvlm")
 data = ExtResource("12_pr13g")
 metadata/_custom_type_script = "uid://ch5pjmp7ic5lh"

@@ -5,7 +5,7 @@
 [resource]
 render_priority = 0
 shader = ExtResource("1")
-shader_parameter/color_top = Color(0.2856, 0.51, 0.0612, 1)
+shader_parameter/color_top = Color(0.20016171, 0.3682717, 0.03242808, 1)
 shader_parameter/color_bottom = Color(0.0784314, 0.14902, 0.0117647, 1)
 shader_parameter/deg_sway_pitch = 80.0
 shader_parameter/deg_sway_yaw = 45.0

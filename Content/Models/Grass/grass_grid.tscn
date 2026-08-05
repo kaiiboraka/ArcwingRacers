@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://gyyv587hwfnf"]
+
+[ext_resource type="Script" uid="uid://cumu1hy6gr04h" path="res://Content/Models/Grass/grass_grid.gd" id="1_xg30u"]
+[ext_resource type="PackedScene" uid="uid://druf3fny7sqq6" path="res://Content/Models/Grass/grass_chunk_20.tscn" id="2_3caii"]
+
+[node name="Grass_Grid" type="Node3D" unique_id=797721740]
+script = ExtResource("1_xg30u")
+chunk_scene = ExtResource("2_3caii")
