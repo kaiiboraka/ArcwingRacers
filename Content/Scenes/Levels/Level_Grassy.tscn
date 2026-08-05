@@ -6,7 +6,6 @@
 [ext_resource type="PackedScene" uid="uid://bdnuklyimpace" path="res://Content/Models/Doodads/SM_rock_wall_03.glb" id="4_qaeqv"]
 [ext_resource type="PackedScene" uid="uid://d7dnvvk3mjxr" path="res://Content/Models/Doodads/SM_rock_wall_02.glb" id="5_njj3u"]
 [ext_resource type="PackedScene" uid="uid://ymjhu8j5b0ul" path="res://Content/Models/Doodads/SM_spire_01.glb" id="6_rcdk6"]
-[ext_resource type="PackedScene" uid="uid://xskqf03ju65p" path="res://addons/Custom_Nodes/ExtendableWall/ExtendableWall.tscn" id="7_30ukf"]
 [ext_resource type="PackedScene" uid="uid://gyyv587hwfnf" path="res://Content/Models/Grass/grass_grid.tscn" id="8_g8spr"]
 [ext_resource type="PackedScene" uid="uid://dhayk7ccamfuf" path="res://Content/Models/Doodads/tree.tscn" id="9_dw44t"]
 [ext_resource type="Script" uid="uid://3l243a44cncc" path="res://Systems/Track/spline_point_data.gd" id="9_hc4ah"]
@@ -17,10 +16,18 @@
 [ext_resource type="PackedScene" uid="uid://w0q3x65i5xif" path="res://Content/Models/Doodads/sm_tree_cone_01.tscn" id="12_qaeqv"]
 [ext_resource type="PackedScene" uid="uid://52mr8is85mi3" path="res://Content/Scenes/Skyboxes/skybox_afternoon_sky_hills.tscn" id="13_o8oxc"]
 
-[sub_resource type="Resource" id="Resource_njj3u"]
+[sub_resource type="Resource" id="Resource_2y3fe"]
 resource_local_to_scene = true
 script = ExtResource("9_hc4ah")
 flags = 1
+
+[sub_resource type="Resource" id="Resource_qaeqv"]
+resource_local_to_scene = true
+script = ExtResource("9_hc4ah")
+
+[sub_resource type="Resource" id="Resource_njj3u"]
+resource_local_to_scene = true
+script = ExtResource("9_hc4ah")
 
 [sub_resource type="Resource" id="Resource_rcdk6"]
 resource_local_to_scene = true
@@ -150,15 +157,7 @@ script = ExtResource("9_hc4ah")
 resource_local_to_scene = true
 script = ExtResource("9_hc4ah")
 
-[sub_resource type="Resource" id="Resource_lwpcb"]
-resource_local_to_scene = true
-script = ExtResource("9_hc4ah")
-
-[sub_resource type="Resource" id="Resource_gris6"]
-resource_local_to_scene = true
-script = ExtResource("9_hc4ah")
-
-[sub_resource type="Curve3D" id="Curve3D_in2tn"]
+[sub_resource type="Curve3D" id="Curve3D_lwpcb"]
 resource_name = "Main_Spline"
 closed = true
 bake_interval = 0.25
@@ -168,7 +167,7 @@ _data = {
 }
 point_count = 35
 script = ExtResource("10_h4f0x")
-point_data = Array[ExtResource("9_hc4ah")]([SubResource("Resource_njj3u"), SubResource("Resource_rcdk6"), SubResource("Resource_30ukf"), SubResource("Resource_vtupm"), SubResource("Resource_hc4ah"), SubResource("Resource_h4f0x"), SubResource("Resource_fqvlm"), SubResource("Resource_pr13g"), SubResource("Resource_o8oxc"), SubResource("Resource_15o6q"), SubResource("Resource_53l28"), SubResource("Resource_lxsag"), SubResource("Resource_xbsqa"), SubResource("Resource_62pwj"), SubResource("Resource_id8mg"), SubResource("Resource_nrs7i"), SubResource("Resource_oyolg"), SubResource("Resource_tv5n8"), SubResource("Resource_y1l3m"), SubResource("Resource_yx1i1"), SubResource("Resource_nknd4"), SubResource("Resource_imvlc"), SubResource("Resource_ygxrv"), SubResource("Resource_wteer"), SubResource("Resource_1fayh"), SubResource("Resource_cel4s"), SubResource("Resource_rsqbr"), SubResource("Resource_12p8y"), SubResource("Resource_d2eht"), SubResource("Resource_ej7iq"), SubResource("Resource_aunuw"), SubResource("Resource_cnh5c"), SubResource("Resource_ejtfb"), SubResource("Resource_lwpcb"), SubResource("Resource_gris6")])
+point_data = Array[ExtResource("9_hc4ah")]([SubResource("Resource_2y3fe"), SubResource("Resource_qaeqv"), SubResource("Resource_njj3u"), SubResource("Resource_rcdk6"), SubResource("Resource_30ukf"), SubResource("Resource_vtupm"), SubResource("Resource_hc4ah"), SubResource("Resource_h4f0x"), SubResource("Resource_fqvlm"), SubResource("Resource_pr13g"), SubResource("Resource_o8oxc"), SubResource("Resource_15o6q"), SubResource("Resource_53l28"), SubResource("Resource_lxsag"), SubResource("Resource_xbsqa"), SubResource("Resource_62pwj"), SubResource("Resource_id8mg"), SubResource("Resource_nrs7i"), SubResource("Resource_oyolg"), SubResource("Resource_tv5n8"), SubResource("Resource_y1l3m"), SubResource("Resource_yx1i1"), SubResource("Resource_nknd4"), SubResource("Resource_imvlc"), SubResource("Resource_ygxrv"), SubResource("Resource_wteer"), SubResource("Resource_1fayh"), SubResource("Resource_cel4s"), SubResource("Resource_rsqbr"), SubResource("Resource_12p8y"), SubResource("Resource_d2eht"), SubResource("Resource_ej7iq"), SubResource("Resource_aunuw"), SubResource("Resource_cnh5c"), SubResource("Resource_ejtfb")])
 metadata/_custom_type_script = "uid://dkyobseeo0c7n"
 
 [sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_wj5hs"]
@@ -195,7 +194,7 @@ transform = Transform3D(0.9848078, 0, 0.17364816, 0, 1, 0, -0.17364816, 0, 0.984
 racers_to_load = [NodePath("../Arcwing")]
 
 [node name="TrackSpline" type="Path3D" parent="." unique_id=888770020]
-curve = SubResource("Curve3D_in2tn")
+curve = SubResource("Curve3D_lwpcb")
 script = ExtResource("11_fqvlm")
 data = ExtResource("12_pr13g")
 metadata/_custom_type_script = "uid://ch5pjmp7ic5lh"
@@ -210,16 +209,16 @@ repair_tick_rate = 0.1
 transform = Transform3D(-0.017090486, 0, -0.99985397, 0, 1, 0, 0.99985397, 0, -0.017090486, -156.98074, -3.796, -44.99861)
 
 [node name="SM_rock_wall_03" parent="Rocks" unique_id=2118265676 instance=ExtResource("4_qaeqv")]
-transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -137.14157, 4.326, -185.60303)
+transform = Transform3D(-0.7660445, 0, 0.6427875, 0, 1, 0, -0.6427875, 0, -0.7660445, -165.58325, 4.326, -105.03584)
 
 [node name="SM_rock_wall_09" parent="Rocks" unique_id=896194556 instance=ExtResource("4_qaeqv")]
 transform = Transform3D(0.11461355, 0, 0.99341017, -0.5871228, 0.80665874, 0.06773861, -0.801343, -0.5910175, 0.09245402, -152.88454, 25.163654, -51.76756)
 
 [node name="SM_rock_wall_04" parent="Rocks" unique_id=1918293414 instance=ExtResource("4_qaeqv")]
-transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -375.5227, 4.3260307, 32.201416)
+transform = Transform3D(-0.9848077, 0, -0.17364827, 0, 1, 0, 0.17364827, 0, -0.9848077, -379.2811, 4.3260307, -17.907211)
 
 [node name="SM_rock_wall_05" parent="Rocks" unique_id=770379880 instance=ExtResource("4_qaeqv")]
-transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 86.05603, 4.3260307, 486.58942)
+transform = Transform3D(-0.9063077, 0, -0.42261836, 0, 1, 0, 0.42261836, 0, -0.9063077, 78.40837, 4.3260307, 522.20013)
 
 [node name="SM_rock_wall_06" parent="Rocks" unique_id=2015987045 instance=ExtResource("4_qaeqv")]
 transform = Transform3D(0.9041166, 0, -0.42728597, 0, 1, 0, 0.42728597, 0, 0.9041166, 122.12395, 4.3260307, 229.98462)
@@ -231,7 +230,7 @@ transform = Transform3D(0.9041166, 0, -0.42728597, 0, 1, 0, 0.42728597, 0, 0.904
 transform = Transform3D(0.9041166, 0, -0.42728597, 0, 1, 0, 0.42728597, 0, 0.9041166, 149.599, 4.326, 896.4887)
 
 [node name="SM_rock_wall_14" parent="Rocks" unique_id=427253697 instance=ExtResource("4_qaeqv")]
-transform = Transform3D(-0.427286, 0, -0.9041166, 0, 1, 0, 0.9041166, 0, -0.427286, 135.10793, -5.674, 646.3088)
+transform = Transform3D(-1.0770884, 0, -0.638829, 0, 1, 0, 0.8943606, 0, -0.7693488, 135.10793, -0.6739998, 646.3088)
 
 [node name="outer_wall" type="Node3D" parent="Rocks" unique_id=2090417264]
 transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0)
@@ -763,6 +762,9 @@ transform = Transform3D(6.2999997, 0, 0, 0, 9, 0, 0, 0, 7.2000003, -540, -15, -4
 [node name="SM_tree_cone_02" parent="Rocks" unique_id=429784029 instance=ExtResource("12_qaeqv")]
 transform = Transform3D(6.2999997, 0, 0, 0, 9, 0, 0, 0, 7.2000003, -600, -15, -25)
 
+[node name="SM_rock_wall_15" parent="Rocks" unique_id=123364208 instance=ExtResource("3_2y3fe")]
+transform = Transform3D(-0.34202015, 1.2216004, -1.0244549e-09, 0.08189963, 0.038751747, -1.0958142, -0.9361168, -0.44293427, -0.09587135, -137.31876, -9.252238, 1201.0164)
+
 [node name="Spires" type="Node3D" parent="." unique_id=979514155]
 
 [node name="SM_spire_03" parent="Spires" unique_id=2122090247 instance=ExtResource("6_rcdk6")]
@@ -770,10 +772,6 @@ transform = Transform3D(0.7975855, 0, -2.178799, 0, 1, 0, 0.6032059, 0, 2.880904
 
 [node name="SM_spire_04" parent="Spires" unique_id=1452509985 instance=ExtResource("6_rcdk6")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 3.6120317, 15.286816, -1.5258788e-05, 1018.095)
-
-[node name="ExtendableWall" parent="." unique_id=1149585584 instance=ExtResource("7_30ukf")]
-transform = Transform3D(-0.6449288, -0.67231995, 0.3633905, 0, 0.47549102, 0.87972057, -0.76424265, 0.5673571, -0.30665785, -211.38463, 0.632293, -111.4559)
-size = Vector3(20, 26, 11.599998)
 
 [node name="WorldFloor" type="StaticBody3D" parent="." unique_id=1223787576]
 axis_lock_linear_x = true

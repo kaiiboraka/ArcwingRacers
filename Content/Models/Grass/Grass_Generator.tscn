@@ -4,4 +4,5 @@
 
 [node name="Grass_Generator" type="Node3D" unique_id=455209844]
 script = ExtResource("1_yisdq")
+density = 5.0
 chunk_size = 20.0
