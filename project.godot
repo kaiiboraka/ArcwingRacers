@@ -49,12 +49,13 @@ ScreenEffects="*uid://mdeofcf6dtj"
 
 [display]
 
-window/size/viewport_width=1600
-window/size/viewport_height=900
+window/size/viewport_width=1920
+window/size/viewport_height=1080
 window/size/resizable=false
 window/size/extend_to_title=true
 window/size/sharp_corners=true
 window/stretch/mode="canvas_items"
+window/stretch/scale_mode="integer"
 window/icon="uid://cxanvdcmlwtu6"
 window/physics_interpolation=false
 

@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://dsme70m87xf00"]
 
 [ext_resource type="Material" uid="uid://dkkifw0on5tng" path="res://Content/Materials/M_invisible.tres" id="1_abq3a"]
-[ext_resource type="Material" uid="uid://dfp1fhglykru5" path="res://Content/Materials/M_grass.tres" id="2_uywlj"]
+[ext_resource type="Material" uid="uid://dfp1fhglykru5" path="res://Content/Materials/M_shader_grass.tres" id="2_uywlj"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_f4770"]
 material = ExtResource("1_abq3a")

@@ -14,6 +14,7 @@ corner_radius_bottom_left = 10
 [node name="DebugManager" type="CanvasLayer" unique_id=1442710505]
 layer = 10
 script = ExtResource("1_ccbrj")
+enabled = false
 property_entry_scene = ExtResource("2_bw1w2")
 
 [node name="DebugInputs" type="Node" parent="." unique_id=865701920]

@@ -4,5 +4,9 @@
 
 [node name="Grass_Generator" type="Node3D" unique_id=455209844]
 script = ExtResource("1_yisdq")
-density = 5.0
+sway_yaw = Vector2(0, 8)
+sway_pitch = Vector2(0.04, 0.1)
+blade_width = Vector2(0.3, 0.5)
+blade_height = Vector2(0.75, 3.5)
+density = 2.5
 chunk_size = 20.0

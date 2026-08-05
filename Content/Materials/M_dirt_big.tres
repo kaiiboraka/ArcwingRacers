@@ -3,49 +3,36 @@
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_tw5kw"]
 
 [sub_resource type="NoiseTexture2D" id="NoiseTexture2D_10ci5"]
-width = 4096
-height = 4096
+resource_local_to_scene = true
+width = 300
+height = 600
 noise = SubResource("FastNoiseLite_tw5kw")
 
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_ufwmt"]
-width = 4096
-height = 4096
-noise = SubResource("FastNoiseLite_tw5kw")
-
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_b4edc"]
-width = 4096
-height = 4096
-noise = SubResource("FastNoiseLite_tw5kw")
-
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_cw3ks"]
-width = 4096
-height = 4096
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_67n6f"]
+resource_local_to_scene = true
+width = 300
+height = 600
 noise = SubResource("FastNoiseLite_tw5kw")
 as_normal_map = true
-
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_f1f0g"]
-width = 4096
-height = 4096
-noise = SubResource("FastNoiseLite_tw5kw")
 
 [resource]
 albedo_color = Color(0.4509804, 0.36862746, 0.36862746, 1)
 albedo_texture = SubResource("NoiseTexture2D_10ci5")
 metallic_specular = 0.0
-roughness_texture = SubResource("NoiseTexture2D_f1f0g")
+roughness_texture = SubResource("NoiseTexture2D_10ci5")
 roughness_texture_channel = 4
 emission = Color(18.892157, 9.806819, 4.6655025, 1)
 emission_energy_multiplier = 16.0
 normal_enabled = true
-normal_texture = SubResource("NoiseTexture2D_cw3ks")
+normal_texture = SubResource("NoiseTexture2D_67n6f")
 ao_enabled = true
 ao_light_affect = 0.2
-ao_texture = SubResource("NoiseTexture2D_ufwmt")
+ao_texture = SubResource("NoiseTexture2D_10ci5")
 ao_texture_channel = 4
 heightmap_enabled = true
 heightmap_scale = 0.25
 heightmap_deep_parallax = true
 heightmap_min_layers = 8
 heightmap_max_layers = 32
-heightmap_texture = SubResource("NoiseTexture2D_b4edc")
+heightmap_texture = SubResource("NoiseTexture2D_10ci5")
 texture_filter = 5
