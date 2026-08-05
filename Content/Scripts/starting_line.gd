@@ -51,6 +51,8 @@ func _rebuild_grid():
 		var idx : int = _parse_index(child.name);
 		if child is Marker3D and idx != -1:
 			grid_entries[idx] = child;
+		elif child is Node3D:
+			continue;
 		else:
 			child.queue_free();
 

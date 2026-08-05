@@ -1,0 +1,5 @@
+[gd_scene format=3 uid="uid://ugaptw3wumt1"]
+
+[ext_resource type="PackedScene" uid="uid://we1bqw3xdfua" path="res://Content/Models/Doodads/SM_tree_cone_02.glb" id="1_0wo5e"]
+
+[node name="SM_tree_cone_02" unique_id=1628465547 instance=ExtResource("1_0wo5e")]

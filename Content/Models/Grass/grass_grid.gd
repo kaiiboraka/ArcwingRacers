@@ -32,16 +32,10 @@ const _SIZE_PATTERN := "^(.*[\\/])?grass_chunk_([0-9]+(?:_[0-9]+)?)\\.tscn$"
 		grid_height = maxi(value, 1)
 		_rebuild_dirty()
 
-## Rotate each tiled chunk by a random 90° multiple so the repeated patch doesn't read as one
-## obvious copy. Safe to mix freely: a 90° rotation keeps the square footprint flush.
-@export var randomize_chunks : bool = true:
-	set(value):
-		randomize_chunks = value
-		_rebuild_dirty()
 
 ## Side of one chunk in meters, parsed from chunk_scene's filename. Used as grid spacing; you
 ## normally never touch this. Falls back to chunk_size_fallback when the filename can't be read.
-@export var chunk_size : float = 0.0:
+var chunk_size : float = 0.0:
 	set(value):
 		chunk_size = value
 		_rebuild_dirty()
@@ -77,11 +71,8 @@ func _rebuild() -> void:
 			var inst : Node3D = chunk_scene.instantiate() as Node3D
 			inst.name = "GrassChunk_%d_%d" % [ix, iz]
 			add_child(inst)
-			if owner:
-				inst.owner = owner
+			#inst.owner = self
 			inst.position = Vector3(ix * size, 0.0, iz * size) - half
-			if randomize_chunks:
-				inst.rotation_degrees.y = float(randi_range(0, 3) * 90)
 
 ## Prefer the size read from the filename; fall back to chunk_size_fallback.
 func _resolved_chunk_size() -> float:

@@ -1,0 +1,5 @@
+[gd_scene format=3 uid="uid://bhhol84dkqddh"]
+
+[ext_resource type="PackedScene" uid="uid://cwwjf60364b7f" path="res://Content/Models/Doodads/SM_tree_round_02.glb" id="1_vhgua"]
+
+[node name="SM_tree_round_02" unique_id=779855159 instance=ExtResource("1_vhgua")]

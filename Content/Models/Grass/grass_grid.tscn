@@ -6,3 +6,4 @@
 [node name="Grass_Grid" type="Node3D" unique_id=797721740]
 script = ExtResource("1_xg30u")
 chunk_scene = ExtResource("2_3caii")
+grid_width = 3

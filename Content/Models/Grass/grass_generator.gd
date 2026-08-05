@@ -20,8 +20,8 @@ const GrassFactory = preload("./grass_factory.gd")
 
 @export var sway_yaw : Vector2 = Vector2(0.0, 10.0)
 @export var sway_pitch : Vector2 = Vector2(0.04, 0.08)
-@export var blade_width : Vector2 = Vector2(0.1, 0.2)
-@export var blade_height : Vector2 = Vector2(1, 3)
+@export var blade_width : Vector2 = Vector2(0.2, 0.3)
+@export var blade_height : Vector2 = Vector2(1, 2.5)
 ## Blades per square meter. On a 40 m chunk a density of 1.0 gives ~1600 blades per chunk.
 @export var density : float = 2.0:
 	set(new_value):
