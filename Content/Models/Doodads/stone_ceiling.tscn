@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://ctpxqqc2fo7bx"]
+
+[ext_resource type="PackedScene" uid="uid://d7dnvvk3mjxr" path="res://Content/Models/Doodads/SM_rock_wall_02.glb" id="1_nqhrm"]
+[ext_resource type="PackedScene" uid="uid://bdnuklyimpace" path="res://Content/Models/Doodads/SM_rock_wall_03.glb" id="2_2gp8u"]
+
+[node name="Ceiling" type="Node3D" unique_id=1597952138]
+
+[node name="SM_rock_wall_08" parent="." unique_id=1494184742 instance=ExtResource("1_nqhrm")]
+transform = Transform3D(1.0946295, -0.21535826, -0.15227376, 0.18123199, 0.7421571, 1.0278172, -0.049927086, -2.0276556, 0.39237195, 14.150727, 48.646152, 47.63965)
+
+[node name="SM_rock_wall_09" parent="." unique_id=2026919089 instance=ExtResource("1_nqhrm")]
+transform = Transform3D(1.1105589, -0.02810643, -0.0017633074, -0.0006440453, 0.16803981, -1.1073179, 0.014479168, 2.1632237, 0.08599384, 10.241409, 39.27388, -68.336914)
+
+[node name="SM_rock_wall_05" parent="." unique_id=427253697 instance=ExtResource("2_2gp8u")]
+transform = Transform3D(-1.3847797, -0.60532236, 0.10581322, 0, 0.42808336, 1.0422611, -0.5669464, 1.4785138, -0.2584512, 16.827484, 57.719666, -11.285877)
