@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bbhemq76j3uf2"
-path="res://.godot/imported/diamond bg BIG border.PNG-926e3434eed7d3286e13f0b537f7efc6.ctex"
+uid="uid://bv5js10gjp1le"
+path="res://.godot/imported/top-bar_gradient.png-f50d2ca60c663b40851cbd07bf5d4f31.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://UI/HUD/Light/diamond bg BIG border.PNG"
-dest_files=["res://.godot/imported/diamond bg BIG border.PNG-926e3434eed7d3286e13f0b537f7efc6.ctex"]
+source_file="res://UI/HUD/top-bar_gradient.png"
+dest_files=["res://.godot/imported/top-bar_gradient.png-f50d2ca60c663b40851cbd07bf5d4f31.ctex"]
 
 [params]
 

@@ -1,6 +1,11 @@
 [gd_scene format=3 uid="uid://c1gnx5bseg8ac"]
 
+[ext_resource type="Texture2D" uid="uid://bv5js10gjp1le" path="res://UI/HUD/top-bar_gradient.png" id="1_2ptjp"]
+[ext_resource type="PackedScene" uid="uid://d1hrwm72m604c" path="res://UI/MinMaxValuesLabel.tscn" id="1_gppie"]
+[ext_resource type="FontFile" uid="uid://xeik5cdgmhrh" path="res://UI/Fonts/MinasansBold-m2mmP.otf" id="1_uk570"]
 [ext_resource type="PackedScene" uid="uid://6v2cl3ywfpn4" path="res://UI/HUD/Spedometer/spedometer.tscn" id="1_yixhe"]
+[ext_resource type="Theme" uid="uid://b3feribuv55rf" path="res://Content/Themes/Minasans_Theme.tres" id="3_f2wx0"]
+[ext_resource type="Script" uid="uid://bbqgfxq3wr1x0" path="res://UI/HUD/RaceHUD/race_hud.gd" id="4_gppie"]
 
 [node name="HUD_Control" type="Control" unique_id=1390710289]
 layout_mode = 3
@@ -25,8 +30,88 @@ theme_override_constants/margin_bottom = 20
 [node name="Top_Control" type="Control" parent="HUD_Margin" unique_id=1503482771]
 layout_mode = 2
 
-[node name="TopBar_HBoxContainer" type="HBoxContainer" parent="HUD_Margin/Top_Control" unique_id=1383697863]
+[node name="NinePatchRect" type="NinePatchRect" parent="HUD_Margin/Top_Control" unique_id=1213129277]
+self_modulate = Color(0.21568628, 0.78431374, 1, 1)
 layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = -10.0
+offset_bottom = 130.0
+grow_horizontal = 2
+texture = ExtResource("1_2ptjp")
+region_rect = Rect2(0, 0, 160, 56)
+patch_margin_left = 32
+patch_margin_top = 16
+patch_margin_right = 32
+
+[node name="TopBar_HBoxContainer" type="HBoxContainer" parent="HUD_Margin/Top_Control/NinePatchRect" unique_id=1383697863]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 12.0
+offset_bottom = 128.0
+grow_horizontal = 2
+alignment = 1
+
+[node name="Position_VBoxContainer2" type="VBoxContainer" parent="HUD_Margin/Top_Control/NinePatchRect/TopBar_HBoxContainer" unique_id=850654038]
+layout_mode = 2
+size_flags_horizontal = 10
+
+[node name="Pos_Label" type="Label" parent="HUD_Margin/Top_Control/NinePatchRect/TopBar_HBoxContainer/Position_VBoxContainer2" unique_id=1399151579]
+layout_mode = 2
+size_flags_vertical = 10
+offset_transform_enabled = true
+offset_transform_position = Vector2(-8, 0)
+theme = ExtResource("3_f2wx0")
+theme_override_fonts/font = ExtResource("1_uk570")
+theme_override_font_sizes/font_size = 32
+text = "POS"
+
+[node name="MinMaxValuesLabel" parent="HUD_Margin/Top_Control/NinePatchRect/TopBar_HBoxContainer/Position_VBoxContainer2" unique_id=372772368 instance=ExtResource("1_gppie")]
+layout_mode = 2
+offset_transform_enabled = true
+offset_transform_position = Vector2(-16, 0)
+
+[node name="Time_VBoxContainer" type="VBoxContainer" parent="HUD_Margin/Top_Control/NinePatchRect/TopBar_HBoxContainer" unique_id=841860565]
+layout_mode = 2
+size_flags_horizontal = 6
+
+[node name="Time_Label" type="Label" parent="HUD_Margin/Top_Control/NinePatchRect/TopBar_HBoxContainer/Time_VBoxContainer" unique_id=1761985136]
+layout_mode = 2
+size_flags_vertical = 10
+theme = ExtResource("3_f2wx0")
+theme_override_fonts/font = ExtResource("1_uk570")
+theme_override_font_sizes/font_size = 32
+text = "TIME"
+horizontal_alignment = 1
+
+[node name="Timer_RichTextLabel" type="RichTextLabel" parent="HUD_Margin/Top_Control/NinePatchRect/TopBar_HBoxContainer/Time_VBoxContainer" unique_id=1625928337]
+clip_contents = false
+layout_mode = 2
+theme = ExtResource("3_f2wx0")
+theme_override_font_sizes/normal_font_size = 48
+theme_override_font_sizes/mono_font_size = 250
+bbcode_enabled = true
+text = "00:00.000"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[node name="Lap_VBoxContainer" type="VBoxContainer" parent="HUD_Margin/Top_Control/NinePatchRect/TopBar_HBoxContainer" unique_id=1307760349]
+layout_mode = 2
+size_flags_horizontal = 2
+
+[node name="Lap_Label" type="Label" parent="HUD_Margin/Top_Control/NinePatchRect/TopBar_HBoxContainer/Lap_VBoxContainer" unique_id=377832194]
+layout_mode = 2
+size_flags_vertical = 10
+theme = ExtResource("3_f2wx0")
+theme_override_fonts/font = ExtResource("1_uk570")
+theme_override_font_sizes/font_size = 32
+text = "LAP"
+
+[node name="MinMaxValuesLabel" parent="HUD_Margin/Top_Control/NinePatchRect/TopBar_HBoxContainer/Lap_VBoxContainer" unique_id=1701166069 instance=ExtResource("1_gppie")]
+layout_mode = 2
 
 [node name="Bottom_Control" type="Control" parent="HUD_Margin" unique_id=1743586221]
 custom_minimum_size = Vector2(0, 350)
@@ -54,3 +139,43 @@ theme_override_constants/margin_right = 400
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 0
+
+[node name="RaceHud" type="Control" parent="HUD_Margin" unique_id=569667684]
+layout_mode = 2
+mouse_filter = 2
+script = ExtResource("4_gppie")
+
+[node name="Screen_CenterContainer" type="CenterContainer" parent="HUD_Margin" unique_id=783965078]
+layout_mode = 2
+
+[node name="Countdown_RichTextLabel" type="RichTextLabel" parent="HUD_Margin/Screen_CenterContainer" unique_id=1890641817]
+unique_name_in_owner = true
+clip_contents = false
+layout_mode = 2
+theme = ExtResource("3_f2wx0")
+theme_override_colors/default_color = Color(0, 0.8901961, 1, 1)
+theme_override_font_sizes/normal_font_size = 250
+theme_override_font_sizes/bold_font_size = 250
+theme_override_font_sizes/bold_italics_font_size = 250
+theme_override_font_sizes/italics_font_size = 250
+theme_override_font_sizes/mono_font_size = 250
+bbcode_enabled = true
+text = "[b]3"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[node name="Finished_RichTextLabel" type="RichTextLabel" parent="HUD_Margin/Screen_CenterContainer" unique_id=1886824090]
+unique_name_in_owner = true
+clip_contents = false
+layout_mode = 2
+theme = ExtResource("3_f2wx0")
+theme_override_colors/default_color = Color(1, 0.8901961, 0, 1)
+theme_override_font_sizes/bold_italics_font_size = 84
+bbcode_enabled = true
+text = "[b][i]FINISH"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1

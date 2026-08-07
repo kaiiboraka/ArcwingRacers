@@ -33,3 +33,19 @@ signal overheat_ended()
 ## OVERHEAT, so it gets its own channel) — HUD subscribes to tint the light.
 signal repair_started()
 signal repair_ended()
+
+# Race (RaceManager → HUD). Naming follows technical/race-manager.md.
+## Every RaceManager.State transition (PREGAME/COUNTDOWN/RACING/FINISHED).
+signal race_state_changed(state : int)
+## PREGAME complete — the pod is on the grid and locked; the intro can start.
+signal race_pregame_ready()
+## Countdown numerals 3, 2, 1 (one per second).
+signal race_countdown_tick(tick : int)
+## GO — countdown over, controls unlocked, race clock just started.
+signal race_countdown_go()
+## RACING entered (the running clock begins; countdown _go_ already fired).
+signal race_started()
+## A lap was completed: lap number (1-based), its time, and the new best lap (INF→unset).
+signal race_lap_completed(lap : int, lap_time : float, best_lap : float)
+## Race over: total elapsed time and all completed lap times.
+signal race_finished(total_time : float, lap_times : Array)

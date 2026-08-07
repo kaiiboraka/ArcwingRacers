@@ -1,10 +1,25 @@
 # Plan: Race Vertical Slice (Time Trial First)
 
-Status: 🔜 DRAFT (2026-08-02). For discussion — not yet committed to. Priority per user:
-**timer + laps first**, before AI and the input-buffer slot model. Floor goal is a playable
-time trial in `Test_Level`: countdown, drive N laps, live lap/best-lap/total time, finish +
-results. Design homes: `technical/race-manager.md`, `technical/starting-grid-and-race-start.md`,
+Status: ✅ COMMITTED (2026-08-07). Priority per user: **timer + laps first**, before ALI and
+the input-buffer slot model. Floor goal is a playable time trial: countdown, drive N laps,
+live lap/best-lap/total time, finish + banner — wired into the current prototype level
+(`Level_Grassy.tscn`, the project's main scene) with the HUD living in the global `HUD.tscn`.
+Design homes: `technical/race-manager.md`, `technical/starting-grid-and-race-start.md`,
 `technical/input-buffer.md`, `game-design/race-structure/race-manager.md`, `game-design/hud/hud.md`.
+
+Open decisions resolved at commit time (2026-08-07, user + agent conversation):
+- Decision 1 (EventBus now or later): **now** — EventBus already exists
+  (`Systems/Events/event_bus.gd` autoload, ADR 0002); race signals are added there and the
+  HUD subscribes via EventBus (per ADR 0002). Direct signals would have been fine but are
+  not needed.
+- Decision 2 (wrap vs waypoints): **forward seam-wrap only**, keep the hook. `Test_`-level
+  has no branches in play.
+- Decision 3 (lap count): exported `total_laps`, default 3, per scene.
+- Decision 4 — RaceManager as scene node: yes, added to `Level_Grassy.tscn`; LapTracker is
+  a `RefCounted` owned by RaceManager (no extra scene node needed).
+- Decision 6 (results): finish banner + times on the HUD; full results screen deferred.
+- Stretch (takeoff boost): **deferred** to a follow-up — the slice stays small and does not
+  touch pod boost/heat code.
 
 ## Goal
 

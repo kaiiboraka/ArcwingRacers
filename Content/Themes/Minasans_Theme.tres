@@ -1,0 +1,41 @@
+[gd_resource type="Theme" format=3 uid="uid://b3feribuv55rf"]
+
+[ext_resource type="FontFile" uid="uid://xeik5cdgmhrh" path="res://UI/Fonts/MinasansBold-m2mmP.otf" id="1_km85t"]
+[ext_resource type="FontFile" uid="uid://bji78r500j7ed" path="res://UI/Fonts/MinasansItalic-7OmmP.otf" id="2_eombp"]
+[ext_resource type="FontFile" uid="uid://dvu4vxds3q44a" path="res://UI/Fonts/MinasansLight-dr88K.otf" id="3_eombp"]
+[ext_resource type="FontFile" uid="uid://bjifctc1o8sj0" path="res://UI/Fonts/Minasans-KVaBX.otf" id="3_x1uhw"]
+[ext_resource type="FontFile" uid="uid://cxqub0sfewm4v" path="res://UI/Fonts/Anta-Regular.ttf" id="5_x1uhw"]
+
+[sub_resource type="FontVariation" id="FontVariation_nvlkt"]
+base_font = ExtResource("1_km85t")
+
+[sub_resource type="FontVariation" id="FontVariation_4l8yg"]
+base_font = ExtResource("1_km85t")
+variation_transform = Transform2D(1, 0.3, 0, 1, 0, 0)
+spacing_glyph = 3
+
+[sub_resource type="FontVariation" id="FontVariation_7veuk"]
+base_font = ExtResource("2_eombp")
+
+[sub_resource type="FontVariation" id="FontVariation_hyvcf"]
+base_font = ExtResource("3_eombp")
+
+[resource]
+default_font = ExtResource("5_x1uhw")
+Label/colors/font_shadow_color = Color(0, 0, 0, 1)
+Label/constants/outline_size = 4
+Label/constants/shadow_offset_x = 4
+Label/constants/shadow_offset_y = 3
+Label/constants/shadow_outline_size = 12
+Label/font_sizes/font_size = 16
+Label/fonts/font = ExtResource("3_x1uhw")
+RichTextLabel/colors/font_shadow_color = Color(0, 0, 0, 1)
+RichTextLabel/constants/outline_size = 4
+RichTextLabel/constants/shadow_offset_x = 4
+RichTextLabel/constants/shadow_offset_y = 3
+RichTextLabel/constants/shadow_outline_size = 12
+RichTextLabel/fonts/bold_font = SubResource("FontVariation_nvlkt")
+RichTextLabel/fonts/bold_italics_font = SubResource("FontVariation_4l8yg")
+RichTextLabel/fonts/italics_font = SubResource("FontVariation_7veuk")
+RichTextLabel/fonts/light_font = SubResource("FontVariation_hyvcf")
+RichTextLabel/fonts/normal_font = ExtResource("3_x1uhw")

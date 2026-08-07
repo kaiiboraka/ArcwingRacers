@@ -415,6 +415,14 @@ var _part_health : Array[float] = [];
 var _repairing : bool = false;
 var _overheat_repair_remaining : float = 0.0;
 
+## When true, the pod ignores all player input: _physics_process early-returns (parked on the
+## starting grid). The leading RaceManager drives this during PREGAME/COUNTDOWN and clears it
+## on GO. The spedometer is zeroed while locked so it doesn't show a stale reading.
+var input_locked : bool = false;
+
+func set_input_locked(locked : bool) -> void:
+	input_locked = locked;
+
 func _ready():
 	if Engine.is_editor_hint():
 		return;
@@ -462,6 +470,10 @@ func _ready():
 
 func _physics_process(delta):
 	if Engine.is_editor_hint():
+		return;
+
+	if input_locked:
+		EventBus.speed_updated.emit(0.0, 0.0);
 		return;
 
 	var input = InputCollector;

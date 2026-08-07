@@ -18,6 +18,7 @@
 [ext_resource type="PackedScene" uid="uid://52mr8is85mi3" path="res://Content/Scenes/Skyboxes/skybox_afternoon_sky_hills.tscn" id="13_o8oxc"]
 [ext_resource type="Material" uid="uid://dds22dhg4h8h6" path="res://Content/Materials/M_grass_texture.tres" id="16_qaeqv"]
 [ext_resource type="Material" uid="uid://b3accgfymm6r2" path="res://Content/Materials/M_dirt_big.tres" id="17_njj3u"]
+[ext_resource type="Script" uid="uid://cg5ng2hacr6hn" path="res://Systems/Race/race_manager.gd" id="19_rcdk6"]
 
 [sub_resource type="Resource" id="Resource_njj3u"]
 resource_local_to_scene = true
@@ -27,6 +28,7 @@ flags = 1
 [sub_resource type="Resource" id="Resource_rcdk6"]
 resource_local_to_scene = true
 script = ExtResource("9_hc4ah")
+flags = 10
 
 [sub_resource type="Resource" id="Resource_30ukf"]
 resource_local_to_scene = true
@@ -55,6 +57,7 @@ script = ExtResource("9_hc4ah")
 [sub_resource type="Resource" id="Resource_o8oxc"]
 resource_local_to_scene = true
 script = ExtResource("9_hc4ah")
+flags = 20
 
 [sub_resource type="Resource" id="Resource_15o6q"]
 resource_local_to_scene = true
@@ -67,6 +70,7 @@ script = ExtResource("9_hc4ah")
 [sub_resource type="Resource" id="Resource_lxsag"]
 resource_local_to_scene = true
 script = ExtResource("9_hc4ah")
+flags = 10
 
 [sub_resource type="Resource" id="Resource_xbsqa"]
 resource_local_to_scene = true
@@ -139,6 +143,7 @@ script = ExtResource("9_hc4ah")
 [sub_resource type="Resource" id="Resource_ej7iq"]
 resource_local_to_scene = true
 script = ExtResource("9_hc4ah")
+flags = 8
 
 [sub_resource type="Resource" id="Resource_aunuw"]
 resource_local_to_scene = true
@@ -147,6 +152,7 @@ script = ExtResource("9_hc4ah")
 [sub_resource type="Resource" id="Resource_cnh5c"]
 resource_local_to_scene = true
 script = ExtResource("9_hc4ah")
+flags = 18
 
 [sub_resource type="Resource" id="Resource_ejtfb"]
 resource_local_to_scene = true
@@ -1135,3 +1141,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -313, 0, 1465)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="WorldFloor/WorldBoundary_Z+" unique_id=2134123651]
 shape = SubResource("WorldBoundaryShape3D_njj3u")
+
+[node name="RaceManager" type="Node" parent="." unique_id=562303923 node_paths=PackedStringArray("pod", "track", "starting_line")]
+script = ExtResource("19_rcdk6")
+pod = NodePath("../Arcwing")
+track = NodePath("../TrackSpline")
+starting_line = NodePath("../StartingLine")
