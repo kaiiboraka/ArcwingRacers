@@ -37,7 +37,7 @@ script = ExtResource("2_pygo4")
 resource_name = "Start_Right_Spline"
 bake_interval = 0.25
 _data = {
-"points": PackedVector3Array(0, 0, 0, 0, 0, 0, -35.782074, 0, -158.38998, 0, 0, 0, 0, 0, 0, -63.126663, 0, -218.34962, 0, 0, 0, 0, 0, 0, -138.39671, 0, -261.88605, 0, 0, 0, 0, 0, 0, -209.21883, 7.6293945e-06, -255.07762, 0, 0, 0, 0, 0, 0, -295.50983, 0, -184.50746, 0, 0, 0, 0, 0, 0, -363.06018, 0, -59.848557, 0, 0, 0, 0, 0, 0, -455.09232, 0, 35.208267),
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, -80.782074, 0, -158.38998, 0, 0, 0, 0, 0, 0, -88.12666, 0, -203.34962, 0, 0, 0, 0, 0, 0, -173.39671, 0, -256.88605, 0, 0, 0, 0, 0, 0, -254.21883, 7.6293945e-06, -235.07762, 0, 0, 0, 0, 0, 0, -330.50983, 0, -169.50746, 0, 0, 0, 0, 0, 0, -398.06018, 0, -84.84856, 0, 0, 0, 0, 0, 0, -460.09232, 0, 25.208267),
 "tilts": PackedFloat32Array(0, 0, 0, 0, 0, 0, 0)
 }
 point_count = 7
@@ -106,81 +106,104 @@ script = ExtResource("2_pygo4")
 resource_local_to_scene = true
 script = ExtResource("2_pygo4")
 
-[sub_resource type="Resource" id="Resource_7ki6v"]
-resource_local_to_scene = true
-script = ExtResource("2_pygo4")
-
-[sub_resource type="Curve3D" id="Curve3D_61wwr"]
+[sub_resource type="Curve3D" id="Curve3D_7ki6v"]
 resource_name = "Midway_Spline"
 bake_interval = 0.25
 _data = {
-"points": PackedVector3Array(0, 0, 0, 0, 0, 0, -615.6366, 0, 448.33252, 0, 0, 0, 0, 0, 0, -501.87488, 0, 352.40048, 0, 0, 0, 0, 0, 0, -349.22064, 0, 265.10803, 0, 0, 0, 0, 0, 0, -236.50847, 0, 267.27524, 0, 0, 0, 0, 0, 0, -145.963, 0, 326.0682, 0, 0, 0, 0, 0, 0, -97.96196, 0, 410.38748, 0, 0, 0, 0, 0, 0, -63.814224, 0, 513.46045, 0, 0, 0, 0, 0, 0, -74.09746, 0, 632.2177, 0, 0, 0, 0, 0, 0, -140.38678, 0, 756.3551, 0, 0, 0, 0, 0, 0, -194.14752, 3.0517578e-05, 879.15015, 0, 0, 0, 0, 0, 0, -176.90146, 0, 1020.2566, 0, 0, 0, 0, 0, 0, -138.16014, 0, 1048.1986, 0, 0, 0, 0, 0, 0, -93.59257, 0, 1042.4043, 0, 0, 0, 0, 0, 0, -51.070087, 0, 1000.52545, 0, 0, 0, 0, 0, 0, -5.193367, 0, 897.3786, 0, 0, 0, 0, 0, 0, 43.12281, 0, 791.1125),
-"tilts": PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, -615.6366, 0, 448.33252, 0, 0, 0, 0, 0, 0, -501.87488, 0, 352.40048, 0, 0, 0, 0, 0, 0, -349.22064, 0, 265.10803, 0, 0, 0, 0, 0, 0, -236.50847, 0, 267.27524, 0, 0, 0, 0, 0, 0, -145.963, 0, 326.0682, 0, 0, 0, 0, 0, 0, -97.96196, 0, 410.38748, 0, 0, 0, 0, 0, 0, -63.814224, 0, 513.46045, 0, 0, 0, 0, 0, 0, -74.09746, 0, 632.2177, 0, 0, 0, 0, 0, 0, -140.38678, 0, 756.3551, 0, 0, 0, 0, 0, 0, -194.14752, 3.0517578e-05, 879.15015, 0, 0, 0, 0, 0, 0, -186.90146, 0, 970.2566, 0, 0, 0, 0, 0, 0, -158.16014, 0, 1033.1986, 0, 0, 0, 0, 0, 0, -123.59257, 0, 1057.4043, 0, 0, 0, 0, 0, 0, -71.07008, 0, 1035.5254, 0, 0, 0, 0, 0, 0, -30.193367, 0, 967.3786),
+"tilts": PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 }
-point_count = 16
+point_count = 15
 script = ExtResource("1_bx276")
-point_data = Array[ExtResource("2_pygo4")]([SubResource("Resource_br3hp"), SubResource("Resource_t1ij3"), SubResource("Resource_ia80j"), SubResource("Resource_p1bb6"), SubResource("Resource_rrsa3"), SubResource("Resource_hku66"), SubResource("Resource_1v15v"), SubResource("Resource_0lohd"), SubResource("Resource_lgo6f"), SubResource("Resource_2tcvn"), SubResource("Resource_kk3dr"), SubResource("Resource_rikuf"), SubResource("Resource_1oc5y"), SubResource("Resource_5lwjx"), SubResource("Resource_d8c63"), SubResource("Resource_7ki6v")])
+point_data = Array[ExtResource("2_pygo4")]([SubResource("Resource_br3hp"), SubResource("Resource_t1ij3"), SubResource("Resource_ia80j"), SubResource("Resource_p1bb6"), SubResource("Resource_rrsa3"), SubResource("Resource_hku66"), SubResource("Resource_1v15v"), SubResource("Resource_0lohd"), SubResource("Resource_lgo6f"), SubResource("Resource_2tcvn"), SubResource("Resource_kk3dr"), SubResource("Resource_rikuf"), SubResource("Resource_1oc5y"), SubResource("Resource_5lwjx"), SubResource("Resource_d8c63")])
 path_name = "Midway"
 cyclic = false
 
+[sub_resource type="Resource" id="Resource_61wwr"]
+resource_local_to_scene = true
+script = ExtResource("2_pygo4")
+
 [sub_resource type="Resource" id="Resource_jfr6a"]
+resource_local_to_scene = true
+script = ExtResource("2_pygo4")
+
+[sub_resource type="Curve3D" id="Curve3D_4lwru"]
+resource_name = "rock split 1_Spline"
+bake_interval = 0.25
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 49.22496, 0, 670.30115, 0, 0, 0, 0, 0, 0, 33.69954, 3.0517578e-05, 521.8808),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+script = ExtResource("1_bx276")
+point_data = Array[ExtResource("2_pygo4")]([SubResource("Resource_61wwr"), SubResource("Resource_jfr6a")])
+path_name = "rock split 1"
+cyclic = false
+
+[sub_resource type="Resource" id="Resource_md2oi"]
+resource_local_to_scene = true
+script = ExtResource("2_pygo4")
+
+[sub_resource type="Curve3D" id="Curve3D_tblqr"]
+resource_name = "rock split 2_Spline"
+bake_interval = 0.25
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 104.115524, 0, 594.7126),
+"tilts": PackedFloat32Array(0)
+}
+point_count = 1
+script = ExtResource("1_bx276")
+point_data = Array[ExtResource("2_pygo4")]([SubResource("Resource_md2oi")])
+path_name = "rock split 2"
+cyclic = false
+
+[sub_resource type="Resource" id="Resource_a03j4"]
+script = ExtResource("3_4twbn")
+from_path_index = 1
+from_point_index = 6
+to_point_index = 8
+
+[sub_resource type="Resource" id="Resource_34jh2"]
+script = ExtResource("3_4twbn")
+from_point_index = 11
+to_path_index = 2
+
+[sub_resource type="Resource" id="Resource_up5qv"]
+script = ExtResource("3_4twbn")
+from_path_index = 2
+from_point_index = 14
+to_point_index = 28
+
+[sub_resource type="Resource" id="Resource_tpscb"]
+script = ExtResource("3_4twbn")
+from_path_index = 3
+to_point_index = 29
+
+[sub_resource type="Resource" id="Resource_40v3o"]
+script = ExtResource("3_4twbn")
+from_path_index = 3
+from_point_index = 1
+to_point_index = 33
+
+[sub_resource type="Resource" id="Resource_os1cy"]
+script = ExtResource("3_4twbn")
+from_path_index = 4
+to_path_index = 3
+
+[sub_resource type="Resource" id="Resource_svhv8"]
+script = ExtResource("3_4twbn")
+from_path_index = 4
+to_point_index = 31
+
+[sub_resource type="Resource" id="Resource_47euv"]
 script = ExtResource("3_4twbn")
 from_path_index = 1
 to_point_index = 1
 
-[sub_resource type="Resource" id="Resource_4lwru"]
-script = ExtResource("3_4twbn")
-from_path_index = 2
-from_point_index = 15
-to_point_index = 27
-
-[sub_resource type="Resource" id="Resource_md2oi"]
-script = ExtResource("3_4twbn")
-from_path_index = 2
-to_point_index = 11
-
-[sub_resource type="Resource" id="Resource_tblqr"]
-script = ExtResource("3_4twbn")
-from_path_index = 1
-from_point_index = 6
-to_point_index = 7
-
-[sub_resource type="Resource" id="Resource_a03j4"]
-resource_local_to_scene = true
-script = ExtResource("2_pygo4")
-flags = 1
-
-[sub_resource type="Resource" id="Resource_34jh2"]
-resource_local_to_scene = true
-script = ExtResource("2_pygo4")
-
-[sub_resource type="Resource" id="Resource_up5qv"]
-resource_local_to_scene = true
-script = ExtResource("2_pygo4")
-
-[sub_resource type="Resource" id="Resource_tpscb"]
-resource_local_to_scene = true
-script = ExtResource("2_pygo4")
-
-[sub_resource type="Resource" id="Resource_40v3o"]
-resource_local_to_scene = true
-script = ExtResource("2_pygo4")
-
-[sub_resource type="Resource" id="Resource_os1cy"]
-resource_local_to_scene = true
-script = ExtResource("2_pygo4")
-
-[sub_resource type="Resource" id="Resource_svhv8"]
-resource_local_to_scene = true
-script = ExtResource("2_pygo4")
-
-[sub_resource type="Resource" id="Resource_47euv"]
-resource_local_to_scene = true
-script = ExtResource("2_pygo4")
-
 [sub_resource type="Resource" id="Resource_ielto"]
 resource_local_to_scene = true
 script = ExtResource("2_pygo4")
+flags = 1
 
 [sub_resource type="Resource" id="Resource_ldg81"]
 resource_local_to_scene = true
@@ -286,22 +309,58 @@ script = ExtResource("2_pygo4")
 resource_local_to_scene = true
 script = ExtResource("2_pygo4")
 
-[sub_resource type="Curve3D" id="Curve3D_iqa1y"]
+[sub_resource type="Resource" id="Resource_iqa1y"]
+resource_local_to_scene = true
+script = ExtResource("2_pygo4")
+
+[sub_resource type="Resource" id="Resource_4kodp"]
+resource_local_to_scene = true
+script = ExtResource("2_pygo4")
+
+[sub_resource type="Resource" id="Resource_xqqi8"]
+resource_local_to_scene = true
+script = ExtResource("2_pygo4")
+
+[sub_resource type="Resource" id="Resource_l75yx"]
+resource_local_to_scene = true
+script = ExtResource("2_pygo4")
+
+[sub_resource type="Resource" id="Resource_d8lt7"]
+resource_local_to_scene = true
+script = ExtResource("2_pygo4")
+
+[sub_resource type="Resource" id="Resource_imyfq"]
+resource_local_to_scene = true
+script = ExtResource("2_pygo4")
+
+[sub_resource type="Resource" id="Resource_vu7y8"]
+resource_local_to_scene = true
+script = ExtResource("2_pygo4")
+
+[sub_resource type="Resource" id="Resource_k4d6c"]
+resource_local_to_scene = true
+script = ExtResource("2_pygo4")
+
+[sub_resource type="Resource" id="Resource_b6dhs"]
+resource_local_to_scene = true
+script = ExtResource("2_pygo4")
+
+[sub_resource type="Curve3D" id="Curve3D_ysemf"]
 resource_name = "Main_Spline"
 closed = true
 bake_interval = 0.25
 _data = {
-"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -30.183659, 0, -72.17536, 0, 0, 0, 0, 0, 0, -66.83301, 3.0517578e-05, -123.058975, 0, 0, 0, 0, 0, 0, -133.23328, 3.7823029, -132.7869, 0, 0, 0, 0, 0, 0, -205.95132, 0, -74.45372, 0, 0, 0, 0, 0, 0, -248.09964, 0, -13.565903, 0, 0, 0, 0, 0, 0, -292.54993, 8.59816, 51.535034, 0, 0, 0, 0, 0, 0, -489.52814, -1.5258789e-05, 134.86964, 0, 0, 0, 0, 0, 0, -576.78076, 0, 211.56111, 0, 0, 0, 0, 0, 0, -666.88306, 0, 264.70398, 0, 0, 0, 0, 0, 0, -717.04535, 3.0517578e-05, 387.498, 0, 0, 0, 0, 0, 0, -687.98596, 0, 457.68057, 0, 0, 0, 0, 0, 0, -627.39465, 0, 565.7223, 0, 0, 0, 0, 0, 0, -484.4727, 0, 632.88074, 0, 0, 0, 0, 0, 0, -390.0428, 0, 692.49884, 0, 0, 0, 0, 0, 0, -366.37735, 0, 821.3484, 0, 0, 0, 0, 0, 0, -407.8685, 0, 938.6877, 0, 0, 0, 0, 0, 0, -476.58063, 0, 1079.432, 0, 0, 0, 0, 0, 0, -472.7571, 0, 1207.4006, 0, 0, 0, 0, 0, 0, -410.9278, 0, 1287.0302, 0, 0, 0, 0, 0, 0, -296.68353, 0, 1356.368, 0, 0, 0, 0, 0, 0, -191.07878, 1.5258789e-05, 1346.8253, 0, 0, 0, 0, 0, 0, -90.40575, 0, 1309.1604, 0, 0, 0, 0, 0, 0, -0.5631504, 0, 1233.7555, 0, 0, 0, 0, 0, 0, 61.57742, 0, 1128.3641, 0, 0, 0, 0, 0, 0, 75.07982, 0, 976.1542, 0, 0, 0, 0, 0, 0, 69.08367, 0, 834.6866, 0, 0, 0, 0, 0, 0, 111.05892, 0, 679.6202, 0, 0, 0, 0, 0, 0, 162.17596, 0, 557.2273, 0, 0, 0, 0, 0, 0, 163.23083, 0, 440.5808, 0, 0, 0, 0, 0, 0, 104.114044, 0, 348.15543, 0, 0, 0, 0, 0, 0, 50.30561, 0, 240.91786, 0, 0, 0, 0, 0, 0, 40.037956, 0, 163.49242, 0, 0, 0, 0, 0, 0, 26.069992, 0, 89.78571, 0, 0, 0, 0, 0, 0, 16.649338, 0, 54.80797),
-"tilts": PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, -25, 0, 85, 0, 0, 0, 0, 0, 0, -70.183655, 0, -72.17536, 0, 0, 0, 0, 0, 0, -116.83301, 3.0517578e-05, -148.05898, 0, 0, 0, 0, 0, 0, -173.233, 0, -177.787, 0, 0, 0, 0, 0, 0, -230.95132, 0, -159.45372, 0, 0, 0, 0, 0, 0, -248.09964, 0, -88.5659, 0, 0, 0, 0, 0, 0, -277.55, 0, 6.535, 0, 0, 0, 0, 0, 0, -356.797, 0, 63.593, 0, 0, 0, 0, 0, 0, -489.52814, -1.5258789e-05, 134.86964, 0, 0, 0, 0, 0, 0, -576.78076, 0, 211.56111, 0, 0, 0, 0, 0, 0, -666.88306, 0, 264.70398, 0, 0, 0, 0, 0, 0, -717.04535, 3.0517578e-05, 387.498, 0, 0, 0, 0, 0, 0, -627.39465, 0, 565.7223, 0, 0, 0, 0, 0, 0, -484.4727, 0, 632.88074, 0, 0, 0, 0, 0, 0, -390.0428, 0, 692.49884, 0, 0, 0, 0, 0, 0, -366.37735, 0, 821.3484, 0, 0, 0, 0, 0, 0, -407.8685, 0, 938.6877, 0, 0, 0, 0, 0, 0, -476.58063, 0, 1079.432, 0, 0, 0, 0, 0, 0, -472.7571, 0, 1207.4006, 0, 0, 0, 0, 0, 0, -410.9278, 0, 1287.0302, 0, 0, 0, 0, 0, 0, -301.68353, 0, 1366.368, 0, 0, 0, 0, 0, 0, -235.04828, 8.905654e-06, 1370.7986, 0, 0, 0, 0, 0, 0, -191.07878, 1.5258789e-05, 1346.8253, 0, 0, 0, 0, 0, 0, -191.07878, 1.5258789e-05, 1346.8253, 0, 0, 0, 0, 0, 0, -90.40575, 0, 1309.1604, 0, 0, 0, 0, 0, 0, -0.5631504, 0, 1233.7555, 0, 0, 0, 0, 0, 0, 61.57742, 0, 1128.3641, 0, 0, 0, 0, 0, 0, 87.41797, 0, 1008.63214, 0, 0, 0, 0, 0, 0, 44.08367, 0, 899.6866, 0, 0, 0, 0, 0, 0, 81.05892, 0, 804.6202, 0, 0, 0, 0, 0, 0, 181.2849, 0, 668.3755, 0, 0, 0, 0, 0, 0, 157.17596, 0, 537.2273, 0, 0, 0, 0, 0, 0, 153.23083, 0, 480.5808, 0, 0, 0, 0, 0, 0, 54.114044, 0, 398.15543, 0, 0, 0, 0, 0, 0, 10.305611, 0, 270.91785, 0, 0, 0, 0, 0, 0, -23.930008, 0, 139.7857),
+"tilts": PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 }
-point_count = 35
+point_count = 36
 script = ExtResource("1_bx276")
-point_data = Array[ExtResource("2_pygo4")]([SubResource("Resource_a03j4"), SubResource("Resource_34jh2"), SubResource("Resource_up5qv"), SubResource("Resource_tpscb"), SubResource("Resource_40v3o"), SubResource("Resource_os1cy"), SubResource("Resource_svhv8"), SubResource("Resource_47euv"), SubResource("Resource_ielto"), SubResource("Resource_ldg81"), SubResource("Resource_otqmp"), SubResource("Resource_h1cfo"), SubResource("Resource_wl7kj"), SubResource("Resource_cbb1o"), SubResource("Resource_dsp2g"), SubResource("Resource_ddt4g"), SubResource("Resource_jwp4i"), SubResource("Resource_p6i1l"), SubResource("Resource_okrh5"), SubResource("Resource_21kd1"), SubResource("Resource_xy4cg"), SubResource("Resource_1bf5p"), SubResource("Resource_trbww"), SubResource("Resource_5udhd"), SubResource("Resource_shfrf"), SubResource("Resource_ecw50"), SubResource("Resource_f1rxj"), SubResource("Resource_5836v"), SubResource("Resource_rih42"), SubResource("Resource_8cnpe"), SubResource("Resource_hpeew"), SubResource("Resource_64yxs"), SubResource("Resource_ooi55"), SubResource("Resource_txun5"), SubResource("Resource_ajvva")])
+point_data = Array[ExtResource("2_pygo4")]([SubResource("Resource_ielto"), SubResource("Resource_ldg81"), SubResource("Resource_otqmp"), SubResource("Resource_h1cfo"), SubResource("Resource_wl7kj"), SubResource("Resource_cbb1o"), SubResource("Resource_dsp2g"), SubResource("Resource_ddt4g"), SubResource("Resource_jwp4i"), SubResource("Resource_p6i1l"), SubResource("Resource_okrh5"), SubResource("Resource_21kd1"), SubResource("Resource_xy4cg"), SubResource("Resource_1bf5p"), SubResource("Resource_trbww"), SubResource("Resource_5udhd"), SubResource("Resource_shfrf"), SubResource("Resource_ecw50"), SubResource("Resource_f1rxj"), SubResource("Resource_5836v"), SubResource("Resource_rih42"), SubResource("Resource_8cnpe"), SubResource("Resource_hpeew"), SubResource("Resource_64yxs"), SubResource("Resource_ooi55"), SubResource("Resource_txun5"), SubResource("Resource_ajvva"), SubResource("Resource_iqa1y"), SubResource("Resource_4kodp"), SubResource("Resource_xqqi8"), SubResource("Resource_l75yx"), SubResource("Resource_d8lt7"), SubResource("Resource_imyfq"), SubResource("Resource_vu7y8"), SubResource("Resource_k4d6c"), SubResource("Resource_b6dhs")])
 metadata/_custom_type_script = "uid://dkyobseeo0c7n"
 
 [resource]
 script = ExtResource("4_tcxc8")
-main_curve = SubResource("Curve3D_iqa1y")
-alternate_paths = Array[ExtResource("1_bx276")]([SubResource("Curve3D_lyuog"), SubResource("Curve3D_61wwr")])
-branches = Array[ExtResource("3_4twbn")]([SubResource("Resource_jfr6a"), SubResource("Resource_4lwru"), SubResource("Resource_md2oi"), SubResource("Resource_tblqr")])
+main_curve = SubResource("Curve3D_ysemf")
+alternate_paths = Array[ExtResource("1_bx276")]([SubResource("Curve3D_lyuog"), SubResource("Curve3D_7ki6v"), SubResource("Curve3D_4lwru"), SubResource("Curve3D_tblqr")])
+branches = Array[ExtResource("3_4twbn")]([SubResource("Resource_a03j4"), SubResource("Resource_34jh2"), SubResource("Resource_up5qv"), SubResource("Resource_tpscb"), SubResource("Resource_40v3o"), SubResource("Resource_os1cy"), SubResource("Resource_svhv8"), SubResource("Resource_47euv")])
 metadata/_custom_type_script = "uid://cguaiwyhsvuir"

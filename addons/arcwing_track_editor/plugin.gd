@@ -52,6 +52,12 @@ var _main_spline_watching : Spline;
 var _name_watched_splines : Array[Spline] = [];
 var _spline_name_snapshot : Array[String] = [];
 
+## The built-in Path3D toolbar's "Delete Point" toggle button, resolved lazily. When it is
+## pressed, the built-in handles clicks over MAIN-path points and forwards everything else to
+## us — so an LMB click that reaches us during that tool is necessarily over an alternate-path
+## point (or empty space) and we delete it ourselves. See _builtin_delete_point_active().
+var _builtin_delete_button : Button;
+
 
 func _enter_tree() -> void:
 	_gizmo_plugin = TrackSplineGizmoPluginScript.new();
@@ -382,6 +388,13 @@ func _forward_3d_gui_input(camera : Camera3D, event : InputEvent) -> int:
 	# ctrl/shift/meta drive selection and snapping. Let the viewport handle those.
 	if mb.alt_pressed or mb.shift_pressed or mb.ctrl_pressed or mb.meta_pressed:
 		return EditorPlugin.AFTER_GUI_INPUT_PASS;
+	# The built-in Path3D "Delete Point" tool only removes points from Path3D.curve (the
+	# MAIN path) — it never sees alternate_paths. It forwards input before this plugin, so a
+	# Delete-tool click that misses every main-path point (i.e. one over an alternate point)
+	# reaches us here. When that tool is active, treat an LMB click like our right-click
+	# remove: delete the point under the cursor on whatever path it lives on.
+	if mb.button_index == MOUSE_BUTTON_LEFT and _builtin_delete_point_active():
+		return _remove_point_click(camera, mb.position);
 	if mb.button_index == MOUSE_BUTTON_RIGHT:
 		return _remove_point_click(camera, mb.position);
 	if _mode == MODE_EDIT:
@@ -393,6 +406,39 @@ func _forward_3d_gui_input(camera : Camera3D, event : InputEvent) -> int:
 	if _mode == MODE_WIRE:
 		return _wire_click(camera, mb.position);
 	return EditorPlugin.AFTER_GUI_INPUT_PASS;
+
+
+## True while the built-in Path3D toolbar's "Delete Point" toggle is pressed. Resolved by
+## walking the editor UI for the toggle button (tooltip "Delete Point"); cached after the
+## first hit. When false, the built-in is in Select/Add/etc. mode and we must NOT turn LMB
+## into a delete (that would break point dragging and selection).
+func _builtin_delete_point_active() -> bool:
+	if _builtin_delete_button == null or not is_instance_valid(_builtin_delete_button):
+		_builtin_delete_button = _find_builtin_delete_button();
+	return _builtin_delete_button != null and _builtin_delete_button.button_pressed
+
+
+func _find_builtin_delete_button() -> Button:
+	# Our own toolbar is added to EditorPlugin.CONTAINER_SPATIAL_EDITOR_MENU, which Godot
+	# maps to Node3DEditor::add_control_to_menu_panel() — the same context_toolbar_hbox that
+	# receives the built-in Path3D toolbar (topmenu_bar). So searching the parent container's
+	# subtree is far tighter (and more reliable) than walking the whole editor UI.
+	if _toolbar == null or _toolbar.get_parent() == null:
+		return null;
+	return _search_for_delete_button(_toolbar.get_parent())
+
+
+func _search_for_delete_button(node : Node) -> Button:
+	for child in node.get_children():
+		if child == _toolbar:
+			continue;
+		var btn := child as Button;
+		if btn and btn.toggle_mode and btn.tooltip_text == "Delete Point":
+			return btn;
+		var found := _search_for_delete_button(child);
+		if found:
+			return found;
+	return null;
 
 
 ## Left-click over a point in EDIT mode selects it for the live path-data dock. Selecting on

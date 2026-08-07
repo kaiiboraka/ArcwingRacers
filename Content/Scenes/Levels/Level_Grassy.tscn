@@ -160,17 +160,21 @@ script = ExtResource("9_hc4ah")
 resource_local_to_scene = true
 script = ExtResource("9_hc4ah")
 
+[sub_resource type="Resource" id="Resource_in2tn"]
+resource_local_to_scene = true
+script = ExtResource("9_hc4ah")
+
 [sub_resource type="Curve3D" id="Curve3D_in2tn"]
 resource_name = "Main_Spline"
 closed = true
 bake_interval = 0.25
 _data = {
-"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -30.183659, 0, -72.17536, 0, 0, 0, 0, 0, 0, -66.83301, 3.0517578e-05, -123.058975, 0, 0, 0, 0, 0, 0, -133.23328, 3.7823029, -132.7869, 0, 0, 0, 0, 0, 0, -205.95132, 0, -74.45372, 0, 0, 0, 0, 0, 0, -248.09964, 0, -13.565903, 0, 0, 0, 0, 0, 0, -292.54993, 8.59816, 51.535034, 0, 0, 0, 0, 0, 0, -489.52814, -1.5258789e-05, 134.86964, 0, 0, 0, 0, 0, 0, -576.78076, 0, 211.56111, 0, 0, 0, 0, 0, 0, -666.88306, 0, 264.70398, 0, 0, 0, 0, 0, 0, -717.04535, 3.0517578e-05, 387.498, 0, 0, 0, 0, 0, 0, -687.98596, 0, 457.68057, 0, 0, 0, 0, 0, 0, -627.39465, 0, 565.7223, 0, 0, 0, 0, 0, 0, -484.4727, 0, 632.88074, 0, 0, 0, 0, 0, 0, -390.0428, 0, 692.49884, 0, 0, 0, 0, 0, 0, -366.37735, 0, 821.3484, 0, 0, 0, 0, 0, 0, -407.8685, 0, 938.6877, 0, 0, 0, 0, 0, 0, -476.58063, 0, 1079.432, 0, 0, 0, 0, 0, 0, -472.7571, 0, 1207.4006, 0, 0, 0, 0, 0, 0, -410.9278, 0, 1287.0302, 0, 0, 0, 0, 0, 0, -296.68353, 0, 1356.368, 0, 0, 0, 0, 0, 0, -191.07878, 1.5258789e-05, 1346.8253, 0, 0, 0, 0, 0, 0, -90.40575, 0, 1309.1604, 0, 0, 0, 0, 0, 0, -0.5631504, 0, 1233.7555, 0, 0, 0, 0, 0, 0, 61.57742, 0, 1128.3641, 0, 0, 0, 0, 0, 0, 75.07982, 0, 976.1542, 0, 0, 0, 0, 0, 0, 69.08367, 0, 834.6866, 0, 0, 0, 0, 0, 0, 111.05892, 0, 679.6202, 0, 0, 0, 0, 0, 0, 162.17596, 0, 557.2273, 0, 0, 0, 0, 0, 0, 163.23083, 0, 440.5808, 0, 0, 0, 0, 0, 0, 104.114044, 0, 348.15543, 0, 0, 0, 0, 0, 0, 50.30561, 0, 240.91786, 0, 0, 0, 0, 0, 0, 40.037956, 0, 163.49242, 0, 0, 0, 0, 0, 0, 26.069992, 0, 89.78571, 0, 0, 0, 0, 0, 0, 16.649338, 0, 54.80797),
-"tilts": PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, -25, 0, 85, 0, 0, 0, 0, 0, 0, -70.183655, 0, -72.17536, 0, 0, 0, 0, 0, 0, -116.83301, 3.0517578e-05, -148.05898, 0, 0, 0, 0, 0, 0, -173.233, 0, -177.787, 0, 0, 0, 0, 0, 0, -230.95132, 0, -159.45372, 0, 0, 0, 0, 0, 0, -248.09964, 0, -88.5659, 0, 0, 0, 0, 0, 0, -277.55, 0, 6.535, 0, 0, 0, 0, 0, 0, -356.797, 0, 63.593, 0, 0, 0, 0, 0, 0, -489.52814, -1.5258789e-05, 134.86964, 0, 0, 0, 0, 0, 0, -576.78076, 0, 211.56111, 0, 0, 0, 0, 0, 0, -666.88306, 0, 264.70398, 0, 0, 0, 0, 0, 0, -717.04535, 3.0517578e-05, 387.498, 0, 0, 0, 0, 0, 0, -627.39465, 0, 565.7223, 0, 0, 0, 0, 0, 0, -484.4727, 0, 632.88074, 0, 0, 0, 0, 0, 0, -390.0428, 0, 692.49884, 0, 0, 0, 0, 0, 0, -366.37735, 0, 821.3484, 0, 0, 0, 0, 0, 0, -407.8685, 0, 938.6877, 0, 0, 0, 0, 0, 0, -476.58063, 0, 1079.432, 0, 0, 0, 0, 0, 0, -472.7571, 0, 1207.4006, 0, 0, 0, 0, 0, 0, -410.9278, 0, 1287.0302, 0, 0, 0, 0, 0, 0, -301.68353, 0, 1366.368, 0, 0, 0, 0, 0, 0, -235.04828, 8.905654e-06, 1370.7986, 0, 0, 0, 0, 0, 0, -191.07878, 1.5258789e-05, 1346.8253, 0, 0, 0, 0, 0, 0, -191.07878, 1.5258789e-05, 1346.8253, 0, 0, 0, 0, 0, 0, -90.40575, 0, 1309.1604, 0, 0, 0, 0, 0, 0, -0.5631504, 0, 1233.7555, 0, 0, 0, 0, 0, 0, 61.57742, 0, 1128.3641, 0, 0, 0, 0, 0, 0, 87.41797, 0, 1008.63214, 0, 0, 0, 0, 0, 0, 44.08367, 0, 899.6866, 0, 0, 0, 0, 0, 0, 81.05892, 0, 804.6202, 0, 0, 0, 0, 0, 0, 181.2849, 0, 668.3755, 0, 0, 0, 0, 0, 0, 157.17596, 0, 537.2273, 0, 0, 0, 0, 0, 0, 153.23083, 0, 480.5808, 0, 0, 0, 0, 0, 0, 54.114044, 0, 398.15543, 0, 0, 0, 0, 0, 0, 10.305611, 0, 270.91785, 0, 0, 0, 0, 0, 0, -23.930008, 0, 139.7857),
+"tilts": PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 }
-point_count = 35
+point_count = 36
 script = ExtResource("10_h4f0x")
-point_data = Array[ExtResource("9_hc4ah")]([SubResource("Resource_njj3u"), SubResource("Resource_rcdk6"), SubResource("Resource_30ukf"), SubResource("Resource_vtupm"), SubResource("Resource_hc4ah"), SubResource("Resource_h4f0x"), SubResource("Resource_fqvlm"), SubResource("Resource_pr13g"), SubResource("Resource_o8oxc"), SubResource("Resource_15o6q"), SubResource("Resource_53l28"), SubResource("Resource_lxsag"), SubResource("Resource_xbsqa"), SubResource("Resource_62pwj"), SubResource("Resource_id8mg"), SubResource("Resource_nrs7i"), SubResource("Resource_oyolg"), SubResource("Resource_tv5n8"), SubResource("Resource_y1l3m"), SubResource("Resource_yx1i1"), SubResource("Resource_nknd4"), SubResource("Resource_imvlc"), SubResource("Resource_ygxrv"), SubResource("Resource_wteer"), SubResource("Resource_1fayh"), SubResource("Resource_cel4s"), SubResource("Resource_rsqbr"), SubResource("Resource_12p8y"), SubResource("Resource_d2eht"), SubResource("Resource_ej7iq"), SubResource("Resource_aunuw"), SubResource("Resource_cnh5c"), SubResource("Resource_ejtfb"), SubResource("Resource_lwpcb"), SubResource("Resource_gris6")])
+point_data = Array[ExtResource("9_hc4ah")]([SubResource("Resource_njj3u"), SubResource("Resource_rcdk6"), SubResource("Resource_30ukf"), SubResource("Resource_vtupm"), SubResource("Resource_hc4ah"), SubResource("Resource_h4f0x"), SubResource("Resource_fqvlm"), SubResource("Resource_pr13g"), SubResource("Resource_o8oxc"), SubResource("Resource_15o6q"), SubResource("Resource_53l28"), SubResource("Resource_lxsag"), SubResource("Resource_xbsqa"), SubResource("Resource_62pwj"), SubResource("Resource_id8mg"), SubResource("Resource_nrs7i"), SubResource("Resource_oyolg"), SubResource("Resource_tv5n8"), SubResource("Resource_y1l3m"), SubResource("Resource_yx1i1"), SubResource("Resource_nknd4"), SubResource("Resource_imvlc"), SubResource("Resource_ygxrv"), SubResource("Resource_wteer"), SubResource("Resource_1fayh"), SubResource("Resource_cel4s"), SubResource("Resource_rsqbr"), SubResource("Resource_12p8y"), SubResource("Resource_d2eht"), SubResource("Resource_ej7iq"), SubResource("Resource_aunuw"), SubResource("Resource_cnh5c"), SubResource("Resource_ejtfb"), SubResource("Resource_lwpcb"), SubResource("Resource_gris6"), SubResource("Resource_in2tn")])
 metadata/_custom_type_script = "uid://dkyobseeo0c7n"
 
 [sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_wj5hs"]
@@ -682,7 +686,7 @@ transform = Transform3D(0.9041166, 0, -0.42728597, 0, 1, 0, 0.42728597, 0, 0.904
 transform = Transform3D(0.9041166, 0, -0.42728597, 0, 1, 0, 0.42728597, 0, 0.9041166, 149.599, 4.326, 896.4887)
 
 [node name="SM_rock_wall_14" parent="Rocks" unique_id=1601696802 instance=ExtResource("4_qaeqv")]
-transform = Transform3D(-1.0770884, 0, -0.638829, 0, 1, 0, 0.8943606, 0, -0.7693488, 135.10793, -0.6739998, 646.3088)
+transform = Transform3D(-0.9054209, 0, -0.76271975, 0, 1, 0, 1.0678077, 0, -0.6467292, 115.107925, -0.6739998, 671.3088)
 
 [node name="Ceiling" parent="Rocks" unique_id=1597952138 instance=ExtResource("11_2y3fe")]
 transform = Transform3D(0.9641814, 0, 1.1490667, 0, 1.5, 0, -1.1490667, 0, 0.9641814, -34.029, -20, 1290.3625)
@@ -996,6 +1000,7 @@ transform = Transform3D(6.877, -2.9560178e-08, 3.8428233e-08, 2.561882e-08, 7.93
 
 [node name="Grass" type="Node3D" parent="." unique_id=2090523011]
 transform = Transform3D(1, 0, 5.5879354e-09, -3.7252903e-09, 1, 0, 5.5879354e-09, 0, 1, 0, -9.536743e-06, 0)
+visible = false
 
 [node name="Grass_Grid" parent="Grass" unique_id=797721740 instance=ExtResource("8_g8spr")]
 transform = Transform3D(1, 0, 0, -1.1632227e-25, 1, 0, 0, 0, 1, -90, -1.1175871e-07, 65)

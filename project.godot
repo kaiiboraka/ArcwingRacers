@@ -38,7 +38,6 @@ NetworkSimulator="*uid://1y2ey1e6qjwr"
 Noray="*uid://gu4bv4tgms3x"
 PacketHandshake="*uid://tt3j25a05n7c"
 LayerNames="*uid://cfuv1yauxwtgd"
-_mcp_game_helper="*res://addons/godot_ai/runtime/game_helper.gd"
 PhantomCameraManager="*uid://duq6jhf6unyis"
 DebugManager="*uid://g77bng7caocf"
 InputCollector="*res://Systems/Input/InputCollector.gd"
@@ -46,6 +45,7 @@ CameraRoot="*uid://btveng6akpeug"
 EventBus="*res://Systems/Events/event_bus.gd"
 Ui="*uid://dblpebgaxt1jb"
 ScreenEffects="*uid://mdeofcf6dtj"
+_mcp_game_helper="*res://addons/godot_ai/runtime/game_helper.gd"
 
 [display]
 
