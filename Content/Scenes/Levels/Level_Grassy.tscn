@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://ckbu050laq1kp"]
 
 [ext_resource type="PackedScene" uid="uid://v7n3qlho6kr3" path="res://Content/Scenes/starting_line.tscn" id="1_dw44t"]
+[ext_resource type="LightmapGIData" uid="uid://7bpg6ih6q5mv" path="res://Content/Scenes/Levels/Level_Grassy.lmbake" id="2_njj3u"]
 [ext_resource type="PackedScene" uid="uid://dylywca7tvxrp" path="res://Content/Scenes/Arcwing.tscn" id="2_uqm16"]
 [ext_resource type="PackedScene" uid="uid://dvywxboih5khm" path="res://Content/Models/Doodads/SM_rock_wall_01.glb" id="3_2y3fe"]
 [ext_resource type="PackedScene" uid="uid://bdnuklyimpace" path="res://Content/Models/Doodads/SM_rock_wall_03.glb" id="4_qaeqv"]
@@ -18,18 +19,10 @@
 [ext_resource type="Material" uid="uid://dds22dhg4h8h6" path="res://Content/Materials/M_grass_texture.tres" id="16_qaeqv"]
 [ext_resource type="Material" uid="uid://b3accgfymm6r2" path="res://Content/Materials/M_dirt_big.tres" id="17_njj3u"]
 
-[sub_resource type="Resource" id="Resource_2y3fe"]
-resource_local_to_scene = true
-script = ExtResource("9_hc4ah")
-flags = 1
-
-[sub_resource type="Resource" id="Resource_qaeqv"]
-resource_local_to_scene = true
-script = ExtResource("9_hc4ah")
-
 [sub_resource type="Resource" id="Resource_njj3u"]
 resource_local_to_scene = true
 script = ExtResource("9_hc4ah")
+flags = 1
 
 [sub_resource type="Resource" id="Resource_rcdk6"]
 resource_local_to_scene = true
@@ -159,7 +152,15 @@ script = ExtResource("9_hc4ah")
 resource_local_to_scene = true
 script = ExtResource("9_hc4ah")
 
-[sub_resource type="Curve3D" id="Curve3D_lwpcb"]
+[sub_resource type="Resource" id="Resource_lwpcb"]
+resource_local_to_scene = true
+script = ExtResource("9_hc4ah")
+
+[sub_resource type="Resource" id="Resource_gris6"]
+resource_local_to_scene = true
+script = ExtResource("9_hc4ah")
+
+[sub_resource type="Curve3D" id="Curve3D_in2tn"]
 resource_name = "Main_Spline"
 closed = true
 bake_interval = 0.25
@@ -169,7 +170,7 @@ _data = {
 }
 point_count = 35
 script = ExtResource("10_h4f0x")
-point_data = Array[ExtResource("9_hc4ah")]([SubResource("Resource_2y3fe"), SubResource("Resource_qaeqv"), SubResource("Resource_njj3u"), SubResource("Resource_rcdk6"), SubResource("Resource_30ukf"), SubResource("Resource_vtupm"), SubResource("Resource_hc4ah"), SubResource("Resource_h4f0x"), SubResource("Resource_fqvlm"), SubResource("Resource_pr13g"), SubResource("Resource_o8oxc"), SubResource("Resource_15o6q"), SubResource("Resource_53l28"), SubResource("Resource_lxsag"), SubResource("Resource_xbsqa"), SubResource("Resource_62pwj"), SubResource("Resource_id8mg"), SubResource("Resource_nrs7i"), SubResource("Resource_oyolg"), SubResource("Resource_tv5n8"), SubResource("Resource_y1l3m"), SubResource("Resource_yx1i1"), SubResource("Resource_nknd4"), SubResource("Resource_imvlc"), SubResource("Resource_ygxrv"), SubResource("Resource_wteer"), SubResource("Resource_1fayh"), SubResource("Resource_cel4s"), SubResource("Resource_rsqbr"), SubResource("Resource_12p8y"), SubResource("Resource_d2eht"), SubResource("Resource_ej7iq"), SubResource("Resource_aunuw"), SubResource("Resource_cnh5c"), SubResource("Resource_ejtfb")])
+point_data = Array[ExtResource("9_hc4ah")]([SubResource("Resource_njj3u"), SubResource("Resource_rcdk6"), SubResource("Resource_30ukf"), SubResource("Resource_vtupm"), SubResource("Resource_hc4ah"), SubResource("Resource_h4f0x"), SubResource("Resource_fqvlm"), SubResource("Resource_pr13g"), SubResource("Resource_o8oxc"), SubResource("Resource_15o6q"), SubResource("Resource_53l28"), SubResource("Resource_lxsag"), SubResource("Resource_xbsqa"), SubResource("Resource_62pwj"), SubResource("Resource_id8mg"), SubResource("Resource_nrs7i"), SubResource("Resource_oyolg"), SubResource("Resource_tv5n8"), SubResource("Resource_y1l3m"), SubResource("Resource_yx1i1"), SubResource("Resource_nknd4"), SubResource("Resource_imvlc"), SubResource("Resource_ygxrv"), SubResource("Resource_wteer"), SubResource("Resource_1fayh"), SubResource("Resource_cel4s"), SubResource("Resource_rsqbr"), SubResource("Resource_12p8y"), SubResource("Resource_d2eht"), SubResource("Resource_ej7iq"), SubResource("Resource_aunuw"), SubResource("Resource_cnh5c"), SubResource("Resource_ejtfb"), SubResource("Resource_lwpcb"), SubResource("Resource_gris6")])
 metadata/_custom_type_script = "uid://dkyobseeo0c7n"
 
 [sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_wj5hs"]
@@ -205,8 +206,12 @@ plane = Plane(0, 0, -1, 0)
 [node name="Skybox_AfternoonSky" parent="." unique_id=886949906 instance=ExtResource("13_o8oxc")]
 transform = Transform3D(0.4679298, 0, -0.8837656, 0, 1, 0, 0.8837656, 0, 0.4679298, 0, 0, 0)
 
+[node name="LightmapGI" type="LightmapGI" parent="." unique_id=620911490]
+quality = 2
+light_data = ExtResource("2_njj3u")
+
 [node name="TrackSpline" type="Path3D" parent="." unique_id=888770020]
-curve = SubResource("Curve3D_lwpcb")
+curve = SubResource("Curve3D_in2tn")
 script = ExtResource("11_fqvlm")
 data = ExtResource("12_pr13g")
 metadata/_custom_type_script = "uid://ch5pjmp7ic5lh"

@@ -82,10 +82,24 @@ void vertex() {
 	COLOR = mix(color_bottom, color_top, UV2.y);
 }
 
+//void fragment() {
+	//float side = FRONT_FACING ? 1.0 : -1.0;
+	//NORMAL = NORMAL * side;
+	//ALBEDO = COLOR.rgb;
+	//SPECULAR = 0.5;
+	//ROUGHNESS = clamp(1.0 - (wind * 1.2), 0.0, 1.0);
+//}
+
 void fragment() {
 	float side = FRONT_FACING ? 1.0 : -1.0;
 	NORMAL = NORMAL * side;
-	ALBEDO = COLOR.rgb;
+	
+	// UV2.y: 0.0 at root, 1.0 at tip. 
+	// Fades from black (0.0) at bottom to normal color (1.0) at mid-height.
+	float fake_ao = smoothstep(0.0, 0.5, UV2.y);
+	
+	ALBEDO = COLOR.rgb * fake_ao;
+	
 	SPECULAR = 0.5;
 	ROUGHNESS = clamp(1.0 - (wind * 1.2), 0.0, 1.0);
 }

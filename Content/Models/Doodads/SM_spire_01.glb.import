@@ -49,9 +49,9 @@ _subresources={
 },
 "meshes": {
 "SM_spire_01_spire_01": {
-"generate/lightmap_uv": 0,
-"generate/lods": 0,
-"generate/shadow_meshes": 0,
+"generate/lightmap_uv": 1,
+"generate/lods": 1,
+"generate/shadow_meshes": 1,
 "lods/normal_merge_angle": 20.0,
 "save_to_file/enabled": false,
 "save_to_file/fallback_path": "res://bodt.tres",
@@ -62,6 +62,8 @@ _subresources={
 "PATH:spire_01": {
 "decomposition/precision": 6,
 "generate/physics": true,
+"mesh_instance/visibility_range_end": 1000.0,
+"mesh_instance/visibility_range_end_margin": 100.0,
 "physics/layer": 6,
 "physics/shape_type": 0
 }

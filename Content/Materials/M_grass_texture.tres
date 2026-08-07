@@ -1,10 +1,10 @@
 [gd_resource type="StandardMaterial3D" format=3 uid="uid://dds22dhg4h8h6"]
 
 [ext_resource type="Texture2D" uid="uid://b5do75kacsa5n" path="res://Content/Textures/Material_Textures/Grass_Textures/1K/Poliigon_GrassPatchyGround_4585_BaseColor.jpg" id="1_r2icr"]
-[ext_resource type="Texture2D" uid="uid://cu3p0wd0bhfvr" path="res://Content/Textures/Material_Textures/Grass_Textures/2K/Poliigon_GrassPatchyGround_4585_AmbientOcclusion.jpg" id="2_cf86y"]
-[ext_resource type="Texture2D" uid="uid://djlshikvwf7an" path="res://Content/Textures/Material_Textures/Grass_Textures/2K/Poliigon_GrassPatchyGround_4585_Metallic.jpg" id="3_2yff7"]
-[ext_resource type="Texture2D" uid="uid://c8jsfjn5l3fb7" path="res://Content/Textures/Material_Textures/Grass_Textures/2K/Poliigon_GrassPatchyGround_4585_Normal.png" id="4_hjj6b"]
-[ext_resource type="Texture2D" uid="uid://c1qb2lccdw02i" path="res://Content/Textures/Material_Textures/Grass_Textures/2K/Poliigon_GrassPatchyGround_4585_Roughness.jpg" id="5_i25k3"]
+[ext_resource type="Texture2D" uid="uid://sv2a6smn77yc" path="res://Content/Textures/Material_Textures/Grass_Textures/1K/Poliigon_GrassPatchyGround_4585_AmbientOcclusion.jpg" id="2_cf86y"]
+[ext_resource type="Texture2D" uid="uid://b8qoynjp0mp4r" path="res://Content/Textures/Material_Textures/Grass_Textures/1K/Poliigon_GrassPatchyGround_4585_Metallic.jpg" id="3_2yff7"]
+[ext_resource type="Texture2D" uid="uid://b0uyudnbe2eab" path="res://Content/Textures/Material_Textures/Grass_Textures/1K/Poliigon_GrassPatchyGround_4585_Normal.png" id="4_hjj6b"]
+[ext_resource type="Texture2D" uid="uid://b6c3v4nw2deu3" path="res://Content/Textures/Material_Textures/Grass_Textures/1K/Poliigon_GrassPatchyGround_4585_Roughness.jpg" id="5_i25k3"]
 
 [resource]
 albedo_color = Color(0.49803922, 0.61960787, 0.61960787, 1)

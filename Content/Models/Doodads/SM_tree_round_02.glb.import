@@ -26,7 +26,7 @@ nodes/use_node_type_suffixes=true
 meshes/ensure_tangents=true
 meshes/generate_lods=true
 meshes/create_shadow_meshes=true
-meshes/light_baking=1
+meshes/light_baking=2
 meshes/lightmap_texel_size=0.2
 meshes/force_disable_compression=false
 skins/use_named_skins=true
@@ -52,9 +52,31 @@ _subresources={
 "use_external/path": "uid://cp0eof0tm5epu"
 }
 },
+"meshes": {
+"SM_tree_round_02_leaves": {
+"generate/lightmap_uv": 1,
+"generate/lods": 1,
+"generate/shadow_meshes": 1,
+"lods/normal_merge_angle": 20.0,
+"save_to_file/enabled": false,
+"save_to_file/fallback_path": "",
+"save_to_file/path": ""
+},
+"SM_tree_round_02_trunk": {
+"generate/lightmap_uv": 1,
+"generate/lods": 1,
+"generate/shadow_meshes": 1,
+"lods/normal_merge_angle": 20.0,
+"save_to_file/enabled": false,
+"save_to_file/fallback_path": "",
+"save_to_file/path": ""
+}
+},
 "nodes": {
 "PATH:tree_round_02/leaves": {
 "generate/physics": true,
+"mesh_instance/visibility_range_end": 1000.0,
+"mesh_instance/visibility_range_end_margin": 100.0,
 "physics/layer": 4,
 "physics/mask": 16,
 "physics/shape_type": 4,
@@ -63,6 +85,8 @@ _subresources={
 },
 "PATH:tree_round_02/trunk": {
 "generate/physics": true,
+"mesh_instance/visibility_range_end": 1000.0,
+"mesh_instance/visibility_range_end_margin": 100.0,
 "physics/shape_type": 5,
 "primitive/height": 10.0,
 "primitive/position": Vector3(0, 5, 0),

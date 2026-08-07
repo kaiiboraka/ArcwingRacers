@@ -52,15 +52,39 @@ _subresources={
 "use_external/path": "uid://cp0eof0tm5epu"
 }
 },
+"meshes": {
+"SM_tree_cone_01_pCone1": {
+"generate/lightmap_uv": 1,
+"generate/lods": 1,
+"generate/shadow_meshes": 1,
+"lods/normal_merge_angle": 20.0,
+"save_to_file/enabled": false,
+"save_to_file/fallback_path": "",
+"save_to_file/path": ""
+},
+"SM_tree_cone_01_trunk_branchless": {
+"generate/lightmap_uv": 1,
+"generate/lods": 1,
+"generate/shadow_meshes": 1,
+"lods/normal_merge_angle": 20.0,
+"save_to_file/enabled": false,
+"save_to_file/fallback_path": "",
+"save_to_file/path": ""
+}
+},
 "nodes": {
 "PATH:tree_cone_01/pCone1": {
 "generate/physics": true,
+"mesh_instance/visibility_range_end": 1000.0,
+"mesh_instance/visibility_range_end_margin": 100.0,
 "physics/layer": 4,
 "physics/mask": 16,
 "physics/shape_type": 1
 },
 "PATH:tree_cone_01/trunk_branchless": {
 "generate/physics": true,
+"mesh_instance/visibility_range_end": 1000.0,
+"mesh_instance/visibility_range_end_margin": 100.0,
 "physics/layer": 4,
 "physics/mask": 16,
 "physics/shape_type": 5,

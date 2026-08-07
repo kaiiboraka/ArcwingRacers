@@ -1,26 +1,6 @@
 [gd_resource type="StandardMaterial3D" format=3 uid="uid://nqb0sfw6aen4"]
 
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_b4edc"]
-frequency = 0.8
-fractal_octaves = 6
-fractal_gain = -0.395
-
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_i6muv"]
-width = 2048
-height = 2048
-noise = SubResource("FastNoiseLite_b4edc")
-
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_uun6i"]
-width = 2048
-height = 2048
-noise = SubResource("FastNoiseLite_b4edc")
-
 [resource]
 resource_name = "M_building"
-shading_mode = 2
 albedo_color = Color(1, 0.9808205, 0.9260749, 1)
-roughness_texture = SubResource("NoiseTexture2D_uun6i")
-roughness_texture_channel = 4
-heightmap_enabled = true
-heightmap_scale = 0.5
-heightmap_texture = SubResource("NoiseTexture2D_i6muv")
+roughness = 0.97129184

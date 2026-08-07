@@ -17,7 +17,7 @@ dest_files=["res://.godot/imported/above_the_clouds_01_4K.exr-db47014c3957e8fd53
 [params]
 
 compress/mode=2
-compress/high_quality=false
+compress/high_quality=true
 compress/lossy_quality=0.7
 compress/uastc_level=0
 compress/rdo_quality_loss=0.0

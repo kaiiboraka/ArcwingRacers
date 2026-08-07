@@ -2,8 +2,11 @@
 
 [ext_resource type="Texture2D" uid="uid://dtfr4b5vidf20" path="res://Content/Textures/HDRI/golden_gate_hills_4k.exr" id="1_6b68e"]
 [ext_resource type="Script" uid="uid://jodbdij6ggno" path="res://Systems/Skybox/skybox_controller.gd" id="1_kdldv"]
+[ext_resource type="Texture2D" uid="uid://craic16emko1u" path="res://Content/Textures/HDRI/golden_gate_hills_1k.exr" id="2_poknm"]
 [ext_resource type="Script" uid="uid://dickvutqohcwc" path="res://Systems/Skybox/sky_preview.gd" id="3_lhc3g"]
 [ext_resource type="Texture2D" uid="uid://cyfoskjyra73d" path="res://Content/Textures/HDRI/NightSkyHDRI003_4K_HDR.exr" id="4_ic5wu"]
+[ext_resource type="Texture2D" uid="uid://oht1a06h5qd2" path="res://Content/Textures/HDRI/NightSkyHDRI003_1K_HDR.exr" id="4_lrqc4"]
+[ext_resource type="Texture2D" uid="uid://bq2urdnw0eejb" path="res://Content/Textures/HDRI/NightSkyHDRI003_2K_HDR.exr" id="5_4qoll"]
 [ext_resource type="Texture2D" uid="uid://21l35n72exum" path="res://Content/Textures/HDRI/NightSkyHDRI003_4K_TONEMAPPED.jpg" id="5_ihda3"]
 [ext_resource type="Texture2D" uid="uid://bja81cb2y57m7" path="res://Content/Textures/HDRI/aarfontein_dirt_road_2k.exr" id="6_xedjw"]
 [ext_resource type="Texture2D" uid="uid://b18omsvlo01f8" path="res://Content/Textures/HDRI/above_the_clouds_01_4K.exr" id="7_n15v1"]
@@ -13,6 +16,7 @@
 [ext_resource type="Texture2D" uid="uid://pbiiabiffwit" path="res://Content/Textures/HDRI/golden_gate_hills_4k.png" id="11_gabd1"]
 [ext_resource type="Texture2D" uid="uid://cesxlc84jb634" path="res://Content/Textures/HDRI/lonely_road_afternoon_puresky_2k.exr" id="12_gh44d"]
 [ext_resource type="Texture2D" uid="uid://cjjdhoytlva08" path="res://Content/Textures/HDRI/overcast_soil_puresky_2k.exr" id="13_1qsir"]
+[ext_resource type="Texture2D" uid="uid://cceho15pqe3up" path="res://Content/Textures/HDRI/golden_gate_hills_2k.exr" id="13_gabd1"]
 [ext_resource type="Texture2D" uid="uid://dfr5g5h1mfm4j" path="res://Content/Textures/HDRI/qwantani_night_2k.exr" id="14_tc1hl"]
 [ext_resource type="Texture2D" uid="uid://betwnawvck2vr" path="res://Content/Textures/HDRI/rosendal_plains_2_4k.exr" id="15_sopty"]
 [ext_resource type="Texture2D" uid="uid://dm708o5av57px" path="res://Content/Textures/HDRI/rosendal_plains_2_4k.png" id="16_adab6"]
@@ -55,7 +59,7 @@
 [ext_resource type="Texture2D" uid="uid://dsnpguk58ajb4" path="res://Content/Textures/HDRI/stylized/stylized_ocean_HDRI_4k_seams-fixed.png" id="53_sqjhn"]
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_0irts"]
-panorama = ExtResource("1_6b68e")
+panorama = ExtResource("2_poknm")
 
 [sub_resource type="Sky" id="Sky_nd3ke"]
 sky_material = SubResource("PanoramaSkyMaterial_0irts")
@@ -83,6 +87,7 @@ sky_offset_degrees = Vector3(0, 180, 0)
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1897897905]
 transform = Transform3D(0.6956907, 0.44749582, 0.5619269, 0.07597724, -0.82370657, 0.56190306, 0.7143121, -0.3482172, -0.60704464, 0.5479045, 9.381731, 9.334223)
+light_bake_mode = 1
 shadow_enabled = true
 directional_shadow_blend_splits = true
 directional_shadow_max_distance = 1000.0
@@ -90,5 +95,5 @@ directional_shadow_max_distance = 1000.0
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=31880974]
 environment = SubResource("Environment_qlj4a")
 script = ExtResource("3_lhc3g")
-panorama_textures = Array[Texture2D]([ExtResource("4_ic5wu"), ExtResource("5_ihda3"), ExtResource("6_xedjw"), ExtResource("7_n15v1"), ExtResource("8_poknm"), ExtResource("9_lrqc4"), ExtResource("10_4qoll"), ExtResource("1_6b68e"), ExtResource("11_gabd1"), ExtResource("12_gh44d"), ExtResource("13_1qsir"), ExtResource("14_tc1hl"), ExtResource("15_sopty"), ExtResource("16_adab6"), ExtResource("17_wlvut"), ExtResource("18_8bpd2"), ExtResource("19_7pp78"), ExtResource("20_0g3mv"), ExtResource("21_d7aii"), ExtResource("22_dfbxe"), ExtResource("23_23rdg"), ExtResource("24_3nqbj"), ExtResource("25_vfql6"), ExtResource("26_coexu"), ExtResource("27_j3jtj"), ExtResource("28_6q2gt"), ExtResource("29_o6oqb"), ExtResource("30_iw1ol"), ExtResource("31_mdt20"), ExtResource("32_pdwx3"), ExtResource("33_xexk2"), ExtResource("34_7gcyg"), ExtResource("35_06vyi"), ExtResource("36_iyy5g"), ExtResource("37_udi8r"), ExtResource("38_hn2bj"), ExtResource("39_djfar"), ExtResource("40_3lneq"), ExtResource("41_btx11"), ExtResource("42_adho4"), ExtResource("43_rf8u5"), ExtResource("44_rum4b"), ExtResource("45_siv3s"), ExtResource("46_4ipve"), ExtResource("47_ahkgl"), ExtResource("48_xilpy"), ExtResource("49_5x22c"), ExtResource("50_8rhiy"), ExtResource("51_waik2"), ExtResource("52_ns66m"), ExtResource("53_sqjhn")])
-current_index = 7
+panorama_textures = Array[Texture2D]([ExtResource("4_lrqc4"), ExtResource("5_4qoll"), ExtResource("4_ic5wu"), ExtResource("5_ihda3"), ExtResource("6_xedjw"), ExtResource("7_n15v1"), ExtResource("8_poknm"), ExtResource("9_lrqc4"), ExtResource("10_4qoll"), ExtResource("2_poknm"), ExtResource("13_gabd1"), ExtResource("1_6b68e"), ExtResource("11_gabd1"), ExtResource("12_gh44d"), ExtResource("13_1qsir"), ExtResource("14_tc1hl"), ExtResource("15_sopty"), ExtResource("16_adab6"), ExtResource("17_wlvut"), ExtResource("18_8bpd2"), ExtResource("19_7pp78"), ExtResource("20_0g3mv"), ExtResource("21_d7aii"), ExtResource("22_dfbxe"), ExtResource("23_23rdg"), ExtResource("24_3nqbj"), ExtResource("25_vfql6"), ExtResource("26_coexu"), ExtResource("27_j3jtj"), ExtResource("28_6q2gt"), ExtResource("29_o6oqb"), ExtResource("30_iw1ol"), ExtResource("31_mdt20"), ExtResource("32_pdwx3"), ExtResource("33_xexk2"), ExtResource("34_7gcyg"), ExtResource("35_06vyi"), ExtResource("36_iyy5g"), ExtResource("37_udi8r"), ExtResource("38_hn2bj"), ExtResource("39_djfar"), ExtResource("40_3lneq"), ExtResource("41_btx11"), ExtResource("42_adho4"), ExtResource("43_rf8u5"), ExtResource("44_rum4b"), ExtResource("45_siv3s"), ExtResource("46_4ipve"), ExtResource("47_ahkgl"), ExtResource("48_xilpy"), ExtResource("49_5x22c"), ExtResource("50_8rhiy"), ExtResource("51_waik2"), ExtResource("52_ns66m"), ExtResource("53_sqjhn")])
+current_index = 9

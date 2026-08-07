@@ -20,7 +20,7 @@ project_layer_names/c#_namespace="ArcwingRacers"
 [application]
 
 config/name="ArcwingRacers"
-run/main_scene="uid://ta4rkqlgf5a0"
+run/main_scene="uid://ckbu050laq1kp"
 config/features=PackedStringArray("4.7", "C#")
 boot_splash/image="uid://d02b1b1s58j40"
 config/icon="uid://caimmelb02tso"

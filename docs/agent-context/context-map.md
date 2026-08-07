@@ -154,6 +154,8 @@ Built on **Godot 4** (GDScript). 3D. See `technical/code-standards.md` for the p
 | `technical/pod-handling-and-boost.md` | ✅ Written — acceleration catch-up model, boost, air control (gravity modulation), steering (yaw + traction + max_turn_rate/turn_response split) |
 | `technical/pod-collision-response.md` | ✅ Written — scrape vs crash, pod-on-pod damage, one-shot destruction, death spin |
 | `technical/next-technical-breakdowns.md` | 📋 Planned — 10 subjects queued for next session |
+| `technical/model-and-level-setup.md` | ✅ Written — model/level import-setup checklist (per-import-scene, per-MeshInstance3D, per-mesh, per-material settings, level prerequisites, LightmapGI baking). Companion to ADR 0009 |
+| `technical/texture2d-import-settings.md` | ✅ Written — Texture2D compression mode: VRAM Compressed (BC6H) for 3D/lightmap/HDR `.exr`, Lossy only for UI/rare 2D |
 | `decisions/adrs/` | ✅ 10 ADRs recorded (0001–0010) |
 | `agent-context/` | ✅ All files updated for ArcwingRacers |
 | Legacy Fantasy X docs | 🗑️ Legacy — keep for reference until replaced |

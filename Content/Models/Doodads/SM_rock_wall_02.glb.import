@@ -26,7 +26,7 @@ nodes/use_node_type_suffixes=true
 meshes/ensure_tangents=true
 meshes/generate_lods=true
 meshes/create_shadow_meshes=true
-meshes/light_baking=1
+meshes/light_baking=2
 meshes/lightmap_texel_size=0.2
 meshes/force_disable_compression=false
 skins/use_named_skins=true
@@ -47,12 +47,26 @@ _subresources={
 "use_external/path": "uid://pp1tiy2adn3l"
 }
 },
+"meshes": {
+"SM_rock_wall_02_rock_wall_02": {
+"generate/lightmap_uv": 1,
+"generate/lods": 1,
+"generate/shadow_meshes": 1,
+"lods/normal_merge_angle": 20.0,
+"save_to_file/enabled": false,
+"save_to_file/fallback_path": "",
+"save_to_file/path": ""
+}
+},
 "nodes": {
 "PATH:rock_wall_02": {
+"generate/occluder": 1,
 "generate/physics": true,
+"mesh_instance/visibility_range_end": 1250.0,
+"mesh_instance/visibility_range_end_margin": 100.0,
 "physics/layer": 3,
 "physics/mask": 16,
-"physics/shape_type": 0
+"physics/shape_type": 1
 }
 }
 }

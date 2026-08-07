@@ -34,7 +34,7 @@ const GrassFactory = preload("./grass_factory.gd")
 		chunk_size = maxf(new_value, 0.0)
 
 ## Material applied to every blade MultiMesh (wind shader / tint).
-@export var grass_material : Material = preload("res://Content/Materials/M_grass.tres")
+@export var grass_material : Material = preload("uid://dfp1fhglykru5")
 
 ## Material for the invisible ground plane baked into each chunk (never renders).
 @export var invisible_material : Material = preload("res://Content/Materials/M_invisible.tres")
