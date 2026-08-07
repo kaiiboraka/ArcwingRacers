@@ -34,5 +34,5 @@ mesh = SubResource("PlaneMesh_tymcu")
 [node name="Blades" type="MultiMeshInstance3D" parent="." unique_id=1371602705]
 material_override = ExtResource("2_1g0mn")
 cast_shadow = 0
-visibility_range_end = 300.0
+visibility_range_end = 600.0
 multimesh = SubResource("MultiMesh_w5ohe")
