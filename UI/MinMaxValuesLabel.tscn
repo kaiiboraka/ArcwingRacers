@@ -26,9 +26,7 @@ labelMax = NodePath("PanelMax/AspectRatioContainer/LabelMax")
 panelCurrent = NodePath("PanelCurrent")
 panelDivider = NodePath("PanelDivider")
 panelMax = NodePath("PanelMax")
-OffsetCurrentX = null
-OffsetDividerX = null
-OffsetMaxX = null
+TextDivider = "/"
 
 [node name="PanelCurrent" type="Panel" parent="." unique_id=1917023966]
 unique_name_in_owner = true

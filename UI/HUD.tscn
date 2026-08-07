@@ -30,8 +30,8 @@ theme_override_constants/margin_bottom = 20
 [node name="Top_Control" type="Control" parent="HUD_Margin" unique_id=1503482771]
 layout_mode = 2
 
-[node name="NinePatchRect" type="NinePatchRect" parent="HUD_Margin/Top_Control" unique_id=1213129277]
-self_modulate = Color(0.21568628, 0.78431374, 1, 1)
+[node name="TopBar_Gradient_NinePatchRect" type="NinePatchRect" parent="HUD_Margin/Top_Control" unique_id=1213129277]
+self_modulate = Color(0.21568628, 0.78431374, 1, 0.6862745)
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
@@ -44,50 +44,65 @@ patch_margin_left = 32
 patch_margin_top = 16
 patch_margin_right = 32
 
-[node name="TopBar_HBoxContainer" type="HBoxContainer" parent="HUD_Margin/Top_Control/NinePatchRect" unique_id=1383697863]
+[node name="TopBar_MarginContainer" type="MarginContainer" parent="HUD_Margin/Top_Control/TopBar_Gradient_NinePatchRect" unique_id=2265821]
 layout_mode = 1
-anchors_preset = 10
+anchors_preset = 15
 anchor_right = 1.0
-offset_top = 12.0
-offset_bottom = 128.0
+anchor_bottom = 1.0
 grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 256
+theme_override_constants/margin_right = 256
+
+[node name="TopBar_HBoxContainer" type="HBoxContainer" parent="HUD_Margin/Top_Control/TopBar_Gradient_NinePatchRect/TopBar_MarginContainer" unique_id=1383697863]
+layout_mode = 2
 alignment = 1
 
-[node name="Position_VBoxContainer2" type="VBoxContainer" parent="HUD_Margin/Top_Control/NinePatchRect/TopBar_HBoxContainer" unique_id=850654038]
+[node name="Position_VBoxContainer" type="VBoxContainer" parent="HUD_Margin/Top_Control/TopBar_Gradient_NinePatchRect/TopBar_MarginContainer/TopBar_HBoxContainer" unique_id=850654038]
 layout_mode = 2
-size_flags_horizontal = 10
-
-[node name="Pos_Label" type="Label" parent="HUD_Margin/Top_Control/NinePatchRect/TopBar_HBoxContainer/Position_VBoxContainer2" unique_id=1399151579]
-layout_mode = 2
-size_flags_vertical = 10
+size_flags_horizontal = 2
 offset_transform_enabled = true
-offset_transform_position = Vector2(-8, 0)
+
+[node name="Pos_Label" type="Label" parent="HUD_Margin/Top_Control/TopBar_Gradient_NinePatchRect/TopBar_MarginContainer/TopBar_HBoxContainer/Position_VBoxContainer" unique_id=1399151579]
+layout_mode = 2
+size_flags_vertical = 2
 theme = ExtResource("3_f2wx0")
 theme_override_fonts/font = ExtResource("1_uk570")
 theme_override_font_sizes/font_size = 32
 text = "POS"
 
-[node name="MinMaxValuesLabel" parent="HUD_Margin/Top_Control/NinePatchRect/TopBar_HBoxContainer/Position_VBoxContainer2" unique_id=372772368 instance=ExtResource("1_gppie")]
+[node name="Position_MinMaxValuesLabel" parent="HUD_Margin/Top_Control/TopBar_Gradient_NinePatchRect/TopBar_MarginContainer/TopBar_HBoxContainer/Position_VBoxContainer" unique_id=372772368 instance=ExtResource("1_gppie")]
+unique_name_in_owner = true
 layout_mode = 2
 offset_transform_enabled = true
 offset_transform_position = Vector2(-16, 0)
+ToggleCurrent = true
+ToggleDivider = true
+ToggleMax = true
+TextCurrent = "1"
+TextMaximum = "12"
+TextSize = 48
+AlignmentCurrent = 2
+AlignmentDivider = 1
 
-[node name="Time_VBoxContainer" type="VBoxContainer" parent="HUD_Margin/Top_Control/NinePatchRect/TopBar_HBoxContainer" unique_id=841860565]
+[node name="Time_VBoxContainer" type="VBoxContainer" parent="HUD_Margin/Top_Control/TopBar_Gradient_NinePatchRect/TopBar_MarginContainer/TopBar_HBoxContainer" unique_id=841860565]
 layout_mode = 2
 size_flags_horizontal = 6
 
-[node name="Time_Label" type="Label" parent="HUD_Margin/Top_Control/NinePatchRect/TopBar_HBoxContainer/Time_VBoxContainer" unique_id=1761985136]
+[node name="Time_Label" type="Label" parent="HUD_Margin/Top_Control/TopBar_Gradient_NinePatchRect/TopBar_MarginContainer/TopBar_HBoxContainer/Time_VBoxContainer" unique_id=1761985136]
 layout_mode = 2
-size_flags_vertical = 10
+size_flags_vertical = 2
 theme = ExtResource("3_f2wx0")
 theme_override_fonts/font = ExtResource("1_uk570")
 theme_override_font_sizes/font_size = 32
 text = "TIME"
 horizontal_alignment = 1
 
-[node name="Timer_RichTextLabel" type="RichTextLabel" parent="HUD_Margin/Top_Control/NinePatchRect/TopBar_HBoxContainer/Time_VBoxContainer" unique_id=1625928337]
+[node name="Timer_RichTextLabel" type="RichTextLabel" parent="HUD_Margin/Top_Control/TopBar_Gradient_NinePatchRect/TopBar_MarginContainer/TopBar_HBoxContainer/Time_VBoxContainer" unique_id=1625928337]
+unique_name_in_owner = true
 clip_contents = false
 layout_mode = 2
+size_flags_vertical = 2
 theme = ExtResource("3_f2wx0")
 theme_override_font_sizes/normal_font_size = 48
 theme_override_font_sizes/mono_font_size = 250
@@ -98,20 +113,29 @@ scroll_active = false
 autowrap_mode = 0
 horizontal_alignment = 1
 
-[node name="Lap_VBoxContainer" type="VBoxContainer" parent="HUD_Margin/Top_Control/NinePatchRect/TopBar_HBoxContainer" unique_id=1307760349]
+[node name="Lap_VBoxContainer" type="VBoxContainer" parent="HUD_Margin/Top_Control/TopBar_Gradient_NinePatchRect/TopBar_MarginContainer/TopBar_HBoxContainer" unique_id=1307760349]
 layout_mode = 2
-size_flags_horizontal = 2
+size_flags_horizontal = 10
 
-[node name="Lap_Label" type="Label" parent="HUD_Margin/Top_Control/NinePatchRect/TopBar_HBoxContainer/Lap_VBoxContainer" unique_id=377832194]
+[node name="Lap_Label" type="Label" parent="HUD_Margin/Top_Control/TopBar_Gradient_NinePatchRect/TopBar_MarginContainer/TopBar_HBoxContainer/Lap_VBoxContainer" unique_id=377832194]
 layout_mode = 2
-size_flags_vertical = 10
+size_flags_vertical = 2
 theme = ExtResource("3_f2wx0")
 theme_override_fonts/font = ExtResource("1_uk570")
 theme_override_font_sizes/font_size = 32
 text = "LAP"
 
-[node name="MinMaxValuesLabel" parent="HUD_Margin/Top_Control/NinePatchRect/TopBar_HBoxContainer/Lap_VBoxContainer" unique_id=1701166069 instance=ExtResource("1_gppie")]
+[node name="Lap_MinMaxValuesLabel" parent="HUD_Margin/Top_Control/TopBar_Gradient_NinePatchRect/TopBar_MarginContainer/TopBar_HBoxContainer/Lap_VBoxContainer" unique_id=1701166069 instance=ExtResource("1_gppie")]
+unique_name_in_owner = true
 layout_mode = 2
+ToggleCurrent = true
+ToggleDivider = true
+ToggleMax = true
+TextCurrent = "1"
+TextMaximum = "3"
+TextSize = 48
+AlignmentCurrent = 2
+AlignmentDivider = 1
 
 [node name="Bottom_Control" type="Control" parent="HUD_Margin" unique_id=1743586221]
 custom_minimum_size = Vector2(0, 350)

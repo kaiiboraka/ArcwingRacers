@@ -1,0 +1,164 @@
+[gd_scene format=3 uid="uid://cko0njbj0tx8y"]
+
+[ext_resource type="Script" uid="uid://bbqgfxq3wr1x0" path="res://UI/HUD/RaceHUD/race_hud.gd" id="1_58fvw"]
+[ext_resource type="Texture2D" uid="uid://bv5js10gjp1le" path="res://UI/HUD/top-bar_gradient.png" id="2_fdytw"]
+[ext_resource type="Theme" uid="uid://b3feribuv55rf" path="res://Content/Themes/Minasans_Theme.tres" id="3_khljn"]
+[ext_resource type="FontFile" uid="uid://xeik5cdgmhrh" path="res://UI/Fonts/MinasansBold-m2mmP.otf" id="4_h67ug"]
+[ext_resource type="PackedScene" uid="uid://d1hrwm72m604c" path="res://UI/MinMaxValuesLabel.tscn" id="5_nncyy"]
+
+[node name="Race_HUD" type="Control" unique_id=1112123383]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_58fvw")
+
+[node name="TopBar_Gradient_NinePatchRect" type="NinePatchRect" parent="." unique_id=857343347]
+self_modulate = Color(0.21568628, 0.78431374, 1, 0.6862745)
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = -10.0
+offset_right = 24.0
+offset_bottom = 130.0
+grow_horizontal = 2
+texture = ExtResource("2_fdytw")
+region_rect = Rect2(0, 0, 160, 56)
+patch_margin_left = 32
+patch_margin_top = 16
+patch_margin_right = 32
+
+[node name="TopBar_MarginContainer" type="MarginContainer" parent="TopBar_Gradient_NinePatchRect" unique_id=855890884]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 256
+theme_override_constants/margin_right = 256
+
+[node name="TopBar_HBoxContainer" type="HBoxContainer" parent="TopBar_Gradient_NinePatchRect/TopBar_MarginContainer" unique_id=905484712]
+layout_mode = 2
+alignment = 1
+
+[node name="Position_VBoxContainer" type="VBoxContainer" parent="TopBar_Gradient_NinePatchRect/TopBar_MarginContainer/TopBar_HBoxContainer" unique_id=1910832184]
+layout_mode = 2
+size_flags_horizontal = 2
+offset_transform_enabled = true
+
+[node name="Pos_Label" type="Label" parent="TopBar_Gradient_NinePatchRect/TopBar_MarginContainer/TopBar_HBoxContainer/Position_VBoxContainer" unique_id=988073005]
+layout_mode = 2
+size_flags_vertical = 2
+theme = ExtResource("3_khljn")
+theme_override_fonts/font = ExtResource("4_h67ug")
+theme_override_font_sizes/font_size = 32
+text = "POS"
+
+[node name="Position_MinMaxValuesLabel" parent="TopBar_Gradient_NinePatchRect/TopBar_MarginContainer/TopBar_HBoxContainer/Position_VBoxContainer" unique_id=1701166069 instance=ExtResource("5_nncyy")]
+unique_name_in_owner = true
+layout_mode = 2
+offset_transform_enabled = true
+offset_transform_position = Vector2(-16, 0)
+ToggleCurrent = true
+ToggleDivider = true
+ToggleMax = true
+TextCurrent = "1"
+TextMaximum = "12"
+TextSize = 48
+AlignmentCurrent = 2
+AlignmentDivider = 1
+
+[node name="Time_VBoxContainer" type="VBoxContainer" parent="TopBar_Gradient_NinePatchRect/TopBar_MarginContainer/TopBar_HBoxContainer" unique_id=282752631]
+layout_mode = 2
+size_flags_horizontal = 6
+
+[node name="Time_Label" type="Label" parent="TopBar_Gradient_NinePatchRect/TopBar_MarginContainer/TopBar_HBoxContainer/Time_VBoxContainer" unique_id=1296819784]
+layout_mode = 2
+size_flags_vertical = 2
+theme = ExtResource("3_khljn")
+theme_override_fonts/font = ExtResource("4_h67ug")
+theme_override_font_sizes/font_size = 32
+text = "TIME"
+horizontal_alignment = 1
+
+[node name="Timer_RichTextLabel" type="RichTextLabel" parent="TopBar_Gradient_NinePatchRect/TopBar_MarginContainer/TopBar_HBoxContainer/Time_VBoxContainer" unique_id=1701111354]
+unique_name_in_owner = true
+clip_contents = false
+layout_mode = 2
+size_flags_vertical = 2
+theme = ExtResource("3_khljn")
+theme_override_font_sizes/normal_font_size = 48
+theme_override_font_sizes/mono_font_size = 250
+bbcode_enabled = true
+text = "00:00.000"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[node name="Lap_VBoxContainer" type="VBoxContainer" parent="TopBar_Gradient_NinePatchRect/TopBar_MarginContainer/TopBar_HBoxContainer" unique_id=46100095]
+layout_mode = 2
+size_flags_horizontal = 10
+
+[node name="Lap_Label" type="Label" parent="TopBar_Gradient_NinePatchRect/TopBar_MarginContainer/TopBar_HBoxContainer/Lap_VBoxContainer" unique_id=626316804]
+layout_mode = 2
+size_flags_vertical = 2
+theme = ExtResource("3_khljn")
+theme_override_fonts/font = ExtResource("4_h67ug")
+theme_override_font_sizes/font_size = 32
+text = "LAP"
+
+[node name="Lap_MinMaxValuesLabel" parent="TopBar_Gradient_NinePatchRect/TopBar_MarginContainer/TopBar_HBoxContainer/Lap_VBoxContainer" unique_id=422359527 instance=ExtResource("5_nncyy")]
+unique_name_in_owner = true
+layout_mode = 2
+ToggleCurrent = true
+ToggleDivider = true
+ToggleMax = true
+TextCurrent = "1"
+TextMaximum = "3"
+TextSize = 48
+AlignmentCurrent = 2
+AlignmentDivider = 1
+
+[node name="Screen_CenterContainer" type="CenterContainer" parent="." unique_id=1682105435]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Countdown_RichTextLabel" type="RichTextLabel" parent="Screen_CenterContainer" unique_id=854115524]
+unique_name_in_owner = true
+clip_contents = false
+layout_mode = 2
+theme = ExtResource("3_khljn")
+theme_override_colors/default_color = Color(0, 0.8901961, 1, 1)
+theme_override_font_sizes/normal_font_size = 250
+theme_override_font_sizes/bold_font_size = 250
+theme_override_font_sizes/bold_italics_font_size = 250
+theme_override_font_sizes/italics_font_size = 250
+theme_override_font_sizes/mono_font_size = 250
+bbcode_enabled = true
+text = "[b]3"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[node name="Finished_RichTextLabel" type="RichTextLabel" parent="Screen_CenterContainer" unique_id=259404650]
+unique_name_in_owner = true
+clip_contents = false
+layout_mode = 2
+theme = ExtResource("3_khljn")
+theme_override_colors/default_color = Color(1, 0.8901961, 0, 1)
+theme_override_font_sizes/bold_italics_font_size = 84
+bbcode_enabled = true
+text = "[b][i]FINISH"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1
