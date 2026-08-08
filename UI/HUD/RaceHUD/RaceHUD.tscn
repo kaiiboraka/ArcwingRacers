@@ -87,14 +87,17 @@ horizontal_alignment = 1
 
 [node name="Timer_RichTextLabel" type="RichTextLabel" parent="TopBar_Gradient_NinePatchRect/TopBar_MarginContainer/TopBar_HBoxContainer/Time_VBoxContainer" unique_id=1701111354]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(275, 68)
 clip_contents = false
 layout_mode = 2
 size_flags_vertical = 2
+offset_transform_enabled = true
+offset_transform_position = Vector2(25, 0)
 theme = ExtResource("3_khljn")
 theme_override_font_sizes/normal_font_size = 48
 theme_override_font_sizes/mono_font_size = 250
 bbcode_enabled = true
-text = "00:00.000"
+text = "00:00.00"
 fit_content = true
 scroll_active = false
 autowrap_mode = 0
@@ -197,7 +200,6 @@ horizontal_alignment = 1
 
 [node name="Finished_RichTextLabel" type="RichTextLabel" parent="Screen_CenterContainer" unique_id=259404650]
 unique_name_in_owner = true
-visible = false
 clip_contents = false
 layout_mode = 2
 theme = ExtResource("3_khljn")

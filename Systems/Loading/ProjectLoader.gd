@@ -14,25 +14,25 @@ extends Node;
 ## The project's own main menu (copied from Maaack's template): extends the base MainMenu
 ## script and adds Continue/Level-Select/New-Game wiring plus the project options/credits
 ## windows. Instantiated at runtime with the project exports set directly.
-const MAIN_MENU_SCENE : String = "res://UI/Example_Scenes/scenes/menus/main_menu/main_menu.tscn";
+const MAIN_MENU_SCENE : String = "uid://ctcm8li40gf7s";
 
-## Opening splash (logo fade-in/out). Own copy of the template opening that hands off to this
+## Opening splash (logo fade-in/out). Own copy of the template opening that animates off to this
 ## ProjectLoader instead of calling SceneLoader.change_scene_*.
-const OPENING_SCENE : String = "res://UI/Example_Scenes/scenes/opening/opening.tscn";
+const OPENING_SCENE : String = "uid://cgsjsem6im78i";
 
-## Options / credits windows the menu opens (from the installed template copy).
-const OPTIONS_WINDOW_SCENE : String = "res://UI/Example_Scenes/scenes/windows/main_menu_options_window.tscn";
-const CREDITS_WINDOW_SCENE : String = "res://UI/Example_Scenes/scenes/windows/main_menu_credits_window.tscn";
+## Options / credits windows the menu opens.
+const OPTIONS_WINDOW_SCENE : String = "uid://dvk85b4ev5pw6";
+const CREDITS_WINDOW_SCENE : String = "uid://ch3o8f2hxf46b";
 
 ## Loading overlay shown while a scene loads (lives inside the UI container).
-const LOADING_SCREEN_SCENE : String = "res://UI/Example_Scenes/scenes/loading_screen/loading_screen.tscn";
+const LOADING_SCREEN_SCENE : String = "uid://dog8vbjbymv3o";
 
 ## Race HUD (RaceHUD + Spedometer). Mounted as a UI-container overlay once a track lands, so
 ## it appears only while a race is active and never on a menu.
 const HUD_SCENE_UID : String = "uid://c1gnx5bseg8ac";
 
 ## Pause layer rebuilt every time it is opened (race slice).
-const PAUSE_SCENE : String = "res://UI/Example_Scenes/scenes/windows/pause_menu_layer.tscn";
+const PAUSE_SCENE : String = "uid://bg2ufb71g5oyl";
 
 ## Default gameplay track for the menu's New Game: Level_Grassy. Test_Level is the same rig
 ## with less dressing.
@@ -57,7 +57,18 @@ func bootstrap() -> void:
 	if opening == null:
 		push_error("ProjectLoader: failed to load opening %s" % OPENING_SCENE)
 		return
-	opening.next_scene_path = MAIN_MENU_SCENE
+	opening.next_scene_path = _path_from_uid(MAIN_MENU_SCENE)
+
+
+## Resolves a `uid://...` reference to its current res:// path. Keeps the feature consts
+## uid-based (source of truth survives moves) while giving engine APIs that only accept a
+## real path (load_threaded, @export_file) a concrete location.
+func _path_from_uid(scene_uid : String) -> String:
+	var packed := ResourceLoader.load(scene_uid);
+	if packed == null:
+		push_error("ProjectLoader: could not resolve uid %s" % scene_uid)
+		return scene_uid
+	return packed.resource_path
 
 
 ## Handoff point reached by the opening when its final image has faded out (or the player

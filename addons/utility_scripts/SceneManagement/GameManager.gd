@@ -148,7 +148,11 @@ func _swap_scene(container : Node, current : Node, new_scene : String, mode : Ch
 	if container == ui:
 		clear_gui_overlays();
 	_dispose_current(container, current, mode);
-	var key : StringName = StringName(new_scene);
+	var packed : PackedScene = load(new_scene);
+	if packed == null:
+		push_error("GameManager._swap_scene: failed to load %s" % new_scene)
+		return null
+	var key : StringName = StringName(packed.resource_path);
 	var node : Node;
 	if scene_cache.has(key):
 		node = scene_cache[key];
@@ -156,7 +160,7 @@ func _swap_scene(container : Node, current : Node, new_scene : String, mode : Ch
 		if node.get_parent() == null:
 			container.add_child(node);
 	else:
-		node = load(new_scene).instantiate();
+		node = packed.instantiate();
 		scene_cache[key] = node;
 		container.add_child(node);
 	return node;

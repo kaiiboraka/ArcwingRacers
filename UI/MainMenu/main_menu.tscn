@@ -1,9 +1,9 @@
-[gd_scene format=3 uid="uid://pqih0vw2yk26"]
+[gd_scene format=3 uid="uid://ctcm8li40gf7s"]
 
 [ext_resource type="PackedScene" uid="uid://c6k5nnpbypshi" path="res://addons/maaacks_game_template/base/nodes/menus/main_menu/main_menu.tscn" id="1_rdxe0"]
-[ext_resource type="Script" path="res://UI/Example_Scenes/scenes/menus/main_menu/main_menu.gd" id="2_w6xca"]
-[ext_resource type="PackedScene" path="res://UI/Example_Scenes/scenes/windows/main_menu_options_window.tscn" id="3_ye26u"]
-[ext_resource type="PackedScene" path="res://UI/Example_Scenes/scenes/windows/main_menu_credits_window.tscn" id="4_7is7n"]
+[ext_resource type="Script" uid="uid://bgajj0m3htojg" path="res://UI/MainMenu/main_menu.gd" id="2_w6xca"]
+[ext_resource type="PackedScene" uid="uid://dvk85b4ev5pw6" path="res://UI/MainMenu/main_menu_options_window.tscn" id="3_ye26u"]
+[ext_resource type="PackedScene" uid="uid://ch3o8f2hxf46b" path="res://UI/MainMenu/Credits/main_menu_credits_window.tscn" id="4_7is7n"]
 [ext_resource type="PackedScene" uid="uid://cwt4p3bufkke5" path="res://addons/maaacks_game_template/base/nodes/windows/confirmation_overlaid_window.tscn" id="5_dm12p"]
 
 [node name="MainMenu" unique_id=869232425 instance=ExtResource("1_rdxe0")]

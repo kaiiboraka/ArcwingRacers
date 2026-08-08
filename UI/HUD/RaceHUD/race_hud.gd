@@ -115,7 +115,7 @@ func _on_lap_completed(_lap : int, _lap_time : float, _best_lap : float) -> void
 
 
 func _on_finished(total_time : float, lap_times : Array) -> void:
-	_finished_label.text = "[b][i]FINISH\nTotal %s    Best %s[/i][/b]" % [_format_time(total_time), _format_time(_best_of(lap_times))]
+	_finished_label.text = "[b][i]FINISH\nTotal %s\nBest %s[/i][/b]" % [_format_time(total_time), _format_time(_best_of(lap_times))]
 	_finished_label.visible = true
 	_kill_tween()
 	_finished_label.modulate.a = 0.0
