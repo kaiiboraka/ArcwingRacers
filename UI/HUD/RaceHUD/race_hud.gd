@@ -79,7 +79,7 @@ func _on_countdown_go() -> void:
 	slide_tween.tween_property(_go_label_box, "offset_transform_position_ratio", Vector2(0,0), .3);
 	slide_tween.finished.connect(
 		func():
-			get_tree().create_timer(.15).timeout.connect(func(): 
+			get_tree().create_timer(.15, false).timeout.connect(func(): 
 				var slide_off_tween = create_tween().set_trans(Tween.TRANS_QUART).set_ease(Tween.EASE_IN);
 				slide_off_tween.tween_property(_go_label_box, "offset_transform_position_ratio", Vector2(2,0), .3);
 				slide_off_tween.finished.connect(func(): _go_label_box.visible = false);

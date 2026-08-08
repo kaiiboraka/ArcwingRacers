@@ -59,7 +59,7 @@ func _begin_pregame() -> void:
 	_place_pod_on_grid()
 	_set_pod_locked(true)
 	EventBus.race_pregame_ready.emit()
-	await get_tree().create_timer(pregame_duration).timeout
+	await get_tree().create_timer(pregame_duration, false).timeout
 	_start_countdown()
 
 
@@ -67,7 +67,7 @@ func _start_countdown() -> void:
 	_set_state(State.COUNTDOWN)
 	for tick in [3, 2, 1]:
 		EventBus.race_countdown_tick.emit(tick)
-		await get_tree().create_timer(1.0).timeout
+		await get_tree().create_timer(1.0, false).timeout
 	EventBus.race_countdown_go.emit()
 	_start_racing()
 

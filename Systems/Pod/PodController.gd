@@ -661,6 +661,8 @@ func _basis_from_forward_up(fwd : Vector3, up : Vector3) -> Basis:
 	var forward : Vector3 = up.cross(right).normalized();
 	return Basis(right, up, -forward);
 
+
+## BUG: tilt motion is moving me in the opposite direction it should. right tilt should move me right, but moves me left, and vice versa.
 func _tilt(delta, input):
 	var speed_frac = clampf(_current_speed / _max_speed_mps, 0.0, 1.0) if _max_speed_mps > 0.0 else 0.0;
 	var tilt_mix : float = clampf(abs(input.tilt), 0.0, 1.0);
