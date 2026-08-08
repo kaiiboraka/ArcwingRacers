@@ -17,6 +17,7 @@ const GROUP_NAME : String = "RaceManager"
 @onready var _lap_label : MinMaxValuesLabel = %Lap_MinMaxValuesLabel
 @onready var _countdown_label : RichTextLabel = %Countdown_RichTextLabel
 @onready var _finished_label : RichTextLabel = %Finished_RichTextLabel
+@onready var _go_label_box : HBoxContainer = $Screen_CenterContainer/GO_HBoxContainer
 
 var _race_manager : RaceManager
 var _last_timer_text : String = ""
@@ -72,7 +73,19 @@ func _on_countdown_tick(tick : int) -> void:
 
 
 func _on_countdown_go() -> void:
-	_animate_countdown("[b]GO!")
+	_go_label_box.offset_transform_position_ratio = Vector2(-2, 0);
+	_go_label_box.visible = true;
+	var slide_tween = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN);
+	slide_tween.tween_property(_go_label_box, "offset_transform_position_ratio", Vector2(0,0), .3);
+	slide_tween.finished.connect(
+		func():
+			get_tree().create_timer(.15).timeout.connect(func(): 
+				var slide_off_tween = create_tween().set_trans(Tween.TRANS_QUART).set_ease(Tween.EASE_IN);
+				slide_off_tween.tween_property(_go_label_box, "offset_transform_position_ratio", Vector2(2,0), .3);
+				slide_off_tween.finished.connect(func(): _go_label_box.visible = false);
+			);
+	)
+	#_animate_countdown("[b]GO!")
 
 
 func _animate_countdown(text_value : String) -> void:
@@ -127,4 +140,4 @@ func _format_time(seconds : float) -> String:
 	if not is_finite(seconds) or seconds < 0.0:
 		return "--:--.---"
 	var total_ms : int = maxi(0, roundi(seconds * 1000.0))
-	return "%d:%02d.%03d" % [total_ms / 60000, (total_ms / 1000) % 60, total_ms % 1000]
+	return "%d:%02d.%02d" % [total_ms / 60000, (total_ms / 1000) % 60, total_ms % 1000]

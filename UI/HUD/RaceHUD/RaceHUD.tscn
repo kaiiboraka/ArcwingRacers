@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://d1hrwm72m604c" path="res://UI/MinMaxValuesLabel.tscn" id="5_nncyy"]
 
 [node name="Race_HUD" type="Control" unique_id=1112123383]
+z_index = -1
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -97,7 +98,6 @@ text = "00:00.000"
 fit_content = true
 scroll_active = false
 autowrap_mode = 0
-horizontal_alignment = 1
 
 [node name="Lap_VBoxContainer" type="VBoxContainer" parent="TopBar_Gradient_NinePatchRect/TopBar_MarginContainer/TopBar_HBoxContainer" unique_id=46100095]
 layout_mode = 2
@@ -134,6 +134,7 @@ grow_vertical = 2
 [node name="Countdown_RichTextLabel" type="RichTextLabel" parent="Screen_CenterContainer" unique_id=854115524]
 unique_name_in_owner = true
 visible = false
+z_index = -1
 clip_contents = false
 layout_mode = 2
 theme = ExtResource("3_khljn")
@@ -144,14 +145,16 @@ theme_override_font_sizes/bold_italics_font_size = 250
 theme_override_font_sizes/italics_font_size = 250
 theme_override_font_sizes/mono_font_size = 250
 bbcode_enabled = true
-text = "[b]GO"
+text = "[b]3"
 fit_content = true
 scroll_active = false
 autowrap_mode = 0
 horizontal_alignment = 1
 
 [node name="GO_HBoxContainer" type="HBoxContainer" parent="Screen_CenterContainer" unique_id=167831760]
+visible = false
 layout_mode = 2
+offset_transform_enabled = true
 theme_override_constants/separation = 14
 
 [node name="GO_RichTextLabel" type="RichTextLabel" parent="Screen_CenterContainer/GO_HBoxContainer" unique_id=875174053]

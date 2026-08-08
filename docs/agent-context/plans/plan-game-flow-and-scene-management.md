@@ -35,7 +35,7 @@ the flow" addendum.
 | GameManager → script autoload | `addons/utility_scripts/SceneManagement/GameManager.gd` | Remove `@export world_3D/world_2D/ui`; add `configure(world3d, world2d, ui)`; keep `change_*_scene(String, mode)`; add packed variants `change_*_scene_packed(packed, mode)` for async handoff |
 | Master main scene | `Content/Scenes/ArcwingRacers.tscn` + boot script | Root `ArcwingRacers` (Node) with `World3D`/`World2D`/`UI`; boot assigns refs into autoload once, then calls `ProjectLoader.bootstrap()` |
 | Flow controller | `Systems/Loading/ProjectLoader.gd` | Scene-path table, async load helpers, `bootstrap()`, menu→race handoff |
-| Main menu / options / pause wiring | `UI/Example_Scenes/scenes/menus/...`, `scenes/windows/pause_menu_layer.tscn` | GUI scenes under `GameManager.ui`; New Game → ProjectLoader → test level; `ui_cancel` → pause layer |
+| Main menu / options / pause wiring | `UI/Example_Scenes/scenes/menus/...`, `scenes/windows/pause_menu_layer.tscn` | GUI scenes under `GameManager.ui`; New Game → ProjectLoader → test level; `ui_cancel` → pause layer. **Done:** main menu host is the project copy `main_menu.tscn` (`ProjectLoader.MAIN_MENU_SCENE`); opening splash is the project copy `opening.tscn`+`opening.gd`; New Game → `ProjectLoader.DEFAULT_TRACK_SCENE` (`Level_Grassy.tscn`); HUD mounted by uid (`res://UI/HUD/HUD.tscn` = `uid://c1gnx5bseg8ac`, `ProjectLoader.HUD_SCENE_UID`) |
 | Settings save | `PlayerConfig`, `AppSettings`, `GlobalState` (template) | Options windows persist via template scripts; autoloads already registered by plugin |
 | project.godot | `project.godot` | `GameManager` → script autoload; add `ProjectLoader` autoload; `main_scene` → ArcwingRacers uid |
 
@@ -121,7 +121,8 @@ No `get_tree().change_scene_*` anywhere — containers only.
 | `addons/utility_scripts/SceneManagement/GameManager.gd` | Script autoload; containers; ChangeMode; sync + packed swap API |
 | `Content/Scenes/ArcwingRacers.tscn` | Master scene: World3D / World2D / UI / _Boot |
 | `Systems/Loading/ProjectLoader.gd` | Project flow controller (scene refs, async helpers, race bootstrap) |
-| `UI/Example_Scenes/scenes/menus/main_menu/main_menu_with_animations.tscn` | Main menu host GUI |
-| `UI/HUD.tscn` / `race_hud` | HUD GUI inside UI host during a race |
+| `UI/Example_Scenes/scenes/menus/main_menu/main_menu.tscn` | Project main menu host GUI (project copy; not `main_menu_with_animations.tscn`) |
+| `UI/Example_Scenes/scenes/opening/opening.tscn` + `opening.gd` | Project opening splash; handoff → `ProjectLoader.opening_finished()` |
+| `UI/HUD/HUD.tscn` (`uid://c1gnx5bseg8ac`) | Race HUD mounted as UI-container overlay during a race |
 | `project.godot` | autoloads, main scene |
 | `addons/utility_scripts/SceneManagement/game_manager.tscn` | Deleted after the swap |

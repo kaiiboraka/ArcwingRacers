@@ -11,9 +11,14 @@
 
 extends Node;
 
-## Maaack's clean base MainMenu scene (no GameState/win-lose dependency). Instantiated at
-## runtime with project exports set directly -- it never falls back to AppConfig.
-const MAIN_MENU_SCENE : String = "res://addons/maaacks_game_template/base/nodes/menus/main_menu/main_menu.tscn";
+## The project's own main menu (copied from Maaack's template): extends the base MainMenu
+## script and adds Continue/Level-Select/New-Game wiring plus the project options/credits
+## windows. Instantiated at runtime with the project exports set directly.
+const MAIN_MENU_SCENE : String = "res://UI/Example_Scenes/scenes/menus/main_menu/main_menu.tscn";
+
+## Opening splash (logo fade-in/out). Own copy of the template opening that hands off to this
+## ProjectLoader instead of calling SceneLoader.change_scene_*.
+const OPENING_SCENE : String = "res://UI/Example_Scenes/scenes/opening/opening.tscn";
 
 ## Options / credits windows the menu opens (from the installed template copy).
 const OPTIONS_WINDOW_SCENE : String = "res://UI/Example_Scenes/scenes/windows/main_menu_options_window.tscn";
@@ -24,7 +29,7 @@ const LOADING_SCREEN_SCENE : String = "res://UI/Example_Scenes/scenes/loading_sc
 
 ## Race HUD (RaceHUD + Spedometer). Mounted as a UI-container overlay once a track lands, so
 ## it appears only while a race is active and never on a menu.
-const HUD_SCENE : String = "res://UI/HUD.tscn";
+const HUD_SCENE_UID : String = "uid://c1gnx5bseg8ac";
 
 ## Pause layer rebuilt every time it is opened (race slice).
 const PAUSE_SCENE : String = "res://UI/Example_Scenes/scenes/windows/pause_menu_layer.tscn";
@@ -43,13 +48,44 @@ var _current_track_path : String = DEFAULT_TRACK_SCENE;
 
 
 ## Entry point, called from the master scene's boot script after it assigns the containers
-## to GameManager. Instantiates the main menu with project exports and places it in the UI
-## container, then hooks its flow signal.
+## to GameManager. Instantiates the opening splash into the UI container. The opening's
+## script background-loads its next_scene_path (the project main menu) and calls back here
+## (`opening_finished` / `opening_show_loading_screen`) when the sequence ends or the load
+## needs a loading overlay.
 func bootstrap() -> void:
-	var menu : Node = GameManager.change_gui_scene(MAIN_MENU_SCENE);
-	if menu == null:
-		push_error("ProjectLoader: failed to load main menu %s" % MAIN_MENU_SCENE)
+	var opening : Node = GameManager.change_gui_scene(OPENING_SCENE);
+	if opening == null:
+		push_error("ProjectLoader: failed to load opening %s" % OPENING_SCENE)
 		return
+	opening.next_scene_path = MAIN_MENU_SCENE
+
+
+## Handoff point reached by the opening when its final image has faded out (or the player
+## skipped) and the background load of the main scene has finished. Swaps the loaded menu
+## scene into the UI container and wires its exports / flow signal.
+func opening_finished() -> void:
+	var packed : PackedScene = SceneLoader.get_resource();
+	if packed == null:
+		push_error("ProjectLoader: opening_finished called but SceneLoader returned null; rebooting.")
+		bootstrap()
+		return
+	var menu : Node = GameManager.change_gui_scene_packed(packed);
+	if menu == null:
+		push_error("ProjectLoader: failed to place main menu from opening load")
+		return
+	_configure_main_menu(menu);
+
+
+## Called by the opening when the user finishes the intro before the menu load is done and
+## the opening opted to show a loading screen. The opening already awaits SceneLoader.scene_loaded
+## one-shot; all we need to do is put the loading overlay in front of the intro.
+func opening_show_loading_screen() -> void:
+	GameManager.show_gui_overlay(LOADING_SCREEN_SCENE);
+
+
+## Configures a freshly-placed main menu instance with the project's exports and hooks its
+## flow signal onto ProjectLoader. Shared between the opening handoff and direct menu loads.
+func _configure_main_menu(menu : Node) -> void:
 	_menu = menu;
 	menu.game_scene_path = DEFAULT_TRACK_SCENE;
 	menu.signal_game_start = true;
@@ -57,6 +93,16 @@ func bootstrap() -> void:
 	menu.credits_packed_scene = load(CREDITS_WINDOW_SCENE);
 	if menu.has_signal("game_started"):
 		menu.game_started.connect(_on_game_started_from_menu);
+
+
+## Loads the main menu directly, skipping the opening intro. Used when returning to the menu
+## from a race (the intro only plays at first boot).
+func _show_main_menu() -> void:
+	var menu : Node = GameManager.change_gui_scene(MAIN_MENU_SCENE);
+	if menu == null:
+		push_error("ProjectLoader: failed to load main menu %s" % MAIN_MENU_SCENE)
+		return
+	_configure_main_menu(menu);
 
 
 ## Handles the main menu's `game_started` signal. The menu has already started the
@@ -105,7 +151,7 @@ func _finish_swap() -> void:
 	if packed == null:
 		push_error("ProjectLoader: SceneLoader returned null; returning to menu.")
 		_loading_track = false;
-		bootstrap();
+		_show_main_menu();
 		return
 	GameManager.change_3D_scene_packed(packed, GameManager.ChangeMode.DELETE);
 	GameManager.clear_gui_scene();
@@ -115,7 +161,7 @@ func _finish_swap() -> void:
 ## Mounts the HUD and the hidden pause layer onto the UI container. Called once the track is
 ## in World3D. The pause layer starts hidden and is toggled on ui_cancel while a race is up.
 func _mount_race_ui() -> void:
-	GameManager.show_gui_overlay(HUD_SCENE);
+	GameManager.show_gui_overlay(HUD_SCENE_UID);
 	_pause_layer = GameManager.show_gui_overlay(PAUSE_SCENE, false);
 
 
@@ -129,14 +175,14 @@ func _unhandled_input(_event : InputEvent) -> void:
 
 
 ## Returns to the main menu from an active race: clears the 3D container and every GUI
-## overlay, then re-boots the menu into the UI container
+## overlay, then re-boots the menu into the UI container (no opening intro replay).
 func return_to_menu() -> void:
 	get_tree().paused = false;
 	_loading_track = false;
 	_pause_layer = null;
 	GameManager.clear_3d_scene();
 	GameManager.clear_gui_scene();
-	bootstrap();
+	_show_main_menu();
 
 
 ## Re-runs the current race from the pause menu's Restart. Unpauses, drops overlays and the
