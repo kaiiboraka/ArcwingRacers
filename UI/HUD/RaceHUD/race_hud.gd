@@ -78,7 +78,7 @@ func _on_countdown_tick(tick : int) -> void:
 
 func _on_countdown_go() -> void:
 	const in_out_time = .15
-	const stay_time = .25
+	const stay_time = .35
 	_go_label_box.offset_transform_position_ratio = Vector2(-2, 0);
 	_go_label_box.visible = true;
 	var slide_tween = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN);
@@ -87,8 +87,11 @@ func _on_countdown_go() -> void:
 		func():
 			get_tree().create_timer(stay_time, false).timeout.connect(func(): 
 				var slide_off_tween = create_tween().set_trans(Tween.TRANS_QUART).set_ease(Tween.EASE_OUT);
-				slide_off_tween.tween_property(_go_label_box, "offset_transform_position_ratio", Vector2(2,0), in_out_time);
-				slide_off_tween.finished.connect(func(): _go_label_box.visible = false);
+				slide_off_tween.tween_property(_go_label_box, "offset_transform_position_ratio", Vector2(3,0), in_out_time);
+				slide_off_tween.finished.connect(func(): 
+					_go_label_box.visible = false
+					_go_label_box.offset_transform_position_ratio = Vector2.ZERO;
+				);
 			);
 	)
 	#_animate_countdown("[b]GO!")
@@ -103,7 +106,7 @@ func _animate_countdown(text_value : String) -> void:
 	_countdown_label.offset_transform_scale = Vector2(0.6, 0.6)
 	_countdown_label.offset_transform_position = Vector2(0, 40)
 	_tween = create_tween()
-	_tween.set_trans(Tween.TRANS_ELASTIC)
+	_tween.set_trans(Tween.TRANS_QUAD)
 	_tween.set_ease(Tween.EASE_OUT)
 	_tween.tween_property(_countdown_label, "offset_transform_scale", Vector2.ONE, 0.2)
 	_tween.parallel().tween_property(_countdown_label, "offset_transform_position", Vector2.ZERO, 0.2)
