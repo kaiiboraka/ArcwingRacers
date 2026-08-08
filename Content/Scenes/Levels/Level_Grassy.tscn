@@ -208,6 +208,12 @@ plane = Plane(0, 0, -1, 0)
 
 [node name="Level_Grassy" type="Node3D" unique_id=421134206]
 
+[node name="RaceManager" type="Node" parent="." unique_id=562303923 node_paths=PackedStringArray("pod", "track", "starting_line")]
+script = ExtResource("19_rcdk6")
+pod = NodePath("../Arcwing")
+track = NodePath("../TrackSpline")
+starting_line = NodePath("../StartingLine")
+
 [node name="Skybox_AfternoonSky" parent="." unique_id=886949906 instance=ExtResource("13_o8oxc")]
 transform = Transform3D(0.4679298, 0, -0.8837656, 0, 1, 0, 0.8837656, 0, 0.4679298, 0, 0, 0)
 
@@ -1136,12 +1142,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -313, 0, 1465)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="WorldFloor/WorldBoundary_Z+" unique_id=2134123651]
 shape = SubResource("WorldBoundaryShape3D_njj3u")
-
-[node name="RaceManager" type="Node" parent="." unique_id=562303923 node_paths=PackedStringArray("pod", "track", "starting_line")]
-script = ExtResource("19_rcdk6")
-pod = NodePath("../Arcwing")
-track = NodePath("../TrackSpline")
-starting_line = NodePath("../StartingLine")
 
 [node name="Lights" type="Node3D" parent="." unique_id=235406535]
 

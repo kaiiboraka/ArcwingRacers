@@ -84,7 +84,7 @@ func _animate_countdown(text_value : String) -> void:
 	_countdown_label.offset_transform_scale = Vector2(0.6, 0.6)
 	_countdown_label.offset_transform_position = Vector2(0, 40)
 	_tween = create_tween()
-	_tween.set_trans(Tween.TRANS_BACK)
+	_tween.set_trans(Tween.TRANS_ELASTIC)
 	_tween.set_ease(Tween.EASE_OUT)
 	_tween.tween_property(_countdown_label, "offset_transform_scale", Vector2.ONE, 0.2)
 	_tween.parallel().tween_property(_countdown_label, "offset_transform_position", Vector2.ZERO, 0.2)
