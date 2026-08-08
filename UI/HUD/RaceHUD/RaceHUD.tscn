@@ -133,6 +133,7 @@ grow_vertical = 2
 
 [node name="Countdown_RichTextLabel" type="RichTextLabel" parent="Screen_CenterContainer" unique_id=854115524]
 unique_name_in_owner = true
+visible = false
 clip_contents = false
 layout_mode = 2
 theme = ExtResource("3_khljn")
@@ -151,6 +152,7 @@ horizontal_alignment = 1
 
 [node name="Finished_RichTextLabel" type="RichTextLabel" parent="Screen_CenterContainer" unique_id=259404650]
 unique_name_in_owner = true
+visible = false
 clip_contents = false
 layout_mode = 2
 theme = ExtResource("3_khljn")

@@ -20,15 +20,10 @@
 [ext_resource type="Material" uid="uid://b3accgfymm6r2" path="res://Content/Materials/M_dirt_big.tres" id="17_njj3u"]
 [ext_resource type="Script" uid="uid://cg5ng2hacr6hn" path="res://Systems/Race/race_manager.gd" id="19_rcdk6"]
 
-[sub_resource type="Resource" id="Resource_njj3u"]
-resource_local_to_scene = true
-script = ExtResource("9_hc4ah")
-flags = 1
-
 [sub_resource type="Resource" id="Resource_rcdk6"]
 resource_local_to_scene = true
 script = ExtResource("9_hc4ah")
-flags = 10
+flags = 1
 
 [sub_resource type="Resource" id="Resource_30ukf"]
 resource_local_to_scene = true
@@ -57,7 +52,6 @@ script = ExtResource("9_hc4ah")
 [sub_resource type="Resource" id="Resource_o8oxc"]
 resource_local_to_scene = true
 script = ExtResource("9_hc4ah")
-flags = 20
 
 [sub_resource type="Resource" id="Resource_15o6q"]
 resource_local_to_scene = true
@@ -70,7 +64,6 @@ script = ExtResource("9_hc4ah")
 [sub_resource type="Resource" id="Resource_lxsag"]
 resource_local_to_scene = true
 script = ExtResource("9_hc4ah")
-flags = 10
 
 [sub_resource type="Resource" id="Resource_xbsqa"]
 resource_local_to_scene = true
@@ -143,7 +136,6 @@ script = ExtResource("9_hc4ah")
 [sub_resource type="Resource" id="Resource_ej7iq"]
 resource_local_to_scene = true
 script = ExtResource("9_hc4ah")
-flags = 8
 
 [sub_resource type="Resource" id="Resource_aunuw"]
 resource_local_to_scene = true
@@ -152,7 +144,6 @@ script = ExtResource("9_hc4ah")
 [sub_resource type="Resource" id="Resource_cnh5c"]
 resource_local_to_scene = true
 script = ExtResource("9_hc4ah")
-flags = 18
 
 [sub_resource type="Resource" id="Resource_ejtfb"]
 resource_local_to_scene = true
@@ -170,7 +161,11 @@ script = ExtResource("9_hc4ah")
 resource_local_to_scene = true
 script = ExtResource("9_hc4ah")
 
-[sub_resource type="Curve3D" id="Curve3D_in2tn"]
+[sub_resource type="Resource" id="Resource_ws21h"]
+resource_local_to_scene = true
+script = ExtResource("9_hc4ah")
+
+[sub_resource type="Curve3D" id="Curve3D_iakwp"]
 resource_name = "Main_Spline"
 closed = true
 bake_interval = 0.25
@@ -180,7 +175,7 @@ _data = {
 }
 point_count = 36
 script = ExtResource("10_h4f0x")
-point_data = Array[ExtResource("9_hc4ah")]([SubResource("Resource_njj3u"), SubResource("Resource_rcdk6"), SubResource("Resource_30ukf"), SubResource("Resource_vtupm"), SubResource("Resource_hc4ah"), SubResource("Resource_h4f0x"), SubResource("Resource_fqvlm"), SubResource("Resource_pr13g"), SubResource("Resource_o8oxc"), SubResource("Resource_15o6q"), SubResource("Resource_53l28"), SubResource("Resource_lxsag"), SubResource("Resource_xbsqa"), SubResource("Resource_62pwj"), SubResource("Resource_id8mg"), SubResource("Resource_nrs7i"), SubResource("Resource_oyolg"), SubResource("Resource_tv5n8"), SubResource("Resource_y1l3m"), SubResource("Resource_yx1i1"), SubResource("Resource_nknd4"), SubResource("Resource_imvlc"), SubResource("Resource_ygxrv"), SubResource("Resource_wteer"), SubResource("Resource_1fayh"), SubResource("Resource_cel4s"), SubResource("Resource_rsqbr"), SubResource("Resource_12p8y"), SubResource("Resource_d2eht"), SubResource("Resource_ej7iq"), SubResource("Resource_aunuw"), SubResource("Resource_cnh5c"), SubResource("Resource_ejtfb"), SubResource("Resource_lwpcb"), SubResource("Resource_gris6"), SubResource("Resource_in2tn")])
+point_data = Array[ExtResource("9_hc4ah")]([SubResource("Resource_rcdk6"), SubResource("Resource_30ukf"), SubResource("Resource_vtupm"), SubResource("Resource_hc4ah"), SubResource("Resource_h4f0x"), SubResource("Resource_fqvlm"), SubResource("Resource_pr13g"), SubResource("Resource_o8oxc"), SubResource("Resource_15o6q"), SubResource("Resource_53l28"), SubResource("Resource_lxsag"), SubResource("Resource_xbsqa"), SubResource("Resource_62pwj"), SubResource("Resource_id8mg"), SubResource("Resource_nrs7i"), SubResource("Resource_oyolg"), SubResource("Resource_tv5n8"), SubResource("Resource_y1l3m"), SubResource("Resource_yx1i1"), SubResource("Resource_nknd4"), SubResource("Resource_imvlc"), SubResource("Resource_ygxrv"), SubResource("Resource_wteer"), SubResource("Resource_1fayh"), SubResource("Resource_cel4s"), SubResource("Resource_rsqbr"), SubResource("Resource_12p8y"), SubResource("Resource_d2eht"), SubResource("Resource_ej7iq"), SubResource("Resource_aunuw"), SubResource("Resource_cnh5c"), SubResource("Resource_ejtfb"), SubResource("Resource_lwpcb"), SubResource("Resource_gris6"), SubResource("Resource_in2tn"), SubResource("Resource_ws21h")])
 metadata/_custom_type_script = "uid://dkyobseeo0c7n"
 
 [sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_wj5hs"]
@@ -221,7 +216,7 @@ quality = 2
 light_data = ExtResource("2_njj3u")
 
 [node name="TrackSpline" type="Path3D" parent="." unique_id=888770020]
-curve = SubResource("Curve3D_in2tn")
+curve = SubResource("Curve3D_iakwp")
 script = ExtResource("11_fqvlm")
 data = ExtResource("12_pr13g")
 metadata/_custom_type_script = "uid://ch5pjmp7ic5lh"
@@ -1147,3 +1142,15 @@ script = ExtResource("19_rcdk6")
 pod = NodePath("../Arcwing")
 track = NodePath("../TrackSpline")
 starting_line = NodePath("../StartingLine")
+
+[node name="Lights" type="Node3D" parent="." unique_id=235406535]
+
+[node name="SpotLight3D" type="SpotLight3D" parent="Lights" unique_id=1932739248]
+transform = Transform3D(0.18720375, -0.4299198, 0.8832463, 0, 0.8991422, 0.43765718, -0.9823213, -0.081931055, 0.1683228, -179.98401, 156.80762, 1156.1687)
+light_color = Color(1, 0.9372549, 0.89411765, 1)
+light_specular = 0.0
+light_bake_mode = 1
+spot_range = 381.27356
+spot_attenuation = -0.6
+spot_angle = 8.0
+spot_angle_attenuation = 2.1435513

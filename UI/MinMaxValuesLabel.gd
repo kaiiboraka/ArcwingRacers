@@ -159,7 +159,7 @@ func _ready() -> void:
 
 
 func _get_components() -> void:
-	# Node references are resolved via the geomatically exported NodePaths; unique names
+	# Node references are assigned via export (in the .tscn node_paths); unique names
 	# (%Name) act as a fallback when the references aren't assigned.
 	if labelCurrent == null:
 		labelCurrent = get_node("%LabelCurrent")

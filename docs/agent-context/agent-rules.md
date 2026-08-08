@@ -46,6 +46,7 @@
 - Before importing or committing any non-original audio asset, add or update its entry in `technical/audio-licensing.md`.
 - Before implementing a new Godot system, confirm the Godot version in `technical/code-standards.md` and consult that version's docs.
 - UI ↔ gameplay communication routes through the EventBus autoload at `systems/events/event_bus.gd` only: UI reads by subscribing to signals, writes by firing request signals.
+- **Never modify a script without first re-reading the sections you plan on changing in their entirety.** If you're changing a function, re-read the existing function; if you're changing an entire script from end-to-end, re-read the entire script from end-to-end. Be fully caught up on the current version and context before making changes — do not rewrite a whole file (or "clean up" adjacent code) when the edit is local. Permanent rule.
 
 ### Never
 - Do not add packages, dependencies, or plugins without asking first.
