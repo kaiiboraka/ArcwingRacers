@@ -32,6 +32,9 @@ func _ready() -> void:
 	EventBus.race_countdown_go.connect(_on_countdown_go)
 	EventBus.race_lap_completed.connect(_on_lap_completed)
 	EventBus.race_finished.connect(_on_finished)
+	_go_label_box.visible = false;
+	_finished_label.visible = false;
+	_countdown_label.visible = false;
 	set_process(true)
 
 
@@ -69,19 +72,22 @@ func set_race_position(current : int, max_racers : int) -> void:
 
 
 func _on_countdown_tick(tick : int) -> void:
+	if (!_countdown_label.visible): _countdown_label.visible = true;
 	_animate_countdown("[b]%d" % tick)
 
 
 func _on_countdown_go() -> void:
+	const in_out_time = .15
+	const stay_time = .25
 	_go_label_box.offset_transform_position_ratio = Vector2(-2, 0);
 	_go_label_box.visible = true;
 	var slide_tween = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN);
-	slide_tween.tween_property(_go_label_box, "offset_transform_position_ratio", Vector2(0,0), .3);
+	slide_tween.tween_property(_go_label_box, "offset_transform_position_ratio", Vector2(0,0), in_out_time);
 	slide_tween.finished.connect(
 		func():
-			get_tree().create_timer(.15, false).timeout.connect(func(): 
-				var slide_off_tween = create_tween().set_trans(Tween.TRANS_QUART).set_ease(Tween.EASE_IN);
-				slide_off_tween.tween_property(_go_label_box, "offset_transform_position_ratio", Vector2(2,0), .3);
+			get_tree().create_timer(stay_time, false).timeout.connect(func(): 
+				var slide_off_tween = create_tween().set_trans(Tween.TRANS_QUART).set_ease(Tween.EASE_OUT);
+				slide_off_tween.tween_property(_go_label_box, "offset_transform_position_ratio", Vector2(2,0), in_out_time);
 				slide_off_tween.finished.connect(func(): _go_label_box.visible = false);
 			);
 	)
