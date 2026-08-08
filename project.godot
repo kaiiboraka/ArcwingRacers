@@ -20,7 +20,8 @@ project_layer_names/c#_namespace="ArcwingRacers"
 [application]
 
 config/name="ArcwingRacers"
-run/main_scene="uid://ckbu050laq1kp"
+config/version="0.0.4"
+run/main_scene="uid://cmcq2esat8g0v"
 config/features=PackedStringArray("4.7", "C#")
 boot_splash/image="uid://d02b1b1s58j40"
 config/icon="uid://caimmelb02tso"
@@ -49,11 +50,12 @@ CameraRoot="*uid://btveng6akpeug"
 EventBus="*res://Systems/Events/event_bus.gd"
 ScreenEffects="*uid://mdeofcf6dtj"
 _mcp_game_helper="*res://addons/godot_ai/runtime/game_helper.gd"
-GameManager="*uid://c8p4vyx73qvxk"
+GameManager="*res://addons/utility_scripts/SceneManagement/GameManager.gd"
 AppConfig="*uid://cjke6crjg14a0"
 SceneLoader="*uid://cbwmrnp0af35y"
 ProjectMusicController="*uid://r5t485lr3p7t"
 ProjectUISoundController="*uid://cc37235kj4384"
+ProjectLoader="*uid://ctvshyhcdtvkk"
 
 [display]
 

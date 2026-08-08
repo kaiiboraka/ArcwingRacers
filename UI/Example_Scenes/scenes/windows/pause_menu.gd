@@ -92,11 +92,11 @@ func _on_restart_confirmation_confirmed() -> void:
 
 func _on_restart_confirmation_closed() -> void:
 	if restarting:
-		SceneLoader.reload_current_scene()
+		ProjectLoader.restart_race()
 		close()
 
 func _on_main_menu_confirmation_confirmed():
-	_load_scene(get_main_menu_scene_path())
+	ProjectLoader.return_to_menu()
 
 func _on_exit_confirmation_confirmed():
 	get_tree().quit()

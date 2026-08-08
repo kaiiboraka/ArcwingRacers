@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://cmcq2esat8g0v"]
+
+[ext_resource type="Script" uid="uid://dwse2gad6ebpa" path="res://Content/Scenes/boot.gd" id="1_f5r03"]
+
+[node name="ArcwingRacers" type="Node" unique_id=1483503459]
+script = ExtResource("1_f5r03")
+
+[node name="World3D" type="Node3D" parent="." unique_id=342274202]
+unique_name_in_owner = true
+
+[node name="World2D" type="Node2D" parent="." unique_id=1452207254]
+unique_name_in_owner = true
+
+[node name="UI" type="CanvasLayer" parent="." unique_id=555816051]
+unique_name_in_owner = true

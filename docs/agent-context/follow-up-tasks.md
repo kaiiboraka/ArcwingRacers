@@ -4,6 +4,10 @@ Tasks explicitly deferred to a later session — not urgent, not forgotten. Remo
 
 ---
 
+- **Game flow + scene management consolidation (`[GFT]`).** ✅ COMMITTED (2026-08-08) — active work: `GameManager.gd` → script autoload (containers injected at boot, packed-scene swap variants); new master main scene `Content/Scenes/ArcwingRacers.tscn` (World3D/World2D/UI + _Boot); project flow controller `Systems/Loading/ProjectLoader.gd` replacing AppConfig as the scene-path owner and chaining `SceneLoader` async → `GameManager` (ADR 0011 composition hub). Adopts Maaack's menus (main menu, options, pause, credits) driven through the flow. Plan: `agent-context/plans/plan-game-flow-and-scene-management.md`.
+
+---
+
 ## Deferred Tasks
 
 - **Write `game-design/overview.md` for ArcwingRacers.** ✅ Done — racing game design replaces Fantasy X.
